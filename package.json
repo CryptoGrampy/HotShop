@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "base58-monero": "^0.0.5",
+    "bn.js": "^5.2.0",
+    "keccak256": "^1.0.6",
+    "monero-javascript": "^0.6.3",
+    "parcel": "^2.2.1"
+  }
+}

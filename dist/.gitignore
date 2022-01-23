@@ -1,0 +1,4 @@
+*
+!.gitignore
+!monero_wallet_full.wasm
+!monero_web_worker.js
