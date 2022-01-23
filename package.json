@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "build": "npx parcel build src/index.html",
+    "start": "npx parcel src/index.html"
+  },
   "dependencies": {
     "base58-monero": "^0.0.5",
     "bn.js": "^5.2.0",
