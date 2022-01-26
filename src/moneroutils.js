@@ -1,18 +1,16 @@
-'use strict';
+import crypto from "./crypto"
+import base58 from "base58-monero"
+import monerojs from "monero-javascript"
 
-const crypto = require('./crypto')
-const base58 = require('base58-monero')
-const monerojs = require('monero-javascript')
-
-export function derivePrivateViewKey(privateSpendKey) {
+function derivePrivateViewKey(privateSpendKey) {
     return crypto.reduceScalar32(crypto.fastHash(privateSpendKey)).toString('hex')
 }
 
-export function derivePublicKey(privateKey) {
+function derivePublicKey(privateKey) {
     return crypto.secretKeyToPublicKey(privateKey).toString('hex')
 }
 
-export function derivePrimaryAddress(network, publicSpendKey, publicViewKey) {
+function derivePrimaryAddress(network, publicSpendKey, publicViewKey) {
     function networkTypeToByte(network) {
         switch (network) {
             case monerojs.MoneroNetworkType.MAINNET:
@@ -34,3 +32,5 @@ export function derivePrimaryAddress(network, publicSpendKey, publicViewKey) {
     const chsum = crypto.fastHash(data).slice(0, 4)
     return base58.encode(Buffer.concat([data, chsum]))
 }
+
+export default { derivePrivateViewKey, derivePublicKey, derivePrimaryAddress }

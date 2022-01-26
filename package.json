@@ -7,7 +7,12 @@
     "base58-monero": "^0.0.5",
     "bn.js": "^5.2.0",
     "keccak256": "^1.0.6",
+    "memfs": "^3.4.1",
     "monero-javascript": "^0.6.3",
-    "parcel": "^2.2.1"
+    "parcel": "^2.2.1",
+    "vue": "^3.2.29"
+  },
+  "devDependencies": {
+    "@parcel/transformer-vue": "^2.2.1"
   }
 }
