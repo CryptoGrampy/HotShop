@@ -30,7 +30,6 @@
                 }
 
                 if (seed !== '') {
-                    // TODO: check if seed is valid!
                     console.log('recovering a wallet')
                     const privateSpendKey = seed
                     const privateViewKey = moneroutils.derivePrivateViewKey(privateSpendKey)
@@ -46,9 +45,8 @@
                             restoreHeight: 1016700,
                         },
                     }
-                } else {
-                    console.log('generating a wallet')
                 }
+
                 return monerojs.createWalletFull(config)
             },
 
@@ -77,6 +75,14 @@
 
         async mounted() {
             const seed = window.location.hash.substr(1)
+            // Validate the seed if there's one set
+            if ( seed !== "" ) {
+                if (!monerojs.MoneroUtils.isValidPrivateSpendKey(seed)) {
+                    // TODO: assign an error code in this.errorCode
+                    console.log("invalid SEED")
+                    return
+                }
+            }
 
             this.wallet = await this.newWallet(seed)
             this.mnemonic = await this.wallet.getMnemonic()
