@@ -90,8 +90,8 @@
 
             // MoneroConnectionManagerListener
             onConnectionChanged(connection){
-                this.isConnected = connection.isConnected()
-                console.log("[event] connection", connection.isConnected())
+                this.isConnected = connection.isConnected() === true
+                console.log("[event] connection", this.isConnected)
             }
         },
 
