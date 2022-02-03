@@ -1,10 +1,12 @@
 <template>
+    <div>Network: {{ defaultWalletConfig.networkType }}</div>
     <div>Primary address: {{ primaryAddress }}</div>
     <div>Mnemonic: {{ mnemonic }}</div>
     <div>Connected: {{ isConnected }}</div>
     <div>Synced: {{ isSynced }}</div>
     <div>Balance: {{ balance }}</div>
     <div>Unlocked balance: {{ unlockedBalance }}</div>
+    <new-transaction v-if="isSynced"></new-transaction>
 </template>
 
 <script>
@@ -23,8 +25,8 @@
                 mnemonic: null,
                 isSynced: false,
                 isConnected: false,
-                balance: 0,
-                unlockedBalance: 0,
+                balance: "0",
+                unlockedBalance: "0",
                 defaultWalletConfig: {
                     language: 'English',
                     networkType: monerojs.MoneroNetworkType.STAGENET,
@@ -108,9 +110,9 @@
             },
 
             onBalancesChanged(newBalance, newUnlockedBalance) {
-                this.balance = newBalance
-                this.unlockedBalance = newUnlockedBalance
-                console.log("[event] balance", this.balance.toString(10), "/", this.unlockedBalance.toString(10))
+                this.balance = newBalance.toString(10)
+                this.unlockedBalance = newUnlockedBalance.toString(10)
+                console.log("[event] balance", this.balance, "/", this.unlockedBalance)
             },
 
             onNewBlock(height){},
@@ -175,6 +177,8 @@
 
             // TODO: add in the config...
             await wallet.startSyncing(30000)
+
+            this.wallet = wallet
         },
 
         beforeDestroy() {
