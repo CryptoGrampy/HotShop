@@ -16,6 +16,22 @@
         name: "App",
 
         methods: {
+            getParamRestoreHeight() {
+                const urlParams = new URLSearchParams(window.location.search)
+                let restoreHeight = null
+                if (urlParams.has("h")) {
+                    restoreHeight = parseInt(urlParams.get("h"))
+                }
+                return restoreHeight
+            },
+
+            setParamRestoreHeight(restoreHeight) {
+                const urlParams = new URLSearchParams(window.location.search)
+                urlParams.set("h", restoreHeight)
+                const newState = "?"+urlParams.toString()+window.location.hash
+                history.pushState(null, "", newState)
+            },
+
             async newConnectionManager() {
                 const connection = new monerojs.MoneroRpcConnection(this.defaultDaemonConnectionConfig)
                 const connectionManager = new monerojs.MoneroConnectionManager(true)
@@ -84,22 +100,19 @@
             // Validate the seed if there's one set
             if (seed !== "") {
                 if (!monerojs.MoneroUtils.isValidPrivateSpendKey(seed)) {
-                    // TODO: assign an error code in this.errorCode
+                    // TODO: set a user visible error!
                     console.error("invalid seed!")
                     return
                 }
             }
 
-            const urlParams = new URLSearchParams(window.location.search)
             let restoreHeight = null
-            if (urlParams.has("h")) {
-                try {
-                    restoreHeight = parseInt(urlParams.get("h"))
-                } catch (e) {
-                    // TODO: assign an error code in this.errorCode
-                    console.error("invalid restore height!")
-                    return
-                }
+            try {
+                restoreHeight = this.getParamRestoreHeight()
+            } catch (e) {
+                // TODO: set a user visible error!
+                console.error("invalid restore height!")
+                return
             }
 
             const wallet = await this.newWallet(seed)
@@ -124,12 +137,14 @@
             await wallet.setDaemonConnection(connectionManager.getConnection())
 
             restoreHeight = (restoreHeight == null) ? await wallet.getDaemonHeight():restoreHeight
+            this.setParamRestoreHeight(restoreHeight)
+
             await wallet.setSyncHeight(restoreHeight - 1)
 
             console.log("daemon height", await wallet.getDaemonHeight())
             console.log("sync height", await wallet.getSyncHeight())
 
-            // TODO: add in config...
+            // TODO: add in the config...
             await wallet.startSyncing(30000)
         },
 
