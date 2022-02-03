@@ -16,12 +16,17 @@
         name: "App",
 
         methods: {
-            newDaemonConnection() {
-                return new monerojs.MoneroRpcConnection(this.defaultDaemonConnectionConfig)
-            },
+            async newConnectionManager() {
+                const connection = new monerojs.MoneroRpcConnection(this.defaultDaemonConnectionConfig)
+                const connectionManager = new monerojs.MoneroConnectionManager(true)
+                await connectionManager.addListener(this)
+                // TODO: add in config
+                await connectionManager.setTimeout(15000)
+                await connectionManager.setConnection(connection)
+                // TODO: add in config
+                await connectionManager.startCheckingConnection(10000)
 
-            newDaemonConnectionManager() {
-                return new monerojs.MoneroConnectionManager(true)
+                return connectionManager
             },
 
             async newWallet(seed) {
@@ -42,12 +47,13 @@
                             primaryAddress: primaryAddress,
                             privateViewKey: privateViewKey,
                             privateSpendKey: privateSpendKey,
-                            restoreHeight: 1016700,
                         },
                     }
                 }
 
-                return monerojs.createWalletFull(config)
+                const wallet = await monerojs.createWalletFull(config)
+                await wallet.addListener(this)
+                return wallet
             },
 
             // MoneroWalletListener interface implementation
@@ -76,43 +82,55 @@
         async mounted() {
             const seed = window.location.hash.substr(1)
             // Validate the seed if there's one set
-            if ( seed !== "" ) {
+            if (seed !== "") {
                 if (!monerojs.MoneroUtils.isValidPrivateSpendKey(seed)) {
                     // TODO: assign an error code in this.errorCode
-                    console.log("invalid SEED")
+                    console.error("invalid seed!")
                     return
                 }
             }
 
-            this.wallet = await this.newWallet(seed)
-            this.mnemonic = await this.wallet.getMnemonic()
-            this.privateSpendKey = await this.wallet.getPrivateSpendKey()
-            this.privateViewKey = await this.wallet.getPrivateViewKey()
-            this.publicSpendKey = await this.wallet.getPublicSpendKey()
-            this.publicViewKey = await this.wallet.getPublicViewKey()
-            this.primaryAddress = await this.wallet.getPrimaryAddress()
+            const urlParams = new URLSearchParams(window.location.search)
+            let restoreHeight = null
+            if (urlParams.has("h")) {
+                try {
+                    restoreHeight = parseInt(urlParams.get("h"))
+                } catch (e) {
+                    // TODO: assign an error code in this.errorCode
+                    console.error("invalid restore height!")
+                    return
+                }
+            }
+
+            const wallet = await this.newWallet(seed)
+            this.mnemonic = await wallet.getMnemonic()
+            this.privateSpendKey = await wallet.getPrivateSpendKey()
+            this.privateViewKey = await wallet.getPrivateViewKey()
+            this.publicSpendKey = await wallet.getPublicSpendKey()
+            this.publicViewKey = await wallet.getPublicViewKey()
+            this.primaryAddress = await wallet.getPrimaryAddress()
 
             window.location.hash = this.privateSpendKey
 
-            console.log(this.mnemonic)
+            console.log('mnemonic:', this.mnemonic)
             console.log('private spend key:', this.privateSpendKey)
             console.log('private view key:', this.privateViewKey)
             console.log('public spend key:', this.publicSpendKey)
             console.log('public view key:', this.publicViewKey)
             console.log('primary address:', this.primaryAddress)
 
-            let connection = this.newDaemonConnection()
-            let connectionManager = this.newDaemonConnectionManager()
-            await connectionManager.setConnection(connection)
-            await connectionManager.addListener(this)
-            // TODO: set timeout in a config
-            await connectionManager.setTimeout(15000)
-            // TODO: set interval in a config
-            await connectionManager.startCheckingConnection(10000)
+            const connectionManager = await this.newConnectionManager()
 
-            await this.wallet.setDaemonConnection(connection)
-            await this.wallet.addListener(this)
-            await this.wallet.startSyncing(30000)
+            await wallet.setDaemonConnection(connectionManager.getConnection())
+
+            restoreHeight = (restoreHeight == null) ? await wallet.getDaemonHeight():restoreHeight
+            await wallet.setSyncHeight(restoreHeight - 1)
+
+            console.log("daemon height", await wallet.getDaemonHeight())
+            console.log("sync height", await wallet.getSyncHeight())
+
+            // TODO: add in config...
+            await wallet.startSyncing(30000)
         },
 
         beforeDestroy() {
@@ -137,7 +155,10 @@
                 },
                 defaultDaemonConnectionConfig: {
                     // NOTICE: must contain http:// or https://
-                    uri: 'http://stagenet.melo.tools:38081',
+                    //uri: 'http://stagenet.melo.tools:38081',
+                    //uri: 'http://xmr.node.itzmx.com:18081',
+                    //uri: 'http://iceland1.strangled.net:18089',
+                    uri: 'http://xmr-lux.boldsuck.org:38081',
                     proxyToWorker: true,
                 }
             };
