@@ -12,8 +12,37 @@
     import moneroutils from "./moneroutils"
     import memfs from "memfs"
 
+    const proxyToWorker = true
+
     export default {
         name: "App",
+
+        data() {
+            return {
+                primaryAddress: null,
+                mnemonic: null,
+                isSynced: false,
+                isConnected: false,
+                balance: 0,
+                unlockedBalance: 0,
+                defaultWalletConfig: {
+                    language: 'English',
+                    networkType: monerojs.MoneroNetworkType.STAGENET,
+                    // Password cannot be empty a dummy password will do.
+                    password: 'walletPassword',
+                    proxyToWorker: proxyToWorker,
+                    fs: memfs,
+                },
+                defaultDaemonConnectionConfig: {
+                    // NOTICE: must contain http:// or https://
+                    //uri: 'http://stagenet.melo.tools:38081',
+                    //uri: 'http://xmr.node.itzmx.com:18081',
+                    //uri: 'http://iceland1.strangled.net:18089',
+                    uri: 'http://xmr-lux.boldsuck.org:38081',
+                    proxyToWorker: proxyToWorker,
+                }
+            };
+        },
 
         methods: {
             getParamRestoreHeight() {
@@ -34,7 +63,7 @@
 
             async newConnectionManager() {
                 const connection = new monerojs.MoneroRpcConnection(this.defaultDaemonConnectionConfig)
-                const connectionManager = new monerojs.MoneroConnectionManager(true)
+                const connectionManager = new monerojs.MoneroConnectionManager(proxyToWorker)
                 await connectionManager.addListener(this)
                 // TODO: add in config
                 await connectionManager.setTimeout(15000)
@@ -150,33 +179,6 @@
 
         beforeDestroy() {
             this.wallet.close()
-        },
-
-        data() {
-            return {
-                primaryAddress: null,
-                mnemonic: null,
-                isSynced: false,
-                isConnected: false,
-                balance: 0,
-                unlockedBalance: 0,
-                defaultWalletConfig: {
-                    language: 'English',
-                    networkType: monerojs.MoneroNetworkType.STAGENET,
-                    // Password cannot be empty a dummy password will do.
-                    password: 'walletPassword',
-                    proxyToWorker: true,
-                    fs: memfs,
-                },
-                defaultDaemonConnectionConfig: {
-                    // NOTICE: must contain http:// or https://
-                    //uri: 'http://stagenet.melo.tools:38081',
-                    //uri: 'http://xmr.node.itzmx.com:18081',
-                    //uri: 'http://iceland1.strangled.net:18089',
-                    uri: 'http://xmr-lux.boldsuck.org:38081',
-                    proxyToWorker: true,
-                }
-            };
         },
     }
 </script>
