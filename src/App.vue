@@ -1,13 +1,34 @@
 <template>
+    <el-container>
+        <el-header>
+            <h1>xmr.gift wallet</h1>
+        </el-header>
+        <el-main>
+            <wallet :balance="balance" :unlockedBalance="unlockedBalance" :address="primaryAddress" :isConnected="isConnected" :isSynced="isSynced" :syncProgress="syncProgress"></wallet>
+        </el-main>
+    </el-container>
+
+    <hr>
+
     <div>Network: {{ defaultWalletConfig.networkType }}</div>
     <div>Primary address: {{ primaryAddress }}</div>
     <div>Mnemonic: {{ mnemonic }}</div>
     <div>Connected: {{ isConnected }}</div>
-    <div>Synced: {{ isSynced }}</div>
-    <div>Balance: {{ balance }}</div>
-    <div>Unlocked balance: {{ unlockedBalance }}</div>
-    <new-transaction v-if="isSynced"></new-transaction>
+    <div v-if="isConnected">
+        <div>Synced: {{ isSynced }}</div>
+        <div v-if="isSynced">
+            <div>Balance: {{ balance }}</div>
+            <div>Unlocked balance: {{ unlockedBalance }}</div>
+        </div>
+    </div>
 </template>
+
+<style scoped>
+    .el-container {
+        max-width:40em;
+        margin:0 auto;
+    }
+</style>
 
 <script>
     import monerojs from "monero-javascript"
@@ -25,6 +46,7 @@
                 mnemonic: null,
                 isSynced: false,
                 isConnected: false,
+                syncProgress: 0,
                 balance: "0",
                 unlockedBalance: "0",
                 defaultWalletConfig: {
@@ -105,14 +127,15 @@
 
             // MoneroWalletListener interface implementation
             onSyncProgress(height, startHeight, endHeight, percentDone, message) {
-                console.log("[event] sync", percentDone * 100, "%")
-                this.isSynced = (percentDone * 100 === 100)
+                this.syncProgress = parseInt(percentDone * 100)
+                this.isSynced = (this.syncProgress === 100)
+                console.debug("[event] sync", this.syncProgress, "%")
             },
 
             onBalancesChanged(newBalance, newUnlockedBalance) {
                 this.balance = newBalance.toString(10)
                 this.unlockedBalance = newUnlockedBalance.toString(10)
-                console.log("[event] balance", this.balance, "/", this.unlockedBalance)
+                console.debug("[event] balance", this.balance, "/", this.unlockedBalance)
             },
 
             onNewBlock(height){},
@@ -122,7 +145,7 @@
             // MoneroConnectionManagerListener
             onConnectionChanged(connection){
                 this.isConnected = connection.isConnected() === true
-                console.log("[event] connection", this.isConnected)
+                console.debug("[event] connection", this.isConnected)
             }
         },
 
@@ -168,12 +191,12 @@
             await wallet.setDaemonConnection(connectionManager.getConnection())
 
             restoreHeight = (restoreHeight == null) ? await wallet.getDaemonHeight():restoreHeight
+
             this.setParamRestoreHeight(restoreHeight)
+            await wallet.setSyncHeight(restoreHeight)
 
-            await wallet.setSyncHeight(restoreHeight - 1)
-
-            console.log("daemon height", await wallet.getDaemonHeight())
-            console.log("sync height", await wallet.getSyncHeight())
+            console.debug("daemon height", await wallet.getDaemonHeight())
+            console.debug("sync height", await wallet.getSyncHeight())
 
             // TODO: add in the config...
             await wallet.startSyncing(30000)
