@@ -190,7 +190,9 @@
 
             await wallet.setDaemonConnection(connectionManager.getConnection())
 
-            restoreHeight = (restoreHeight == null) ? await wallet.getDaemonHeight():restoreHeight
+            // getDaemonHeight - 1 is here to prevent this issue:
+            // https://github.com/monero-ecosystem/monero-javascript/issues/76
+            restoreHeight = (restoreHeight == null) ? await wallet.getDaemonHeight() - 1:restoreHeight
 
             this.setParamRestoreHeight(restoreHeight)
             await wallet.setSyncHeight(restoreHeight)
