@@ -14,7 +14,11 @@
 
         <el-row>
             <el-col class="text-center">
-                <wallet-button :status="walletStatus" @redeem-click="currentCard = 'redeem'" @deposit-click="currentCard = 'deposit'"></wallet-button>
+                <wallet-button
+                        :status="walletStatus"
+                        @redeem-click="currentCard = 'redeem'"
+                        @deposit-click="currentCard = 'deposit'"
+                ></wallet-button>
             </el-col>
         </el-row>
     </el-card>
@@ -28,6 +32,7 @@
     <redeem-card
             v-if="currentCard == 'redeem'"
             @back="currentCard = 'balance'"
+            :redeemBalanceFunc="sendTransaction"
     ></redeem-card>
 </template>
 
@@ -63,11 +68,19 @@
             isConnected: Boolean,
             isSynced: Boolean,
             syncProgress: Number,
+            sendTransactionFunc: Function,
         },
 
         data() {
             return {
                 currentCard: "balance"
+            }
+        },
+
+        methods: {
+            async sendTransaction(address) {
+                console.log("send transaction")
+                return this.$props.sendTransactionFunc(address)
             }
         },
 
@@ -93,6 +106,7 @@
                 return status
             },
 
+            // TODO: pass as $props.formatBalanceFunc
             formatBalance() {
                 return MoneroUtils.atomicUnitsToXmr(this.balance)
             },

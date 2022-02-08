@@ -4,7 +4,15 @@
             <h1>xmr.gift wallet</h1>
         </el-header>
         <el-main>
-            <wallet :balance="balance" :unlockedBalance="unlockedBalance" :address="primaryAddress" :isConnected="isConnected" :isSynced="isSynced" :syncProgress="syncProgress"></wallet>
+            <wallet
+                    :balance="balance"
+                    :unlockedBalance="unlockedBalance"
+                    :address="primaryAddress"
+                    :isConnected="isConnected"
+                    :isSynced="isSynced"
+                    :syncProgress="syncProgress"
+                    :sendTransactionFunc="sweepUnlockedBalance"
+            ></wallet>
         </el-main>
     </el-container>
 
@@ -34,6 +42,7 @@
     import monerojs from "monero-javascript"
     import moneroutils from "./moneroutils"
     import memfs from "memfs"
+    import { ErrorInvalidMoneroAddress } from "./errors"
 
     const proxyToWorker = true
 
@@ -125,6 +134,18 @@
                 return wallet
             },
 
+            async sweepUnlockedBalance(address) {
+                console.debug("sweepUnlockedBalance", address)
+                if (!monerojs.MoneroUtils.isValidAddress(address, this.defaultWalletConfig.networkType)) {
+                    throw new ErrorInvalidMoneroAddress("Invalid Monero address")
+                }
+                return this.wallet.sweepUnlocked({
+                    address: address,
+                    // TODO: set relay=true
+                    relay: false,
+                })
+            },
+
             // MoneroWalletListener interface implementation
             onSyncProgress(height, startHeight, endHeight, percentDone, message) {
                 this.syncProgress = parseInt(percentDone * 100)
@@ -150,6 +171,9 @@
         },
 
         async mounted() {
+            // Load wasm keys module to enable MoneroUtils.isValidAddress
+            await monerojs.LibraryUtils.loadKeysModule()
+
             const seed = window.location.hash.substr(1)
             // Validate the seed if there's one set
             if (seed !== "") {
