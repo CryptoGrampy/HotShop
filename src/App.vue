@@ -82,7 +82,7 @@
                 const urlParams = new URLSearchParams(window.location.search)
                 urlParams.set("h", restoreHeight)
                 const newState = "?"+urlParams.toString()+window.location.hash
-                history.pushState(null, "", newState)
+                history.replaceState(null, "", newState)
             },
 
             async newConnectionManager() {
