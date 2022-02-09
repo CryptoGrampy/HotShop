@@ -41,7 +41,6 @@
 <script>
     import monerojs from "monero-javascript"
     import moneroutils from "./moneroutils"
-    import memfs from "memfs"
     import { ErrorInvalidMoneroAddress } from "./errors"
 
     const proxyToWorker = true
@@ -64,7 +63,6 @@
                     // Password cannot be empty a dummy password will do.
                     password: 'walletPassword',
                     proxyToWorker: proxyToWorker,
-                    fs: memfs,
                 },
                 defaultDaemonConnectionConfig: {
                     // NOTICE: must contain http:// or https://
