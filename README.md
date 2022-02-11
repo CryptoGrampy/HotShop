@@ -1,4 +1,6 @@
-# next
+# xmr.gift wallet
+
+A non-custodial Monero wallet that runs in the browser.
 
 ## Project setup
 ```
