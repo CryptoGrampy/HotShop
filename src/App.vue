@@ -69,7 +69,8 @@
                     //uri: 'http://stagenet.melo.tools:38081',
                     //uri: 'http://xmr.node.itzmx.com:18081',
                     //uri: 'http://iceland1.strangled.net:18089',
-                    uri: 'http://xmr-lux.boldsuck.org:38081',
+                    //uri: 'http://xmr-lux.boldsuck.org:38081',
+                    uri: '127.0.0.1:38081',
                     proxyToWorker: proxyToWorker,
                 }
             };
@@ -99,9 +100,6 @@
                 // TODO: add in config
                 await connectionManager.setTimeout(15000)
                 await connectionManager.setConnection(connection)
-                // TODO: add in config
-                await connectionManager.startCheckingConnection(10000)
-
                 return connectionManager
             },
 
@@ -145,7 +143,7 @@
             },
 
             // MoneroWalletListener interface implementation
-            onSyncProgress(height, startHeight, endHeight, percentDone, message) {
+            onSyncProgress(height, startHeight, endHeight, percentDone) {
                 this.syncProgress = parseInt(percentDone * 100)
                 this.isSynced = (this.syncProgress === 100)
                 console.debug("[event] sync", this.syncProgress, "%")
@@ -157,14 +155,29 @@
                 console.debug("[event] balance", this.balance, "/", this.unlockedBalance)
             },
 
-            onNewBlock(height){},
-            onOutputReceived(output){},
-            onOutputSpent(output){},
+            onNewBlock(){},
+            onOutputReceived(){},
+            onOutputSpent(){},
 
             // MoneroConnectionManagerListener
-            onConnectionChanged(connection){
+            async onConnectionChanged(connection){
                 this.isConnected = connection.isConnected() === true
                 console.debug("[event] connection", this.isConnected)
+
+                if ( this.isConnected ) {
+                    // getDaemonHeight - 1 is here to prevent this issue:
+                    // https://github.com/monero-ecosystem/monero-javascript/issues/76
+                    if (this.restoreHeight == null) {
+                        this.restoreHeight = await this.wallet.getDaemonHeight() - 1
+                        this.setParamRestoreHeight(this.restoreHeight)
+                    }
+
+                    await this.wallet.setSyncHeight(this.restoreHeight)
+                    // TODO: add in config
+                    await this.wallet.startSyncing(30000)
+                } else {
+                    await this.wallet.stopSyncing()
+                }
             }
         },
 
@@ -182,22 +195,21 @@
                 }
             }
 
-            let restoreHeight = null
             try {
-                restoreHeight = this.getParamRestoreHeight()
+                this.restoreHeight = this.getParamRestoreHeight()
             } catch (e) {
                 // TODO: set a user visible error!
                 console.error("invalid restore height!")
                 return
             }
 
-            const wallet = await this.newWallet(seed)
-            this.mnemonic = await wallet.getMnemonic()
-            this.privateSpendKey = await wallet.getPrivateSpendKey()
-            this.privateViewKey = await wallet.getPrivateViewKey()
-            this.publicSpendKey = await wallet.getPublicSpendKey()
-            this.publicViewKey = await wallet.getPublicViewKey()
-            this.primaryAddress = await wallet.getPrimaryAddress()
+            this.wallet = await this.newWallet(seed)
+            this.mnemonic = await this.wallet.getMnemonic()
+            this.privateSpendKey = await this.wallet.getPrivateSpendKey()
+            this.privateViewKey = await this.wallet.getPrivateViewKey()
+            this.publicSpendKey = await this.wallet.getPublicSpendKey()
+            this.publicViewKey = await this.wallet.getPublicViewKey()
+            this.primaryAddress = await this.wallet.getPrimaryAddress()
 
             window.location.hash = this.privateSpendKey
 
@@ -210,25 +222,14 @@
 
             const connectionManager = await this.newConnectionManager()
 
-            await wallet.setDaemonConnection(connectionManager.getConnection())
+            await this.wallet.setDaemonConnection(connectionManager.getConnection())
 
-            // getDaemonHeight - 1 is here to prevent this issue:
-            // https://github.com/monero-ecosystem/monero-javascript/issues/76
-            restoreHeight = (restoreHeight == null) ? await wallet.getDaemonHeight() - 1:restoreHeight
+            // TODO: add in config
+            await connectionManager.startCheckingConnection(10000)
 
-            this.setParamRestoreHeight(restoreHeight)
-            await wallet.setSyncHeight(restoreHeight)
-
-            console.debug("daemon height", await wallet.getDaemonHeight())
-            console.debug("sync height", await wallet.getSyncHeight())
-
-            // TODO: add in the config...
-            await wallet.startSyncing(30000)
-
-            this.wallet = wallet
         },
 
-        beforeDestroy() {
+        beforeUnmount() {
             this.wallet.close()
         },
     }

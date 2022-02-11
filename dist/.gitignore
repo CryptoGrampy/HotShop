@@ -1,8 +1,0 @@
-*
-!.gitignore
-!monero_wallet_full.js
-!monero_wallet_full.wasm
-!monero_wallet_keys.js
-!monero_wallet_keys.wasm
-!monero_web_worker.js
-!monero_web_worker.js.LICENSE.txt
