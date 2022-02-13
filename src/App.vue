@@ -184,6 +184,8 @@
         async mounted() {
             // Load wasm keys module to enable MoneroUtils.isValidAddress
             await monerojs.LibraryUtils.loadKeysModule()
+            // Override the default path to monero_web_worker.js
+            monerojs.LibraryUtils.setWorkerDistPath("./monero_web_worker.js")
 
             const seed = window.location.hash.substr(1)
             // Validate the seed if there's one set
