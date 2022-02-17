@@ -68,7 +68,7 @@
                     //uri: 'http://xmr.node.itzmx.com:18081',
                     //uri: 'http://iceland1.strangled.net:18089',
                     //uri: 'http://127.0.0.1:38081',
-                    uri: 'http://node.xmr.gift:38081',
+                    uri: 'https://node.xmr.gift:38081',
                     //uri: 'http://stagenet.melo.tools:38081',
                     //uri: 'http://xmr-lux.boldsuck.org:38081',
                     proxyToWorker: proxyToWorker,
