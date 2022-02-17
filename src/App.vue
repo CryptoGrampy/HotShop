@@ -137,8 +137,7 @@
                 }
                 return this.wallet.sweepUnlocked({
                     address: address,
-                    // TODO: set relay=true
-                    relay: false,
+                    relay: true,
                 })
             },
 
