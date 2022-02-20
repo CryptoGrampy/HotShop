@@ -44,6 +44,9 @@
     import { ErrorInvalidMoneroAddress } from "./errors"
 
     const proxyToWorker = true
+    const daemonConnectionTimeout = 10000
+    const daemonCheckPeriod = 10000
+    const daemonSyncPeriod = 30000
 
     export default {
         name: "App",
@@ -97,8 +100,7 @@
                 const connection = new monerojs.MoneroRpcConnection(this.defaultDaemonConnectionConfig)
                 const connectionManager = new monerojs.MoneroConnectionManager(proxyToWorker)
                 await connectionManager.addListener(this)
-                // TODO: add in config
-                await connectionManager.setTimeout(15000)
+                await connectionManager.setTimeout(daemonConnectionTimeout)
                 await connectionManager.setConnection(connection)
                 return connectionManager
             },
@@ -172,8 +174,7 @@
                     }
 
                     await this.wallet.setSyncHeight(this.restoreHeight)
-                    // TODO: add in config
-                    await this.wallet.startSyncing(30000)
+                    await this.wallet.startSyncing(daemonSyncPeriod)
                 } else {
                     await this.wallet.stopSyncing()
                 }
@@ -225,8 +226,7 @@
 
             await this.wallet.setDaemonConnection(connectionManager.getConnection())
 
-            // TODO: add in config
-            await connectionManager.startCheckingConnection(10000)
+            await connectionManager.startCheckingConnection(daemonCheckPeriod)
 
         },
 
