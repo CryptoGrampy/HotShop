@@ -96,12 +96,12 @@
                 history.replaceState(null, "", newState)
             },
 
-            async newConnectionManager() {
+            newConnectionManager() {
                 const connection = new monerojs.MoneroRpcConnection(this.defaultDaemonConnectionConfig)
                 const connectionManager = new monerojs.MoneroConnectionManager(proxyToWorker)
-                await connectionManager.addListener(this)
-                await connectionManager.setTimeout(daemonConnectionTimeout)
-                await connectionManager.setConnection(connection)
+                connectionManager.addListener(this)
+                connectionManager.setTimeout(daemonConnectionTimeout)
+                connectionManager.setConnection(connection)
                 return connectionManager
             },
 
@@ -222,12 +222,8 @@
             console.log('public view key:', this.publicViewKey)
             console.log('primary address:', this.primaryAddress)
 
-            const connectionManager = await this.newConnectionManager()
-
-            await this.wallet.setDaemonConnection(connectionManager.getConnection())
-
+            const connectionManager = this.newConnectionManager()
             await connectionManager.startCheckingConnection(daemonCheckPeriod)
-
         },
 
         beforeUnmount() {
