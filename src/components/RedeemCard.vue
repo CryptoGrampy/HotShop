@@ -121,6 +121,7 @@
         methods: {
             async redeemBalance() {
                 console.debug("redeem balance")
+                this.form.address = this.form.address.trim()
                 if (this.form.address === "") {
                     this.error = Error("You must provide an address").message
                     return
