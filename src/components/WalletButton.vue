@@ -1,4 +1,6 @@
 <template>
+    <el-button v-if="status.action == 'loading'" type="primary" loading>Loading</el-button>
+
     <el-button v-if="status.action == 'connecting'" type="primary" loading>Connecting</el-button>
 
     <el-button v-if="status.action == 'syncing'" type="warning" loading>Synchronizing {{ status.progress }}%</el-button>

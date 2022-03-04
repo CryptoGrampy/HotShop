@@ -65,6 +65,7 @@
             balance: String,
             unlockedBalance: String,
             address: String,
+            isLoaded: Boolean,
             isConnected: Boolean,
             isSynced: Boolean,
             syncProgress: Number,
@@ -87,7 +88,11 @@
         computed: {
             walletStatus() {
                 let status = {}
-                if ( !this.isConnected ) {
+                if ( !this.isLoaded ) {
+                    status = {
+                        action: "loading",
+                    }
+                } else if ( !this.isConnected ) {
                     status = {
                         action: "connecting",
                     }

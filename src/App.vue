@@ -15,6 +15,7 @@
                     :balance="balance"
                     :unlockedBalance="unlockedBalance"
                     :address="primaryAddress"
+                    :isLoaded="isLoaded"
                     :isConnected="isConnected"
                     :isSynced="isSynced"
                     :syncProgress="syncProgress"
@@ -54,6 +55,7 @@
         data() {
             return {
                 config: {},
+                wallet: null,
                 primaryAddress: null,
                 isSynced: false,
                 isConnected: false,
@@ -70,6 +72,12 @@
                     proxyToWorker: proxyToWorker,
                 }
             };
+        },
+
+        computed: {
+            isLoaded() {
+                return this.wallet !== null
+            }
         },
 
         methods: {
