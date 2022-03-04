@@ -3,7 +3,7 @@
 
     <el-button v-if="status.action == 'connecting'" type="primary" loading>Connecting</el-button>
 
-    <el-button v-if="status.action == 'syncing'" type="warning" loading>Synchronizing {{ status.progress }}%</el-button>
+    <el-button v-if="status.action == 'syncing'" type="warning" loading>Synchronizing <span v-if="status.progress > 0">&nbsp;{{ status.progress }}%</span></el-button>
 
     <el-button v-if="status.action != 'loading'" @click="$emit('depositClick')" type="primary">Deposit</el-button>
 
