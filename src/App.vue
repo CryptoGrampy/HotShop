@@ -22,20 +22,6 @@
             ></wallet>
         </el-main>
     </el-container>
-
-    <hr>
-
-    <div>Primary address: {{ primaryAddress }}</div>
-    <div>Mnemonic: {{ mnemonic }}</div>
-    <div>Network: {{ config.networkType }}</div>
-    <div>Connected: {{ isConnected }}</div>
-    <div v-if="isConnected">
-        <div>Synced: {{ isSynced }}</div>
-        <div v-if="isSynced">
-            <div>Balance: {{ balance }}</div>
-            <div>Unlocked balance: {{ unlockedBalance }}</div>
-        </div>
-    </div>
 </template>
 
 <style scoped>
@@ -69,7 +55,6 @@
             return {
                 config: {},
                 primaryAddress: null,
-                mnemonic: null,
                 isSynced: false,
                 isConnected: false,
                 syncProgress: 0,
@@ -207,23 +192,11 @@
             }
 
             this.config = this.newWalletConfig(networkType, seed)
-
             this.wallet = await this.newWallet(this.config)
-            this.mnemonic = await this.wallet.getMnemonic()
-            this.privateSpendKey = await this.wallet.getPrivateSpendKey()
-            this.privateViewKey = await this.wallet.getPrivateViewKey()
-            this.publicSpendKey = await this.wallet.getPublicSpendKey()
-            this.publicViewKey = await this.wallet.getPublicViewKey()
             this.primaryAddress = await this.wallet.getPrimaryAddress()
 
-            hash.set(this.privateSpendKey)
-
-            console.log('mnemonic:', this.mnemonic)
-            console.log('private spend key:', this.privateSpendKey)
-            console.log('private view key:', this.privateViewKey)
-            console.log('public spend key:', this.publicSpendKey)
-            console.log('public view key:', this.publicViewKey)
-            console.log('primary address:', this.primaryAddress)
+            const privateSpendKey = await this.wallet.getPrivateSpendKey()
+            hash.set(privateSpendKey)
 
             const connectionManager = this.newConnectionManager()
             await connectionManager.startCheckingConnection(daemonCheckPeriod)
