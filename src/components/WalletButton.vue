@@ -5,7 +5,7 @@
 
     <el-button v-if="status.action == 'syncing'" type="warning" loading>Synchronizing {{ status.progress }}%</el-button>
 
-    <el-button v-if="status.action == 'syncing' || status.action == 'ready'" @click="$emit('depositClick')" type="primary">Deposit</el-button>
+    <el-button v-if="status.action != 'loading'" @click="$emit('depositClick')" type="primary">Deposit</el-button>
 
     <el-tooltip v-if="status.action == 'ready' && !status.empty" effect="dark" :disabled="status.unlocked" content="The balance hasn't been fully unlocked yet. This process is automatic, but may take up to 20 minutes." placement="top-start">
         <el-button :disabled="!status.unlocked" @click="$emit('redeemClick')" type="success">Redeem</el-button>
