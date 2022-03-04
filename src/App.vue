@@ -41,6 +41,7 @@
 <script>
     import monerojs from "monero-javascript"
     import moneroutils from "./moneroutils"
+    import urlparams from "./urlparams"
     import { ErrorInvalidMoneroAddress } from "./errors"
 
     const proxyToWorker = true
@@ -80,22 +81,6 @@
         },
 
         methods: {
-            getParamRestoreHeight() {
-                const urlParams = new URLSearchParams(window.location.search)
-                let restoreHeight = null
-                if (urlParams.has("h")) {
-                    restoreHeight = parseInt(urlParams.get("h"))
-                }
-                return restoreHeight
-            },
-
-            setParamRestoreHeight(restoreHeight) {
-                const urlParams = new URLSearchParams(window.location.search)
-                urlParams.set("h", restoreHeight)
-                const newState = "?"+urlParams.toString()+window.location.hash
-                history.replaceState(null, "", newState)
-            },
-
             newConnectionManager() {
                 const connection = new monerojs.MoneroRpcConnection(this.defaultDaemonConnectionConfig)
                 const connectionManager = new monerojs.MoneroConnectionManager(proxyToWorker)
@@ -172,7 +157,7 @@
                     // https://github.com/monero-ecosystem/monero-javascript/issues/76
                     if (this.restoreHeight == null) {
                         this.restoreHeight = await this.wallet.getDaemonHeight() - 1
-                        this.setParamRestoreHeight(this.restoreHeight)
+                        urlparams.setRestoreHeight(this.restoreHeight)
                     }
 
                     await this.wallet.setSyncHeight(this.restoreHeight)
@@ -199,9 +184,8 @@
                 }
             }
 
-            try {
-                this.restoreHeight = this.getParamRestoreHeight()
-            } catch (e) {
+            this.restoreHeight = urlparams.getRestoreHeight()
+            if (isNaN(this.restoreHeight)) {
                 // TODO: set a user visible error!
                 console.error("invalid restore height!")
                 return
