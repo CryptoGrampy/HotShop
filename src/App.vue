@@ -57,7 +57,7 @@
     import { ErrorInvalidMoneroAddress } from "./errors"
 
     const proxyToWorker = true
-    const daemonConnectionTimeout = 10000
+    const daemonConnectionTimeout = 40000
     const daemonCheckPeriod = 10000
     const daemonSyncPeriod = 30000
     const defaultNetworkType = monerojs.MoneroNetworkType.STAGENET
