@@ -13,10 +13,10 @@ export default {
         history.replaceState(null, "", "?"+urlParams.toString()+window.location.hash)
     },
 
-    getRestoreHeight() {
+    getRestoreHeight(defaultValue) {
         const restoreHeight = this.get("h")
         if (restoreHeight == null) {
-            return null
+            return (defaultValue !== undefined) ? defaultValue:null
         }
         return parseInt(restoreHeight)
     },
@@ -25,10 +25,10 @@ export default {
         this.set("h", restoreHeight)
     },
 
-    getNetworkType() {
+    getNetworkType(defaultValue) {
         const networkType = this.get("n")
         if (networkType == null) {
-            return null
+            return (defaultValue !== undefined) ? defaultValue:null
         }
         return parseInt(networkType)
     },
