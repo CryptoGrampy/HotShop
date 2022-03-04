@@ -42,6 +42,7 @@
     import monerojs from "monero-javascript"
     import moneroutils from "./moneroutils"
     import urlparams from "./urlparams"
+    import hash from "./hash"
     import { ErrorInvalidMoneroAddress } from "./errors"
 
     const proxyToWorker = true
@@ -174,7 +175,7 @@
             // Override the default path to monero_web_worker.js
             monerojs.LibraryUtils.setWorkerDistPath("./monero_web_worker.js")
 
-            const seed = window.location.hash.substr(1)
+            const seed = hash.get()
             // Validate the seed if there's one set
             if (seed !== "") {
                 if (!monerojs.MoneroUtils.isValidPrivateSpendKey(seed)) {
@@ -199,7 +200,7 @@
             this.publicViewKey = await this.wallet.getPublicViewKey()
             this.primaryAddress = await this.wallet.getPrimaryAddress()
 
-            window.location.hash = this.privateSpendKey
+            hash.set(this.privateSpendKey)
 
             console.log('mnemonic:', this.mnemonic)
             console.log('private spend key:', this.privateSpendKey)
