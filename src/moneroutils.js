@@ -33,4 +33,12 @@ function derivePrimaryAddress(network, publicSpendKey, publicViewKey) {
     return base58.encode(Buffer.concat([data, chsum]))
 }
 
-export default { derivePrivateViewKey, derivePublicKey, derivePrimaryAddress }
+function deriveAddressAndKeys(network, privateSpendKey) {
+    const privateViewKey = derivePrivateViewKey(privateSpendKey)
+    const publicSpendKey = derivePublicKey(privateSpendKey)
+    const publicViewKey = derivePublicKey(privateViewKey)
+    const primaryAddress = derivePrimaryAddress(network, publicSpendKey, publicViewKey)
+    return [primaryAddress, privateViewKey, privateSpendKey]
+}
+
+export default { derivePrivateViewKey, derivePublicKey, derivePrimaryAddress, deriveAddressAndKeys }

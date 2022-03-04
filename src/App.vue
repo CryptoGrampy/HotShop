@@ -18,9 +18,9 @@
 
     <hr>
 
-    <div>Network: {{ defaultWalletConfig.networkType }}</div>
     <div>Primary address: {{ primaryAddress }}</div>
     <div>Mnemonic: {{ mnemonic }}</div>
+    <div v-if="config">Network: {{ config.networkType }}</div>
     <div>Connected: {{ isConnected }}</div>
     <div v-if="isConnected">
         <div>Synced: {{ isSynced }}</div>
@@ -49,12 +49,14 @@
     const daemonConnectionTimeout = 10000
     const daemonCheckPeriod = 10000
     const daemonSyncPeriod = 30000
+    const defaultNetworkType = monerojs.MoneroNetworkType.STAGENET
 
     export default {
         name: "App",
 
         data() {
             return {
+                config: null,
                 primaryAddress: null,
                 mnemonic: null,
                 isSynced: false,
@@ -62,13 +64,6 @@
                 syncProgress: 0,
                 balance: "0",
                 unlockedBalance: "0",
-                defaultWalletConfig: {
-                    language: 'English',
-                    networkType: monerojs.MoneroNetworkType.STAGENET,
-                    // Password cannot be empty a dummy password will do.
-                    password: 'walletPassword',
-                    proxyToWorker: proxyToWorker,
-                },
                 defaultDaemonConnectionConfig: {
                     //uri: 'http://xmr.node.itzmx.com:18081',
                     //uri: 'http://iceland1.strangled.net:18089',
@@ -91,28 +86,29 @@
                 return connectionManager
             },
 
-            async newWallet(seed) {
+            newWalletConfig(networkType, seed) {
                 let config = {
-                    ...this.defaultWalletConfig,
+                        language: 'English',
+                        networkType: networkType,
+                        // Password cannot be empty a dummy password will do.
+                        password: 'walletPassword',
+                        proxyToWorker: proxyToWorker,
                 }
-
                 if (seed !== '') {
-                    console.log('recovering a wallet')
-                    const privateSpendKey = seed
-                    const privateViewKey = moneroutils.derivePrivateViewKey(privateSpendKey)
-                    const publicSpendKey = moneroutils.derivePublicKey(privateSpendKey)
-                    const publicViewKey = moneroutils.derivePublicKey(privateViewKey)
-                    const primaryAddress = moneroutils.derivePrimaryAddress(this.defaultWalletConfig.networkType, publicSpendKey, publicViewKey)
+                    const val = moneroutils.deriveAddressAndKeys(networkType, seed)
                     config = {
                         ...config,
                         ...{
-                            primaryAddress: primaryAddress,
-                            privateViewKey: privateViewKey,
-                            privateSpendKey: privateSpendKey,
+                            primaryAddress: val[0],
+                            privateViewKey: val[1],
+                            privateSpendKey: val[2],
                         },
                     }
                 }
+                return config
+            },
 
+            async newWallet(config) {
                 const wallet = await monerojs.createWalletFull(config)
                 await wallet.addListener(this)
                 return wallet
@@ -120,7 +116,7 @@
 
             async sweepUnlockedBalance(address) {
                 console.debug("sweepUnlockedBalance", address)
-                if (!monerojs.MoneroUtils.isValidAddress(address, this.defaultWalletConfig.networkType)) {
+                if (!monerojs.MoneroUtils.isValidAddress(address, this.config.networkType)) {
                     throw new ErrorInvalidMoneroAddress("Invalid Monero address")
                 }
                 return this.wallet.sweepUnlocked({
@@ -192,7 +188,10 @@
                 return
             }
 
-            this.wallet = await this.newWallet(seed)
+            const networkType = defaultNetworkType
+            this.config = this.newWalletConfig(networkType, seed)
+
+            this.wallet = await this.newWallet(this.config)
             this.mnemonic = await this.wallet.getMnemonic()
             this.privateSpendKey = await this.wallet.getPrivateSpendKey()
             this.privateViewKey = await this.wallet.getPrivateViewKey()
