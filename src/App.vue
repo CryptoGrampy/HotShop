@@ -4,6 +4,13 @@
             <h1>xmr.gift wallet</h1>
         </el-header>
         <el-main>
+            <el-row>
+                <el-col :span="24" class="text-right">
+                    <el-tag v-if="config.networkType == 1" type="warning">TESTNET</el-tag>
+                    <el-tag v-if="config.networkType == 2" type="warning">STAGENET</el-tag>
+                </el-col>
+            </el-row>
+
             <wallet
                     :balance="balance"
                     :unlockedBalance="unlockedBalance"
@@ -20,7 +27,7 @@
 
     <div>Primary address: {{ primaryAddress }}</div>
     <div>Mnemonic: {{ mnemonic }}</div>
-    <div v-if="config">Network: {{ config.networkType }}</div>
+    <div>Network: {{ config.networkType }}</div>
     <div>Connected: {{ isConnected }}</div>
     <div v-if="isConnected">
         <div>Synced: {{ isSynced }}</div>
@@ -35,6 +42,10 @@
     .el-container {
         max-width:40em;
         margin:0 auto;
+    }
+
+    .text-right {
+        text-align:right;
     }
 </style>
 
@@ -56,7 +67,7 @@
 
         data() {
             return {
-                config: null,
+                config: {},
                 primaryAddress: null,
                 mnemonic: null,
                 isSynced: false,
@@ -188,7 +199,13 @@
                 return
             }
 
-            const networkType = defaultNetworkType
+            let networkType = urlparams.getNetworkType(defaultNetworkType)
+            if (!monerojs.MoneroNetworkType.isValid(networkType)) {
+                // TODO: set a user visible error!
+                console.error("invalid network type!")
+                return
+            }
+
             this.config = this.newWalletConfig(networkType, seed)
 
             this.wallet = await this.newWallet(this.config)
