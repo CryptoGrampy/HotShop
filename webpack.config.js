@@ -54,6 +54,10 @@ module.exports = {
           from: "*.*",
           context: path.resolve(__dirname, "node_modules/monero-javascript/dist"),
         },
+        {
+          from: "index.css",
+          context: path.resolve(__dirname, "node_modules/element-plus/dist"),
+        },
       ]
     }),
   ],
