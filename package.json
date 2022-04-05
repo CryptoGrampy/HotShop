@@ -8,13 +8,14 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "axios": "^0.26.1",
     "base58-monero": "^0.0.5",
     "core-js": "^3.21.1",
     "element-plus": "^2.0.2",
     "keccak256": "^1.0.6",
     "monero-javascript": "^0.6.4",
-    "qrcode": "^1.5.0",
-    "vue": "^3.2.31"
+    "vue": "^3.2.31",
+    "vue-qrious": "^2.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.17.4",
@@ -37,6 +38,7 @@
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "style-loader": "^3.3.1",
+    "ts-loader": "^9.2.8",
     "url": "^0.11.0",
     "vue-loader": "^17.0.0",
     "vue-template-compiler": "^2.6.14",

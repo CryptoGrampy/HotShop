@@ -6,7 +6,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: {
-    main: "./src/main.js",
+    main: "./src/main.ts",
   },
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -14,6 +14,7 @@ module.exports = {
   },
   module: {
     rules: [
+ 
       {
         test: /\.js$/,
         exclude: /node_modules/,
@@ -30,6 +31,13 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: "vue-loader",
+      },
+      {
+        test: /\.ts$/,
+        loader: 'ts-loader',
+        options: {
+          appendTsSuffixTo: [/\.vue$/]
+        }
       },
       {
         test: /\.css$/i,
@@ -66,7 +74,7 @@ module.exports = {
       //vue: "vue/dist/vue.runtime.esm.js",
       fs: "html5-fs",
     },
-    extensions: ["*", ".js", ".vue", ".json"],
+    extensions: ["*", ".js", ".vue", ".json", ".ts"],
     fallback: { // browser polyfills
       assert: require.resolve('assert'),
       //buffer: require.resolve('buffer'),
