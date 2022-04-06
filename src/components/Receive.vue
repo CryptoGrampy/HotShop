@@ -5,18 +5,21 @@ import { PaymentRequest, PaymentResponse } from '../SimplePay';
 import Status from './Status.vue';
 import QrCode from './QrCode.vue';
 
-const state = reactive({ count: 0 })
-
 const paymentRequest = ref({} as PaymentRequest)
 const paymentStatus = ref({} as PaymentResponse)
 const address = ref('')
 const requestAmount = ref(1000000)
 
+let paymentTracker
 
 const generatePayment = async () => {
     paymentRequest.value = await simplePay.createPaymentRequest(requestAmount.value)
     console.log("Current Payment Request: ", paymentRequest.value)
     address.value = paymentRequest.value.integratedAddress
+
+    paymentTracker = setInterval(async() => {
+        await checkPayment()
+    }, 10000);
 }
 
 const checkPayment = async () => {
@@ -26,6 +29,7 @@ const checkPayment = async () => {
 
 const clearPayment = () => {
     paymentRequest.value = {} as PaymentRequest
+    clearInterval(paymentTracker)
 }
 </script>
 
@@ -43,12 +47,15 @@ const clearPayment = () => {
             <QrCode :monero-address="address" :xmr-amount="requestAmount" />
         </p>
         <p>Please send {{ simplePay.convertAtomicUnitsToXmr(String(requestAmount)) }} to {{ paymentRequest.integratedAddress }}</p>
+         <p>
+        <el-button type="warning" @click="clearPayment">Cancel Payment</el-button>
+    </p>
     </div>
 
-    <p>
-        <el-button @click="checkPayment">Check Payment Status</el-button>
-    </p>
+   
     <div v-if="paymentStatus && paymentRequest.integratedAddress">
+    Waiting for Payment...
+
         <p>Your payment status is: {{ paymentStatus.paymentStatus ? paymentStatus.paymentStatus : 'Not detected' }}</p>
         <p
             v-if="paymentStatus.txData"

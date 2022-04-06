@@ -12,5 +12,4 @@ const paymentStatus = ref({} as PaymentResponse)
 </script>
 
 <template>
-    Hello Payment Status
 </template>
