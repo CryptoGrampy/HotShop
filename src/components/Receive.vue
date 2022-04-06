@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount, onMounted, reactive, ref } from 'vue'
 import { simplePay } from '../main';
-import { PaymentRequest, PaymentResponse } from '../SimplePay';
+import { PaymentRequest, PaymentResponse, PaymentStatus } from '../SimplePay';
 import Status from './Status.vue';
 import QrCode from './QrCode.vue';
 
@@ -13,6 +13,7 @@ const requestAmount = ref(1000000)
 let paymentTracker
 
 const generatePayment = async () => {
+    clearPayment()
     paymentRequest.value = await simplePay.createPaymentRequest(requestAmount.value)
     console.log("Current Payment Request: ", paymentRequest.value)
     address.value = paymentRequest.value.integratedAddress
@@ -23,11 +24,12 @@ const generatePayment = async () => {
 }
 
 const checkPayment = async () => {
-    paymentStatus.value = await simplePay.checkForPaymentSuccess(paymentRequest.value)
+    paymentStatus.value = await simplePay.checkForPayment(paymentRequest.value)
     console.log("Latest Payment Status: ", paymentStatus.value)
 }
 
 const clearPayment = () => {
+    paymentStatus.value = {} as PaymentResponse
     paymentRequest.value = {} as PaymentRequest
     clearInterval(paymentTracker)
 }
@@ -39,7 +41,7 @@ const clearPayment = () => {
         <el-input v-model="requestAmount" @keyup="clearPayment()" placeholder="Please input" />
     </p>
     <p>
-        <el-button type="success" @click="generatePayment">Generate Payment</el-button>
+        <el-button v-if="!paymentRequest.integratedAddress" type="success" @click="generatePayment">Generate Payment</el-button>
     </p>
 
     <div v-if="paymentRequest.integratedAddress">
@@ -52,14 +54,15 @@ const clearPayment = () => {
     </p>
     </div>
 
-   
+    <div v-if="paymentRequest.integratedAddress && !paymentStatus.moneroTx">Waiting for Payment...</div>
+    <div v-if="paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming">Payment Found! </div>
+    <div v-if="paymentStatus.paymentComplete">✅ Payment Complete!</div>
     <div v-if="paymentStatus && paymentRequest.integratedAddress">
-    Waiting for Payment...
 
         <p>Your payment status is: {{ paymentStatus.paymentStatus ? paymentStatus.paymentStatus : 'Not detected' }}</p>
         <p
-            v-if="paymentStatus.txData"
-        >Current Confirmations: {{ paymentStatus.txData.data.confirmations }}</p>
+            v-if="paymentStatus.moneroTx"
+        >Current Confirmations: {{ paymentStatus.confirmations }}</p>
     </div>
 
     <div v-if="paymentRequest.integratedAddress">

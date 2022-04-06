@@ -1,24 +1,23 @@
 <script setup lang="ts">import { reactive } from 'vue';
-import { simplePay, simplePayInitialized } from '../main';
-import { Network, SimplePayConfig, StagenetExplorers, MainnetExplorers } from '../SimplePay';
+import { simplePay } from '../main';
+import { Network, SimplePayConfig, StagenetExplorers, MainnetExplorers, simplePayReady } from '../SimplePay';
 
-const { network, primaryAddress, secretViewKey, defaultConfirmations, blockExplorer } = simplePay.getConfig()
+const { network, primaryAddress, secretViewKey, defaultConfirmations, blockExplorer, monerodUri, monerodPassword, monerodUsername } = simplePay.getConfig()
 
 const settingsForm: SimplePayConfig = reactive({
     network,
     defaultConfirmations,
     primaryAddress,
     secretViewKey,
-    blockExplorer
+    blockExplorer,
+    monerodPassword,
+    monerodUsername,
+    monerodUri
 })
 
-const updateSettings = () => {
-    simplePayInitialized.value = false
-    simplePay.updateConfig(settingsForm).then(() => {
-        simplePayInitialized.value = true
-    }).catch((err) => {
-        console.log("Setting update error: ", err)
-    })
+const updateSettings = async () => {
+    simplePayReady.value = false
+    await simplePay.updateConfig(settingsForm)
 }
 
 </script>
@@ -33,25 +32,26 @@ const updateSettings = () => {
         </el-select>
     </p>
 
-
-    <p v-if="settingsForm.network === String(Network.stagenet)">
-        Block Explorer:
-        <el-select v-model="settingsForm.blockExplorer" placeholder="Select" size="large">
-            <el-option v-for="item in StagenetExplorers" :key="item" :label="item" :value="item" />
-        </el-select>
+    <p>
+        Monerod URI
+        <el-input v-model="settingsForm.monerodUri" placeholder="Please input your Monerod address (note Mainnet/Stagenet)" />
     </p>
 
-    <p v-if="settingsForm.network === String(Network.mainnet)">
-        Block Explorer:
-        <el-select v-model="settingsForm.blockExplorer" placeholder="Select" size="large">
-            <el-option v-for="item in MainnetExplorers" :key="item" :label="item" :value="item" />
-        </el-select>
+    <p>
+        Monerod Username (Optional)
+        <el-input v-model="settingsForm.monerodUsername" placeholder="Please input your Username" />
+    </p>
+
+    <p>
+        Monerod Password (Optional)
+         <el-input v-model="settingsForm.monerodPassword" placeholder="Please input your Password" />
     </p>
 
     <p>
         Primary Address: 
          <el-input v-model="settingsForm.primaryAddress" placeholder="Please input your Primary Address" />
     </p>
+
 
     <p>
         View Key: 

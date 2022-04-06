@@ -1,24 +1,23 @@
 <script setup lang="ts">
 import { onBeforeMount } from 'vue'
 import Settings from './components/Settings.vue';
-import { simplePay, simplePayInitialized } from './main';
+import { simplePay } from './main';
 import Receive from './components/Receive.vue';
+import { simplePayReady } from './SimplePay';
 
 onBeforeMount(async () => {
-    simplePay.init().then(() => {
-        simplePayInitialized.value = true
-    })
+    await simplePay.updateConfig()
 })
 
 </script>
 
 <template>
     <h2>Hello, HotBox</h2>
-    <div v-if="simplePayInitialized">
+    <div v-if="simplePayReady">
       <Receive />
     </div>
 
-    <div v-if="!simplePayInitialized">Rolling up windows.  Please wait...</div>
+    <div v-if="!simplePayReady">Rolling up windows.  Please wait... (may take a minute or so)</div>
     <Settings />
 </template>
 

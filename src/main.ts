@@ -8,11 +8,13 @@ export const simplePay: SimplePay = new SimplePay({
     secretViewKey: '40863a5156686b27dca46a843cbbe2c55c2a4fd60e52a9e4322ffa9cfe8b6b01',
     network: Network.stagenet,
     defaultConfirmations: 1,
-    blockExplorer: StagenetExplorers.rino
+    monerodUsername: '',
+    monerodPassword: '',
+    blockExplorer: StagenetExplorers.rino,
+    monerodUri: 'https://node.xmr.gift:443'
 })
 
 // TODO: Move to a vue store
-export const simplePayInitialized = ref(false)
 
 const app = createApp(App)
 app.use(ElementPlus)
