@@ -2,6 +2,7 @@ import { createApp, ref } from "vue"
 import App from "./App.vue"
 import { Network, SimplePay, StagenetExplorers } from "./SimplePay";
 import ElementPlus from "element-plus"
+import './registerServiceWorker'
 
 export const simplePay: SimplePay = new SimplePay({
     primaryAddress: '5BQ3XRcPdRyMGjZ4MdBvFxiqtkixYwsaz3tNM29VDeihEozHnTbA53bSHF9EZzbkymLnaaZh3K4AaGHHEfQ8WP2PEoG29jT',
