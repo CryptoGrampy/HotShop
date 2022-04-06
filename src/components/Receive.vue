@@ -10,7 +10,6 @@ const state = reactive({ count: 0 })
 const paymentRequest = ref({} as PaymentRequest)
 const paymentStatus = ref({} as PaymentResponse)
 const address = ref('')
-const walletInitialized = ref(false)
 const requestAmount = ref(1000000)
 
 
@@ -24,11 +23,16 @@ const checkPayment = async () => {
     paymentStatus.value = await simplePay.checkForPaymentSuccess(paymentRequest.value)
     console.log("Latest Payment Status: ", paymentStatus.value)
 }
+
+const clearPayment = () => {
+    paymentRequest.value = {} as PaymentRequest
+}
 </script>
 
 <template>
     <p>
-        <el-input v-model="requestAmount" placeholder="Please input" />
+        Requested Amount: 
+        <el-input v-model="requestAmount" @keyup="clearPayment()" placeholder="Please input" />
     </p>
     <p>
         <el-button type="success" @click="generatePayment">Generate Payment</el-button>

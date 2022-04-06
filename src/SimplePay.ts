@@ -201,5 +201,3 @@ export class SimplePay {
         }
     }
 }
-
-

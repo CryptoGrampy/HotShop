@@ -18,7 +18,7 @@ onBeforeMount(async () => {
       <Receive />
     </div>
 
-    <div v-if="!simplePayInitialized">Wallet Initializing.  Please wait...</div>
+    <div v-if="!simplePayInitialized">Rolling up windows.  Please wait...</div>
     <Settings />
 </template>
 
