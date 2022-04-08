@@ -109,6 +109,7 @@ export class SimplePay {
 
     async checkForPayment(paymentRequest: PaymentRequest): Promise<PaymentResponse> {
 
+        // TODO: Review returned promises/activate stricter tsconfig 
         const transactions: MoneroIncomingTransfer[] | undefined = await this.wallet.getIncomingTransfers({
             amount: paymentRequest.requestAmount,
             txQuery: {
@@ -239,7 +240,7 @@ export class SimplePay {
 
             // getDaemonHeight - 1 is here to prevent this issue:
             // https://github.com/monero-ecosystem/monero-javascript/issues/76
-            this.restoreHeight = await this.wallet.getDaemonHeight() - 1
+            this.restoreHeight = await this.wallet.getDaemonHeight()
 
             await this.wallet.setSyncHeight(this.restoreHeight)
             await this.wallet.startSyncing(10000)

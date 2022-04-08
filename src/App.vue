@@ -1,24 +1,17 @@
-<script setup lang="ts">
-import { onBeforeMount } from 'vue'
-import Settings from './components/Settings.vue';
+<script setup lang="ts">import { onBeforeMount } from 'vue';
 import { simplePay } from './main';
-import Receive from './components/Receive.vue';
-import { simplePayReady } from './SimplePay';
 
 onBeforeMount(async () => {
     await simplePay.updateConfig()
 })
-
 </script>
 
 <template>
-    <h2>Hello, HotBox</h2>
-    <div v-if="simplePayReady">
-      <Receive />
-    </div>
-
-    <div v-if="!simplePayReady">Rolling up windows.  Please wait... (may take a minute or so)</div>
-    <Settings />
+    <nav>
+        <router-link to="/">Home</router-link>|
+        <router-link to="/settings">Settings</router-link>|
+    </nav>
+    <router-view />
 </template>
 
 <style>
