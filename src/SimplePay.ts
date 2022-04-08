@@ -1,18 +1,9 @@
 // @ts-ignore
-import monerojs, { LibraryUtils, MoneroDaemonRpc, MoneroIncomingTransfer, MoneroOutputWallet, MoneroRpcConnection, MoneroUtils } from "monero-javascript";
-import axios, { AxiosResponse } from 'axios';
+import monerojs, { LibraryUtils, MoneroDaemonRpc, MoneroIncomingTransfer, MoneroOutputWallet, MoneroRpcConnection, MoneroUtils, MoneroWalletFull } from "monero-javascript";
 import { ref } from "vue";
 
+// TODO replace with callback init method
 export const simplePayReady = ref(false)
-
-export enum StagenetExplorers {
-    rino = 'https://community.rino.io/explorer/stagenet'
-}
-
-export enum MainnetExplorers {
-    xmrChain = 'https://xmrchain.net',
-    rino = 'https://community.rino.io/explorer/mainnet'
-}
 
 export enum Network {
     mainnet = "mainnet",
@@ -24,16 +15,6 @@ export enum PaymentStatus {
     confirming = 'confirming',
     successful = 'successful',
     failed = 'failed'
-}
-
-export interface Output {
-    amount: number
-    block_no: number
-    in_mempool: boolean,
-    output_idx: number
-    output_pubkey: string,
-    payment_id: string
-    tx_hash: string
 }
 
 export enum TransactionResponseStatus {
@@ -71,8 +52,7 @@ export interface PaymentRequest {
 
 export interface PaymentResponse {
     requestedPayment: PaymentRequest
-    output: Output | undefined
-    txData: TransactionResponse | undefined 
+    txData: TransactionResponse | undefined
     moneroTx?: any
     confirmations?: number
     paymentStatus: PaymentStatus
@@ -83,7 +63,6 @@ export interface SimplePayConfig {
     primaryAddress: string
     secretViewKey: string
     defaultConfirmations: number
-    blockExplorer: string
     network: Network
     monerodUri: string
     monerodUsername?: string
@@ -91,7 +70,7 @@ export interface SimplePayConfig {
 }
 
 export class SimplePay {
-    wallet!: any
+    wallet!: MoneroWalletFull
     daemonRpc?: MoneroDaemonRpc
     moneroRpcConnection?: MoneroRpcConnection
     currentHeight?: number
@@ -131,7 +110,6 @@ export class SimplePay {
     async checkForPayment(paymentRequest: PaymentRequest): Promise<PaymentResponse> {
 
         const transactions: MoneroIncomingTransfer[] | undefined = await this.wallet.getIncomingTransfers({
-            // .0001
             amount: paymentRequest.requestAmount,
             txQuery: {
                 paymentId: paymentRequest.paymentId
@@ -140,7 +118,6 @@ export class SimplePay {
 
         let paymentResponse: PaymentResponse = {
             requestedPayment: paymentRequest,
-            output: undefined,
             txData: undefined,
             moneroTx: undefined,
             confirmations: undefined,
@@ -155,13 +132,13 @@ export class SimplePay {
             const txData = transactions[0].getTx()
 
             console.log('transaction data', transactions[0].getTx().getNumConfirmations())
-            
+
             paymentResponse.moneroTx = txData
             paymentResponse.confirmations = txData.getNumConfirmations()
             paymentResponse.paymentStatus = txData.getNumConfirmations() >= paymentRequest.requestedConfirmations ? PaymentStatus.successful : PaymentStatus.confirming
-            paymentResponse.paymentComplete =  txData.getNumConfirmations() >= paymentRequest.requestedConfirmations ? true : false
+            paymentResponse.paymentComplete = txData.getNumConfirmations() >= paymentRequest.requestedConfirmations ? true : false
         }
-    
+
         return paymentResponse
     }
 
@@ -175,7 +152,7 @@ export class SimplePay {
 
         await this.wallet.addListener(this)
         console.log('Primary Address', await this.wallet.getPrimaryAddress())
-        
+
         const connectionManager = this.newConnectionManager()
         await connectionManager.startCheckingConnection()
 
@@ -199,15 +176,15 @@ export class SimplePay {
 
     newConnectionManager() {
         const connection = new monerojs.MoneroRpcConnection({
-              //uri: 'http://xmr.node.itzmx.com:18081',
-        //uri: 'http://iceland1.strangled.net:18089',
-        //uri: 'http://127.0.0.1:38081',
-        uri: this.config.monerodUri,
-        username: this.config.monerodUsername,
-        password: this.config.monerodPassword,
-        //uri: 'http://stagenet.melo.tools:38081',
-        //uri: 'http://xmr-lux.boldsuck.org:38081',
-        proxyToWorker: true,
+            //uri: 'http://xmr.node.itzmx.com:18081',
+            //uri: 'http://iceland1.strangled.net:18089',
+            //uri: 'http://127.0.0.1:38081',
+            uri: this.config.monerodUri,
+            username: this.config.monerodUsername,
+            password: this.config.monerodPassword,
+            //uri: 'http://stagenet.melo.tools:38081',
+            //uri: 'http://xmr-lux.boldsuck.org:38081',
+            proxyToWorker: true,
         })
         const connectionManager = new monerojs.MoneroConnectionManager(true)
         connectionManager.addListener(this)
@@ -221,15 +198,7 @@ export class SimplePay {
         return monerojs.MoneroUtils.atomicUnitsToXmr(amount)
     }
 
-    async getTransactionData(txHash: String) {
-        try {
-            return await axios.get(`${this.config.blockExplorer}/api/transaction/${txHash}`)
-        } catch (err) {
-            console.log('Error fetching transactions', err)
-        }
-    }
-
-     // MoneroWalletListener interface implementation below
+    // MoneroWalletListener interface implementation below
     async onSyncProgress(height: any, startHeight: any, endHeight: any, percentDone: any) {
         console.log(`[event] Height: ${height} | StartHeight: ${startHeight} EndHeight: ${endHeight}`)
         this.syncProgress = percentDone * 100
@@ -247,20 +216,21 @@ export class SimplePay {
         console.debug("[event] balance", this.balance, "/", this.unlockedBalance)
     }
 
-    async onNewBlock(height){
+    async onNewBlock(height) {
         console.log('[event] block', height)
     }
-    async onOutputReceived(output: MoneroOutputWallet){
+    
+    async onOutputReceived(output: MoneroOutputWallet) {
         console.log('[event] output amount', MoneroUtils.atomicUnitsToXmr(output.getAmount()))
         console.log('[event] output tx', output.getTx())
         // Invoked 3 times per received output: once when unconfirmed, once when confirmed, and once when unlocked. The notified output includes basic fields only, so the output or its transaction should be fetched to get all available fields.
         console.log('[event] output', output)
 
     }
-    async onOutputSpent(){}
+    async onOutputSpent() { }
 
     // MoneroConnectionManagerListener
-    async onConnectionChanged(connection){
+    async onConnectionChanged(connection) {
         this.isConnected = connection.isConnected() === true
         console.debug("[event] connection", this.isConnected)
 
@@ -272,7 +242,7 @@ export class SimplePay {
             this.restoreHeight = await this.wallet.getDaemonHeight() - 1
 
             await this.wallet.setSyncHeight(this.restoreHeight)
-            await this.wallet.startSyncing(5000)
+            await this.wallet.startSyncing(10000)
         } else {
             await this.wallet.stopSyncing()
         }

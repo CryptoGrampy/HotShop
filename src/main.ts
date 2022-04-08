@@ -1,6 +1,6 @@
 import { createApp, ref } from "vue"
 import App from "./App.vue"
-import { Network, SimplePay, StagenetExplorers } from "./SimplePay";
+import { Network, SimplePay } from "./SimplePay";
 import ElementPlus from "element-plus"
 
 export const simplePay: SimplePay = new SimplePay({
@@ -10,7 +10,6 @@ export const simplePay: SimplePay = new SimplePay({
     defaultConfirmations: 1,
     monerodUsername: '',
     monerodPassword: '',
-    blockExplorer: StagenetExplorers.rino,
     monerodUri: 'https://node.xmr.gift:443'
 })
 

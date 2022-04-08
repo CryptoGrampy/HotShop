@@ -1,15 +1,14 @@
 <script setup lang="ts">import { reactive } from 'vue';
 import { simplePay } from '../main';
-import { Network, SimplePayConfig, StagenetExplorers, MainnetExplorers, simplePayReady } from '../SimplePay';
+import { Network, SimplePayConfig, simplePayReady } from '../SimplePay';
 
-const { network, primaryAddress, secretViewKey, defaultConfirmations, blockExplorer, monerodUri, monerodPassword, monerodUsername } = simplePay.getConfig()
+const { network, primaryAddress, secretViewKey, defaultConfirmations, monerodUri, monerodPassword, monerodUsername } = simplePay.getConfig()
 
 const settingsForm: SimplePayConfig = reactive({
     network,
     defaultConfirmations,
     primaryAddress,
     secretViewKey,
-    blockExplorer,
     monerodPassword,
     monerodUsername,
     monerodUri
