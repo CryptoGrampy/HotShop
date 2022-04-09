@@ -69,6 +69,9 @@ export interface SimplePayConfig {
     monerodPassword?: string
 }
 
+/**
+ * TODO: only expose XMR units to consumer.  Handle atomic/conversion internally
+ */
 export class SimplePay {
     wallet!: MoneroWalletFull
     daemonRpc?: MoneroDaemonRpc
@@ -242,10 +245,11 @@ export class SimplePay {
             // https://github.com/monero-ecosystem/monero-javascript/issues/76
             this.restoreHeight = await this.wallet.getDaemonHeight()
 
-            await this.wallet.setSyncHeight(this.restoreHeight)
+            await this.wallet.setSyncHeight(this.restoreHeight-1)
             await this.wallet.startSyncing(10000)
         } else {
             await this.wallet.stopSyncing()
+            simplePayReady.value = false
         }
     }
 }

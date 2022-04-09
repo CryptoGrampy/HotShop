@@ -1,14 +1,20 @@
 <script setup lang="ts">
-import { onBeforeMount, onMounted, reactive, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { simplePay } from '../main';
 import { PaymentRequest, PaymentResponse, PaymentStatus } from '../SimplePay';
 import Status from './Status.vue';
 import QrCode from './QrCode.vue';
 
+const props = defineProps<{
+  requestAmount?: number
+}>()
+
+console.log(props.requestAmount)
+
 const paymentRequest = ref({} as PaymentRequest)
 const paymentStatus = ref({} as PaymentResponse)
 const address = ref('')
-const requestAmount = ref(1000000)
+const requestAmount = ref(props.requestAmount || 1000000)
 
 let paymentTracker
 
@@ -33,10 +39,18 @@ const clearPayment = () => {
     paymentRequest.value = {} as PaymentRequest
     clearInterval(paymentTracker)
 }
+
+onMounted(() => {
+    console.log('updated')
+    if (props.requestAmount && props.requestAmount > 0) {
+        generatePayment()
+    }
+})
+
 </script>
 
 <template>
-    <p>
+    <p v-if="!paymentRequest.integratedAddress">
         Requested Amount: 
         <el-input v-model="requestAmount" @keyup="clearPayment()" placeholder="Please input" />
     </p>

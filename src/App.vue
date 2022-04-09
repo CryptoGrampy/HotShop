@@ -15,7 +15,5 @@ onBeforeMount(async () => {
 </template>
 
 <style>
-body {
-    word-wrap: break-word;
-}
+
 </style>
