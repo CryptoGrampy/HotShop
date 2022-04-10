@@ -50,8 +50,7 @@ const updateSettings = async () => {
         Primary Address: 
          <el-input v-model="settingsForm.primaryAddress" placeholder="Please input your Primary Address" />
     </p>
-
-
+    
     <p>
         View Key: 
          <el-input v-model="settingsForm.secretViewKey" placeholder="Please input your secret View Key" />

@@ -2,7 +2,7 @@
 import monerojs, { LibraryUtils, MoneroDaemonRpc, MoneroIncomingTransfer, MoneroOutputWallet, MoneroRpcConnection, MoneroUtils, MoneroWalletFull } from "monero-javascript";
 import { ref } from "vue";
 
-// TODO replace with callback init method
+// TODO replace with callback init method and use vue store
 export const simplePayReady = ref(false)
 
 export enum Network {
@@ -93,6 +93,7 @@ export class SimplePay {
     balance: any;
     unlockedBalance: any;
     isConnected?: boolean;
+    connectionManager?: monerojs.MoneroConnectionManager;
     constructor(private config: SimplePayConfig) {
 
     }
@@ -105,7 +106,8 @@ export class SimplePay {
         if (config) {
             this.config = config
         }
-
+        this.isConnected = false
+       
         await LibraryUtils.loadFullModule();
         await this.initWallet()
     }
@@ -156,9 +158,9 @@ export class SimplePay {
 
         await this.wallet.addListener(this)
         console.log('Primary Address', await this.wallet.getPrimaryAddress())
-
-        const connectionManager = this.newConnectionManager()
-        await connectionManager.startCheckingConnection()
+     
+        this.connectionManager = this.newConnectionManager()
+        await this.connectionManager.startCheckingConnection()
 
         console.log('wallet initialized')
     }
@@ -179,6 +181,10 @@ export class SimplePay {
     }
 
     newConnectionManager() {
+        if (this.connectionManager){
+            this.connectionManager.clear()
+        }
+
         const connection = new monerojs.MoneroRpcConnection({
             //uri: 'http://xmr.node.itzmx.com:18081',
             //uri: 'http://iceland1.strangled.net:18089',
@@ -209,6 +215,7 @@ export class SimplePay {
         this.isSynced = (this.syncProgress === 100)
         console.debug("[event] sync", this.syncProgress, "%")
 
+        // We could generate payment id's immediately, but we need to wait until wallet is fully synced before we can scan for payments
         if (this.syncProgress === 100) {
             simplePayReady.value = true
         }
@@ -235,10 +242,14 @@ export class SimplePay {
 
     // MoneroConnectionManagerListener
     async onConnectionChanged(connection) {
-        this.isConnected = connection.isConnected() === true
+        if (connection) {
+            this.isConnected = connection.isConnected() === true
+            console.log('connection', connection)
+        }
         console.debug("[event] connection", this.isConnected)
 
-        if (this.isConnected) {
+        if (this.isConnected === true) {
+            console.log('setting wallet daemon connectin')
             await this.wallet.setDaemonConnection(connection)
 
             // getDaemonHeight - 1 is here to prevent this issue:

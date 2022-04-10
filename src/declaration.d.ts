@@ -24,6 +24,10 @@ declare module 'monero-javascript' {
         addListener(listener: MoneroConnectionManagerListener): MoneroConnectionManager
         setTimeout(timeoutInMs: number): MoneroConnectionManager
         setConnection(uriOrConnection: MoneroRpcConnection | string): MoneroConnectionManager
+        getConnection(): MoneroRpcConnection
+        getConnections(): MoneroRpcConnection[]
+        clear(): MoneroConnectionManager
+
         //defaults to 10000 i.e. 10 seconds
         startCheckingConnection(periodMs?: number): Promise<MoneroConnectionManager>
     }
