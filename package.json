@@ -8,14 +8,15 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "axios": "^0.26.1",
+    "@chenfengyuan/vue-qrcode": "^2.0.0",
     "base58-monero": "^0.0.5",
     "core-js": "^3.21.1",
     "element-plus": "^2.0.2",
     "keccak256": "^1.0.6",
     "monero-javascript": "^0.6.4",
+    "qrcode": "^1.5.0",
     "vue": "^3.2.31",
-    "vue-qrious": "^2.0.1"
+    "vue-router": "^4.0.14"
   },
   "devDependencies": {
     "@babel/core": "^7.17.4",

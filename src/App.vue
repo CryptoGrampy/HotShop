@@ -1,29 +1,21 @@
-<script setup lang="ts">
-import { onBeforeMount } from 'vue'
-import Settings from './components/Settings.vue';
-import { simplePay, simplePayInitialized } from './main';
-import Receive from './components/Receive.vue';
+<script setup lang="ts">import { onBeforeMount } from 'vue';
+import { simplePay } from './main';
 
 onBeforeMount(async () => {
-    simplePay.init().then(() => {
-        simplePayInitialized.value = true
-    })
+    await simplePay.updateConfig()
 })
-
 </script>
 
 <template>
-    <h2>Hello, HotBox</h2>
-    <div v-if="simplePayInitialized">
-      <Receive />
-    </div>
+    <nav>
+        <router-link to="/">Home</router-link>|
+        <router-link to="/settings">Settings</router-link>|
+        <router-link to="/receive/0.1234">Quickpay</router-link>|
 
-    <div v-if="!simplePayInitialized">Rolling up windows.  Please wait...</div>
-    <Settings />
+    </nav>
+    <router-view />
 </template>
 
 <style>
-body {
-    word-wrap: break-word;
-}
+
 </style>

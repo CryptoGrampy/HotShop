@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import VueQrious from 'vue-qrious'
+import VueQrcode from '@chenfengyuan/vue-qrcode';
+
 const props = defineProps<{
-  moneroAddress: string
-  xmrAmount: number
+  moneroUri: string
 }>()
 
 </script>
 <template>
-    <vue-qrious :size="200" :value="`monero:${props.moneroAddress}?tx_amount=${String(props.xmrAmount)}`" />
+  <vue-qrcode :value="props.moneroUri" :options="{ width: 200 }"></vue-qrcode>
 </template>

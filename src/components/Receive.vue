@@ -1,18 +1,25 @@
 <script setup lang="ts">
-import { onBeforeMount, onMounted, reactive, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { simplePay } from '../main';
-import { PaymentRequest, PaymentResponse } from '../SimplePay';
+import { PaymentRequest, PaymentResponse, PaymentStatus } from '../SimplePay';
 import Status from './Status.vue';
 import QrCode from './QrCode.vue';
+
+const props = defineProps<{
+  requestAmount?: number
+}>()
+
+console.log(props.requestAmount)
 
 const paymentRequest = ref({} as PaymentRequest)
 const paymentStatus = ref({} as PaymentResponse)
 const address = ref('')
-const requestAmount = ref(1000000)
+const requestAmount = ref(props.requestAmount || 0.001)
 
 let paymentTracker
 
 const generatePayment = async () => {
+    clearPayment()
     paymentRequest.value = await simplePay.createPaymentRequest(requestAmount.value)
     console.log("Current Payment Request: ", paymentRequest.value)
     address.value = paymentRequest.value.integratedAddress
@@ -23,43 +30,53 @@ const generatePayment = async () => {
 }
 
 const checkPayment = async () => {
-    paymentStatus.value = await simplePay.checkForPaymentSuccess(paymentRequest.value)
+    paymentStatus.value = await simplePay.checkForPayment(paymentRequest.value)
     console.log("Latest Payment Status: ", paymentStatus.value)
 }
 
 const clearPayment = () => {
+    paymentStatus.value = {} as PaymentResponse
     paymentRequest.value = {} as PaymentRequest
     clearInterval(paymentTracker)
 }
+
+onMounted(() => {
+    console.log('updated')
+    if (props.requestAmount && props.requestAmount > 0) {
+        generatePayment()
+    }
+})
+
 </script>
 
 <template>
-    <p>
+    <p v-if="!paymentRequest.integratedAddress">
         Requested Amount: 
         <el-input v-model="requestAmount" @keyup="clearPayment()" placeholder="Please input" />
     </p>
     <p>
-        <el-button type="success" @click="generatePayment">Generate Payment</el-button>
+        <el-button v-if="!paymentRequest.integratedAddress" type="success" @click="generatePayment">Generate Payment</el-button>
     </p>
 
-    <div v-if="paymentRequest.integratedAddress">
+    <div v-if="paymentRequest.paymentUri">
         <p>
-            <QrCode :monero-address="address" :xmr-amount="requestAmount" />
+            <QrCode :monero-uri="paymentRequest.paymentUri" />
         </p>
-        <p>Please send {{ simplePay.convertAtomicUnitsToXmr(String(requestAmount)) }} to {{ paymentRequest.integratedAddress }}</p>
+        <p>Please send {{ requestAmount }} XMR to {{ paymentRequest.integratedAddress }}</p>
          <p>
         <el-button type="warning" @click="clearPayment">Cancel Payment</el-button>
     </p>
     </div>
 
-   
+    <div v-if="paymentRequest.integratedAddress && !paymentStatus.moneroTx">Waiting for Payment...</div>
+    <div v-if="paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming">Payment Found! </div>
+    <div v-if="paymentStatus.paymentComplete">✅ Payment Complete!</div>
     <div v-if="paymentStatus && paymentRequest.integratedAddress">
-    Waiting for Payment...
 
         <p>Your payment status is: {{ paymentStatus.paymentStatus ? paymentStatus.paymentStatus : 'Not detected' }}</p>
         <p
-            v-if="paymentStatus.txData"
-        >Current Confirmations: {{ paymentStatus.txData.data.confirmations }}</p>
+            v-if="paymentStatus.moneroTx"
+        >Current Confirmations: {{ paymentStatus.confirmations }}</p>
     </div>
 
     <div v-if="paymentRequest.integratedAddress">
