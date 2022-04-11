@@ -1,6 +1,6 @@
 import PosView from '../views/PosView.vue'
 
-import { createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import SettingsView from '../views/SettingsView.vue'
 
 const routes: Array<RouteRecordRaw> = [
@@ -18,8 +18,8 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "about" */ '../views/SettingsView.vue')
   },
   {
-    path: '/quickPay/:requestAmount',
-    name: 'quickPay',
+    path: '/receive/:requestAmount',
+    name: 'receive',
     component: () => import(/* webpackChunkName: "about" */ '../views/QuickPayView.vue'),
     props: true
   }

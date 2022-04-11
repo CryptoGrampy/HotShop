@@ -1,15 +1,16 @@
-// @ts-ignore
 import monerojs, { LibraryUtils, MoneroDaemonRpc, MoneroIncomingTransfer, MoneroOutputWallet, MoneroRpcConnection, MoneroUtils, MoneroWalletFull } from "monero-javascript";
 import { ref } from "vue";
 
 // TODO replace with callback init method and use vue store
 export const simplePayReady = ref(false)
 
+// TODO Use monerojs class
 export enum Network {
     mainnet = "mainnet",
     stagenet = "stagenet"
 }
 
+// TODO: Make these as cleaner display names
 export enum PaymentStatus {
     unknown = 'not detected',
     confirming = 'confirming',
@@ -48,6 +49,7 @@ export interface PaymentRequest {
     requestAmount: number
     label?: string
     requestedConfirmations: number
+    paymentUri?: string
 }
 
 export interface PaymentResponse {
@@ -69,16 +71,11 @@ export interface SimplePayConfig {
     monerodPassword?: string
 }
 
-/**
- * TODO: only expose XMR units to consumer.  Handle atomic/conversion internally
- */
 export class SimplePay {
     wallet!: MoneroWalletFull
     daemonRpc?: MoneroDaemonRpc
     moneroRpcConnection?: MoneroRpcConnection
-    currentHeight?: number
-    monerodModuleInitialized: boolean = false
-    restoreHeight: any = 10000;
+    restoreHeight?;
     defaultDaemonConnectionConfig = {
         //uri: 'http://xmr.node.itzmx.com:18081',
         //uri: 'http://iceland1.strangled.net:18089',
@@ -89,36 +86,35 @@ export class SimplePay {
         proxyToWorker: true,
     }
     syncProgress?: number;
-    isSynced?: boolean;
     balance: any;
     unlockedBalance: any;
-    isConnected?: boolean;
+    monerodConnectionStatus?: boolean;
     connectionManager?: monerojs.MoneroConnectionManager;
-    constructor(private config: SimplePayConfig) {
+    constructor(private config: SimplePayConfig) { }
 
-    }
-
-    getConfig(): SimplePayConfig {
+    public getConfig(): SimplePayConfig {
         return this.config
     }
 
-    async updateConfig(config?: SimplePayConfig) {
+    public async updateConfig(config?: SimplePayConfig) {
         if (config) {
             this.config = config
         }
-        this.isConnected = false
-       
+        this.monerodConnectionStatus = false
+
         await LibraryUtils.loadFullModule();
         await this.initWallet()
     }
 
-    async checkForPayment(paymentRequest: PaymentRequest): Promise<PaymentResponse> {
-
+    public async checkForPayment(paymentRequest: PaymentRequest): Promise<PaymentResponse> {
         // TODO: Review returned promises/activate stricter tsconfig 
+        // TODO: Review this txQuery and determine if this is appropriate way to get payment tx (esp double spend/failed part)
         const transactions: MoneroIncomingTransfer[] | undefined = await this.wallet.getIncomingTransfers({
-            amount: paymentRequest.requestAmount,
+            amount: MoneroUtils.xmrToAtomicUnits(paymentRequest.requestAmount),
             txQuery: {
-                paymentId: paymentRequest.paymentId
+                paymentId: paymentRequest.paymentId,
+                isDoubleSpendSeen: false,
+                isFailed: false
             }
         })
 
@@ -133,7 +129,7 @@ export class SimplePay {
 
         if (transactions && transactions?.length > 0) {
             console.log('Transaction found!')
-            console.log('Full transaction: ', transactions[0])
+            console.log('Full transaction Data: ', transactions[0])
             console.log('getTx: ', transactions[0].getTx())
             const txData = transactions[0].getTx()
 
@@ -148,7 +144,7 @@ export class SimplePay {
         return paymentResponse
     }
 
-    async initWallet(): Promise<void> {
+    public async initWallet(): Promise<void> {
         this.wallet = await monerojs.createWalletFull({
             password: "supersecretpassword123",
             networkType: this.config.network,
@@ -158,30 +154,35 @@ export class SimplePay {
 
         await this.wallet.addListener(this)
         console.log('Primary Address', await this.wallet.getPrimaryAddress())
-     
+
         this.connectionManager = this.newConnectionManager()
         await this.connectionManager.startCheckingConnection()
 
         console.log('wallet initialized')
     }
 
-    async createPaymentRequest(amount: number, requestedConfirmations?: number, label?: string): Promise<PaymentRequest> {
-        const addressState = await this.wallet.getIntegratedAddress()
-        console.log("Using address: ", addressState)
+    public async createPaymentRequest(xmrAmount: number, requestedConfirmations?: number, label?: string): Promise<PaymentRequest> {
+        const integratedAddressState: monerojs.MoneroIntegratedAddress = await this.wallet.getIntegratedAddress()
 
         const paymentRequest: PaymentRequest = {
-            integratedAddress: addressState.state.integratedAddress,
-            paymentId: addressState.state.paymentId,
-            requestAmount: amount,
+            integratedAddress: integratedAddressState.getIntegratedAddress(),
+            paymentId: integratedAddressState.getPaymentId(),
+            requestAmount: xmrAmount,
             label: label,
             requestedConfirmations: requestedConfirmations ?? this.config.defaultConfirmations,
+            paymentUri: this.createPaymentUri(integratedAddressState.getIntegratedAddress(), xmrAmount, label)
         }
 
         return paymentRequest
     }
 
-    newConnectionManager() {
-        if (this.connectionManager){
+    // TODO replace with the Monero-Javascript implementation of this?
+    private createPaymentUri(integratedAddress: string, xmrAmount: number, label?: string) {
+        return `monero:${integratedAddress}?tx_amount=${xmrAmount}&recipient_name=HotShop${label ? 'tx_amount' + label : ''}`
+    }
+
+    private newConnectionManager() {
+        if (this.connectionManager) {
             this.connectionManager.clear()
         }
 
@@ -203,21 +204,18 @@ export class SimplePay {
         return connectionManager
     }
 
-    convertAtomicUnitsToXmr(amount: string): number {
-        console.log('converted to xmr', monerojs.MoneroUtils.atomicUnitsToXmr(amount))
-        return monerojs.MoneroUtils.atomicUnitsToXmr(amount)
-    }
-
-    // MoneroWalletListener interface implementation below
+    // MoneroWalletListener interface implementations 
+    // TODO: Add these to separate class/extend in simplepay, make these methods private
     async onSyncProgress(height: any, startHeight: any, endHeight: any, percentDone: any) {
         console.log(`[event] Height: ${height} | StartHeight: ${startHeight} EndHeight: ${endHeight}`)
         this.syncProgress = percentDone * 100
-        this.isSynced = (this.syncProgress === 100)
         console.debug("[event] sync", this.syncProgress, "%")
 
         // We could generate payment id's immediately, but we need to wait until wallet is fully synced before we can scan for payments
         if (this.syncProgress === 100) {
             simplePayReady.value = true
+        } else {
+            simplePayReady.value = false
         }
     }
 
@@ -227,10 +225,6 @@ export class SimplePay {
         console.debug("[event] balance", this.balance, "/", this.unlockedBalance)
     }
 
-    async onNewBlock(height) {
-        console.log('[event] block', height)
-    }
-    
     async onOutputReceived(output: MoneroOutputWallet) {
         console.log('[event] output amount', MoneroUtils.atomicUnitsToXmr(output.getAmount()))
         console.log('[event] output tx', output.getTx())
@@ -238,17 +232,16 @@ export class SimplePay {
         console.log('[event] output', output)
 
     }
-    async onOutputSpent() { }
 
     // MoneroConnectionManagerListener
     async onConnectionChanged(connection) {
         if (connection) {
-            this.isConnected = connection.isConnected() === true
+            this.monerodConnectionStatus = connection.isConnected() === true
             console.log('connection', connection)
         }
-        console.debug("[event] connection", this.isConnected)
+        console.debug("[event] connection", this.monerodConnectionStatus)
 
-        if (this.isConnected === true) {
+        if (this.monerodConnectionStatus === true) {
             console.log('setting wallet daemon connectin')
             await this.wallet.setDaemonConnection(connection)
 
@@ -256,7 +249,7 @@ export class SimplePay {
             // https://github.com/monero-ecosystem/monero-javascript/issues/76
             this.restoreHeight = await this.wallet.getDaemonHeight()
 
-            await this.wallet.setSyncHeight(this.restoreHeight-1)
+            await this.wallet.setSyncHeight(this.restoreHeight - 1)
             await this.wallet.startSyncing(10000)
         } else {
             await this.wallet.stopSyncing()

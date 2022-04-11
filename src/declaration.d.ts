@@ -100,6 +100,12 @@ declare module 'monero-javascript' {
         getNumConfirmations(): number
     }
 
+    declare class MoneroIntegratedAddress {
+        getIntegratedAddress(): string
+        getPaymentId(): string
+        getStandardAddress(): string
+    }
+
     declare class MoneroWalletFull {
         async setDaemonConnection(uriOrConnection: string | MoneroDaemonRpc, username?: string, password?: string): Promise<MoneroRpcConnection>;
         async getPrimaryAddress(): Promise<string>;

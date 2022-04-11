@@ -14,7 +14,7 @@ console.log(props.requestAmount)
 const paymentRequest = ref({} as PaymentRequest)
 const paymentStatus = ref({} as PaymentResponse)
 const address = ref('')
-const requestAmount = ref(props.requestAmount || 1000000)
+const requestAmount = ref(props.requestAmount || 0.001)
 
 let paymentTracker
 
@@ -58,11 +58,11 @@ onMounted(() => {
         <el-button v-if="!paymentRequest.integratedAddress" type="success" @click="generatePayment">Generate Payment</el-button>
     </p>
 
-    <div v-if="paymentRequest.integratedAddress">
+    <div v-if="paymentRequest.paymentUri">
         <p>
-            <QrCode :monero-address="address" :xmr-amount="requestAmount" />
+            <QrCode :monero-uri="paymentRequest.paymentUri" />
         </p>
-        <p>Please send {{ simplePay.convertAtomicUnitsToXmr(String(requestAmount)) }} to {{ paymentRequest.integratedAddress }}</p>
+        <p>Please send {{ requestAmount }} XMR to {{ paymentRequest.integratedAddress }}</p>
          <p>
         <el-button type="warning" @click="clearPayment">Cancel Payment</el-button>
     </p>

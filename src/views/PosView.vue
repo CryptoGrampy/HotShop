@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { onBeforeMount } from 'vue'
-import Settings from '../components/Settings.vue';
-import { simplePay } from '../main';
 import Receive from '../components/Receive.vue';
 import { simplePayReady } from '../SimplePay';
 
