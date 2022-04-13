@@ -19,10 +19,10 @@ export const get = (): UriValues => {
         p: '49ouNFXbQxj72FYjEgRjVTa35dHVrSL118vNFhxDvQWHJYpZp523EckbrqiSjM6Vb1H6Ap43qYpNRHBaVS9oBFtZUeTaH88',
         v: '9fb781ad709a41bd651f92c2e380813b9ca8abfb7e733105202e1d9f12799c03',
         n: Network.mainnet,
-        m: 'http://192.168.1.75:18089',
+        m: '',
         c: 0,
-        u: 'test',
-        w: 'test',
+        u: '',
+        w: '',
         a: 0
     }
 

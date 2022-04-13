@@ -76,15 +76,6 @@ export class SimplePay {
     daemonRpc?: MoneroDaemonRpc
     moneroRpcConnection?: MoneroRpcConnection
     restoreHeight?;
-    defaultDaemonConnectionConfig = {
-        //uri: 'http://xmr.node.itzmx.com:18081',
-        //uri: 'http://iceland1.strangled.net:18089',
-        //uri: 'http://127.0.0.1:38081',
-        uri: 'https://node.xmr.gift:443',
-        //uri: 'http://stagenet.melo.tools:38081',
-        //uri: 'http://xmr-lux.boldsuck.org:38081',
-        proxyToWorker: true,
-    }
     syncProgress?: number;
     balance: any;
     unlockedBalance: any;
@@ -173,6 +164,8 @@ export class SimplePay {
             paymentUri: this.createPaymentUri(integratedAddressState.getIntegratedAddress(), xmrAmount, label)
         }
 
+        console.log('Current Payment Request', paymentRequest)
+
         return paymentRequest
     }
 
@@ -218,6 +211,9 @@ export class SimplePay {
             simplePayReady.value = false
         }
     }
+
+    onNewBlock(){}
+    onOutputSpent(){}
 
     async onBalancesChanged(newBalance, newUnlockedBalance) {
         this.balance = newBalance.toString(10)

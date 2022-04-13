@@ -9,8 +9,6 @@ const props = defineProps<{
   requestAmount?: number
 }>()
 
-console.log(props.requestAmount)
-
 const paymentRequest = ref({} as PaymentRequest)
 const paymentStatus = ref({} as PaymentResponse)
 const address = ref('')
@@ -21,7 +19,6 @@ let paymentTracker
 const generatePayment = async () => {
     clearPayment()
     paymentRequest.value = await simplePay.createPaymentRequest(requestAmount.value)
-    console.log("Current Payment Request: ", paymentRequest.value)
     address.value = paymentRequest.value.integratedAddress
 
     paymentTracker = setInterval(async() => {
@@ -31,7 +28,6 @@ const generatePayment = async () => {
 
 const checkPayment = async () => {
     paymentStatus.value = await simplePay.checkForPayment(paymentRequest.value)
-    console.log("Latest Payment Status: ", paymentStatus.value)
 }
 
 const clearPayment = () => {
@@ -41,7 +37,6 @@ const clearPayment = () => {
 }
 
 onMounted(() => {
-    console.log('updated')
     if (props.requestAmount && props.requestAmount > 0) {
         generatePayment()
     }
@@ -64,7 +59,9 @@ onMounted(() => {
         </p>
         <p>Please send {{ requestAmount }} XMR to {{ paymentRequest.integratedAddress }}</p>
          <p>
-        <el-button type="warning" @click="clearPayment">Cancel Payment</el-button>
+        <el-button v-if="paymentStatus.paymentComplete !== true" type="warning" @click="clearPayment">Cancel Payment</el-button>
+        <el-button v-if="paymentStatus.paymentComplete === true" type="success" @click="clearPayment">Next Payment</el-button>
+
     </p>
     </div>
 

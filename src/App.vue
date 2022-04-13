@@ -1,16 +1,12 @@
-<script setup lang="ts">import { onBeforeMount } from 'vue';
-import { simplePay } from './main';
+<script setup lang="ts">
 
-onBeforeMount(async () => {
-    await simplePay.updateConfig()
-})
 </script>
 
 <template>
     <nav>
         <router-link to="/">Home</router-link>|
         <router-link to="/settings">Settings</router-link>|
-        <router-link to="/receive/0.1234">Quickpay</router-link>|
+        <router-link to="/receive/0.0001">Quickpay</router-link>|
 
     </nav>
     <router-view />
