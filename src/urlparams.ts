@@ -19,7 +19,7 @@ export const get = (): UriValues => {
         p: '49ouNFXbQxj72FYjEgRjVTa35dHVrSL118vNFhxDvQWHJYpZp523EckbrqiSjM6Vb1H6Ap43qYpNRHBaVS9oBFtZUeTaH88',
         v: '9fb781ad709a41bd651f92c2e380813b9ca8abfb7e733105202e1d9f12799c03',
         n: Network.mainnet,
-        m: '',
+        m: 'https://community.organic-meatballs.duckdns.org:443',
         c: 0,
         u: '',
         w: '',

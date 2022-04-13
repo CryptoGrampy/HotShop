@@ -1,7 +1,8 @@
 import { createApp } from "vue"
 import App from "./App.vue"
-import { Network, SimplePay } from "./SimplePay";
+import { SimplePay } from "./SimplePay";
 import ElementPlus from "element-plus"
+import { createPinia } from "pinia";
 import router from './router'
 import { get } from './urlparams'
 
@@ -31,4 +32,5 @@ if (simplePayConfig.monerodUri) {
 const app = createApp(App)
 app.use(ElementPlus)
 app.use(router)
+app.use(createPinia())
 app.mount("#app")
