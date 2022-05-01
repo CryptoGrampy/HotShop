@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
+    "@element-plus/icons-vue": "^1.1.4",
     "base58-monero": "^0.0.5",
     "core-js": "^3.21.1",
     "element-plus": "^2.0.2",

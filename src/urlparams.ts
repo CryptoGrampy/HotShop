@@ -1,64 +1,72 @@
-import { Network, SimplePayConfig } from "./SimplePay";
+import { Network } from "./SimplePay";
+import { HotShopConfig } from "./store/hot-shop-config";
 
-export interface UriValues {
-    simplePayConfig: SimplePayConfig
-    requestAmount?: number
-}
-
-export const get = (): UriValues => {
+export const getConfigFromHash = (): HotShopConfig => {
     console.log(window.location.hash)
 
     console.log(window.location.hash.split('#'))
     // get all hashes (could be more than 1)
     const hashFragments = window.location.hash.split('#')
-    // get last
-    const hash = hashFragments[hashFragments.length-1]
+    // get last hash - this is where the custom config lives, and decode
+    const hash = decodeURIComponent(hashFragments[hashFragments.length - 1])
 
-    // Set default app params
+    // Set default app params - might change this in the future
     const params = {
-        p: '49ouNFXbQxj72FYjEgRjVTa35dHVrSL118vNFhxDvQWHJYpZp523EckbrqiSjM6Vb1H6Ap43qYpNRHBaVS9oBFtZUeTaH88',
-        v: '9fb781ad709a41bd651f92c2e380813b9ca8abfb7e733105202e1d9f12799c03',
-        n: Network.mainnet,
-        m: 'https://community.organic-meatballs.duckdns.org:443',
-        c: 0,
-        u: '',
-        w: '',
-        a: 0
+        primaryAddress: '49ouNFXbQxj72FYjEgRjVTa35dHVrSL118vNFhxDvQWHJYpZp523EckbrqiSjM6Vb1H6Ap43qYpNRHBaVS9oBFtZUeTaH88',
+        secretViewKey: '9fb781ad709a41bd651f92c2e380813b9ca8abfb7e733105202e1d9f12799c03',
+        network: Network.mainnet,
+        monerodUri: 'https://community.organic-meatballs.duckdns.org:443',
+        defaultConfirmations: 0,
+        monerodUsername: '',
+        monerodPassword: '',
+        shopName: 'HotShop',
+        logoUrl: 'https://www.getmonero.org/press-kit/symbols/monero-symbol-480.png'
     }
 
     hash.split('&').map(keyvalue => {
         let temp = keyvalue.split('=');
+        console.log(`KEYS: ${temp[0]}=${temp[1]}`)
         params[temp[0]] = temp[1]
     });
 
-    const config: UriValues = {
-    simplePayConfig: {
-        primaryAddress: params.p,
-        secretViewKey: params.v,
-        network: params.n,
-        monerodUri: params.m,
-        monerodUsername: params.u,
-        monerodPassword: params.w,
-        defaultConfirmations: params.c,
-    },
-    requestAmount: params.a
+    const config: HotShopConfig = {
+        payment: {
+            primaryAddress: params.primaryAddress,
+            secretViewKey: params.secretViewKey,
+            network: params.network,
+            monerodUri: params.monerodUri,
+            monerodUsername: params.monerodUsername,
+            monerodPassword: params.monerodPassword,
+            defaultConfirmations: params.defaultConfirmations,
+        },
+        user: {
+            shopName: params.shopName,
+            logoUrl: params.logoUrl
+        },
     }
 
     console.log('Config', config)
 
-    // window.location.hash = ''
+    // TODO: clear fragments from url window.location.hash = ''
     return config
 }
 
-// set(param, value) {
-//     const urlParams = new URLSearchParams(window.location.search)
-//     urlParams.set(param, value)
-//     history.replaceState(null, "", "?"+urlParams.toString()+window.location.hash)
-// },
 
-export const getRestoreHeight = (defaultValue?: string) => {
-    const restoreHeight = get()
-    if (restoreHeight == null) {
-        return (defaultValue !== undefined) ? defaultValue : null
-    }
+// Generates hash fragment portion of bookmarkable HotShop URL
+export const getHashFromConfig = (config: HotShopConfig): string => {
+    const fullConfig = {...config.payment, ...config.user}
+
+    let hashFragment = ''
+
+    Object.keys(fullConfig).map((key, index, array) => {
+        if (fullConfig[key] !== undefined && String(fullConfig[key]).length > 0) {
+            hashFragment += `${key}=${fullConfig[key]}${index !== array.length - 1 ? '&' : ''}`
+        }
+    })
+    
+    return '#' + encodeURIComponent(hashFragment)
+}
+
+export const getUrlOrigin = (): string => {
+    return window.location.origin
 }
