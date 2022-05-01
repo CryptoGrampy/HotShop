@@ -2,9 +2,6 @@ import { Network } from "./SimplePay";
 import { HotShopConfig } from "./store/hot-shop-config";
 
 export const getConfigFromHash = (): HotShopConfig => {
-    console.log(window.location.hash)
-
-    console.log(window.location.hash.split('#'))
     // get all hashes (could be more than 1)
     const hashFragments = window.location.hash.split('#')
     // get last hash - this is where the custom config lives, and decode
@@ -25,7 +22,6 @@ export const getConfigFromHash = (): HotShopConfig => {
 
     hash.split('&').map(keyvalue => {
         let temp = keyvalue.split('=');
-        console.log(`KEYS: ${temp[0]}=${temp[1]}`)
         params[temp[0]] = temp[1]
     });
 
@@ -44,8 +40,6 @@ export const getConfigFromHash = (): HotShopConfig => {
             logoUrl: params.logoUrl
         },
     }
-
-    console.log('Config', config)
 
     // TODO: clear fragments from url window.location.hash = ''
     return config

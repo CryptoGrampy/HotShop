@@ -6,7 +6,6 @@ const props = defineProps<{
   requestAmount: string
 }>()
 
-console.log('blah', props.requestAmount)
 </script>
 
 <template>

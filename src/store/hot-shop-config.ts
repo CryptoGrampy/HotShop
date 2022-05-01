@@ -58,9 +58,7 @@ export const useConfigStore = defineStore('hot-shop-config', {
     actions: {
         async init() {
             const hashConfig = getConfigFromHash()
-            console.log('default confs' , hashConfig.payment.defaultConfirmations)
             this.$state = {...this.$state, ...hashConfig}
-            console.log('STORE PAYMENT', this.$state)
             await simplePay.updateConfig(this.payment)
         },
         increment(): void {
