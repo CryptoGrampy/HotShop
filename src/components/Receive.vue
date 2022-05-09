@@ -4,6 +4,13 @@ import { simplePay } from '../main';
 import { PaymentRequest, PaymentResponse, PaymentStatus } from '../SimplePay';
 import Status from './Status.vue';
 import QrCode from './QrCode.vue';
+import { usePaymentStore } from '../store/payment';
+import { storeToRefs } from 'pinia';
+
+const paymentStore = usePaymentStore()
+const { active, succeeded } = storeToRefs(paymentStore)
+const { createNewPayment, saveSuccessfulPayment } = paymentStore
+
 
 const props = defineProps<{
   requestAmount?: number
@@ -19,6 +26,8 @@ let paymentTracker
 const generatePayment = async () => {
     clearPayment()
     paymentRequest.value = await simplePay.createPaymentRequest(requestAmount.value)
+
+    createNewPayment(paymentRequest.value)
     address.value = paymentRequest.value.integratedAddress
 
     paymentTracker = setInterval(async() => {
@@ -28,6 +37,10 @@ const generatePayment = async () => {
 
 const checkPayment = async () => {
     paymentStatus.value = await simplePay.checkForPayment(paymentRequest.value)
+    if (paymentStatus.value.paymentComplete) {
+        saveSuccessfulPayment(paymentStatus.value)
+        clearInterval(paymentTracker)
+    } 
 }
 
 const clearPayment = () => {
@@ -43,7 +56,7 @@ onMounted(() => {
 })
 
 </script>
-
+<!-- TODO: refactor template if statements (cleanup needed!) -->
 <template>
     <p v-if="!paymentRequest.integratedAddress">
         Requested Amount: 

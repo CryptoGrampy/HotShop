@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { HotShopConfig, useConfigStore } from '../store/hot-shop-config';
-import { onMounted, reactive, Ref, ref } from 'vue';
+import { useConfigStore } from '../store/hot-shop-config';
+import { ref } from 'vue';
 import { simplePay } from '../main';
 import { Network, simplePayReady } from '../SimplePay';
 import { storeToRefs } from 'pinia';
-import { config } from 'process';
 
 /**
  * The goal of this component is to:
@@ -23,7 +22,6 @@ const configStore = useConfigStore()
 const currentStoreUrl = ref(configStore.myHotShopUrl)
 
 // ref values from store
-const currentStoreConfig = configStore.$state
 const { myHotShopUrl } = storeToRefs(configStore)
 
 const settingsForm = ref({

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useConfigStore } from './store/hot-shop-config';
 
-const configStore = useConfigStore()
-configStore.init()
+const configStore = useConfigStore();
+(async () => await configStore.init())()
 
 /**
  * TODO: Think about best place to init simplepay
@@ -11,7 +11,6 @@ configStore.init()
  * - if hashfragments are set in userstore, run updateConfig() i.e. start up service and allow user to proceed to requested route
  * - potentially do this as a route guard with a simple boolean hasCredentials method in store
  */
-
 
 </script>
 

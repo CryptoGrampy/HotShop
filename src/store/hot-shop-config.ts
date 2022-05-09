@@ -28,9 +28,6 @@ export interface HotShopConfig {
     // session: SessionConfig
 }
 
-
-
-
 export const useConfigStore = defineStore('hot-shop-config', {
     state: (): HotShopConfig => ({
         payment: {
@@ -49,23 +46,23 @@ export const useConfigStore = defineStore('hot-shop-config', {
     }),
     getters: {
         myHotShopUrl(state): string {
-            return `${getUrlOrigin()}/#/${getHashFromConfig({payment: state.payment, user: state.user})}`
+            return `${getUrlOrigin()}/#/${getHashFromConfig({ payment: state.payment, user: state.user })}`
         },
         currentConfig(): HotShopConfig {
-            return { payment: this.payment, user: this.user}
+            return { payment: this.payment, user: this.user }
         }
     },
     actions: {
         async init() {
             const hashConfig = getConfigFromHash()
-            this.$state = {...this.$state, ...hashConfig}
+            this.$state = { ...this.$state, ...hashConfig }
             await simplePay.updateConfig(this.payment)
         },
         increment(): void {
             this.payment.defaultConfirmations++
         },
         updateUserConfig(updatedConfig: UserConfig) {
-            this.user = {...this.user, ...updatedConfig}
+            this.user = { ...this.user, ...updatedConfig }
         },
         getStaticConfig(): HotShopConfig {
             const config = this.$state

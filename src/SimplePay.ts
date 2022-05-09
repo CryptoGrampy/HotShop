@@ -137,6 +137,7 @@ export class SimplePay {
 
     public async initWallet(): Promise<void> {
         this.wallet = await monerojs.createWalletFull({
+            // needs dummy password
             password: "supersecretpassword123",
             networkType: this.config.network,
             primaryAddress: this.config.primaryAddress,
@@ -169,7 +170,7 @@ export class SimplePay {
         return paymentRequest
     }
 
-    // TODO replace with the Monero-Javascript implementation of this?
+    // TODO replace with the Monero-Javascript implementation of this
     private createPaymentUri(integratedAddress: string, xmrAmount: number, label?: string) {
         return `monero:${integratedAddress}?tx_amount=${xmrAmount}&recipient_name=HotShop${label ? 'tx_amount' + label : ''}`
     }
@@ -180,14 +181,9 @@ export class SimplePay {
         }
 
         const connection = new monerojs.MoneroRpcConnection({
-            //uri: 'http://xmr.node.itzmx.com:18081',
-            //uri: 'http://iceland1.strangled.net:18089',
-            //uri: 'http://127.0.0.1:38081',
             uri: this.config.monerodUri,
             username: this.config.monerodUsername,
             password: this.config.monerodPassword,
-            //uri: 'http://stagenet.melo.tools:38081',
-            //uri: 'http://xmr-lux.boldsuck.org:38081',
             proxyToWorker: true,
         })
         const connectionManager = new monerojs.MoneroConnectionManager(true)
