@@ -51,8 +51,6 @@ const updateSettings = async () => {
 </script>
 
 <template>
-    <h2>Settings</h2>
-
     <p>
         Network:
         <el-select v-model="settingsForm.payment.network" placeholder="Select" size="large">
