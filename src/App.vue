@@ -16,7 +16,7 @@ const configStore = useConfigStore();
 
 <template>
     <el-row justify="center">
-        <el-col :span="24">
+        <el-col :xs="24" :sm="16" :md="16" :lg="12">
             <router-view />
         </el-col>
     </el-row>
