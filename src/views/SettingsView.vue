@@ -1,15 +1,22 @@
 <script setup lang="ts">
 import { simplePayReady } from '../SimplePay';
 import Settings from '../components/Settings.vue';
+import Header from '../components/Header.vue';
 
 </script>
 
 <template>
-    <h3>Hello, SettingsView</h3>
-    <p v-if="simplePayReady">HotShop is Ready!</p>
-    <Settings />
+    <el-container>
+        <el-header>
+            <Header />
+        </el-header>
+        <el-main>
+            <Settings />
+        </el-main>
+    </el-container>
+
+
 </template>
 
 <style>
-
 </style>

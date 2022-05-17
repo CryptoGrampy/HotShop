@@ -15,17 +15,16 @@ const configStore = useConfigStore();
 </script>
 
 <template>
-    <nav>
-        <router-link to="/">Home</router-link>|
-        <router-link to="/settings">Settings</router-link>|
-        <router-link to="/history">History</router-link>|
-        <router-link to="/receive/0.0001">Quickpay</router-link>|
-    </nav>
-    <router-view />
+    <el-row justify="center">
+        <el-col :span="24">
+            <router-view />
+        </el-col>
+    </el-row>
 </template>
 
 <style>
-input, button {
+input,
+button {
     border-radius: 0px !important;
 }
 </style>

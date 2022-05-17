@@ -13,7 +13,7 @@ const { createNewPayment, saveSuccessfulPayment } = paymentStore
 
 
 const props = defineProps<{
-  requestAmount?: number
+    requestAmount?: number
 }>()
 
 const paymentRequest = ref({} as PaymentRequest)
@@ -30,7 +30,7 @@ const generatePayment = async () => {
     createNewPayment(paymentRequest.value)
     address.value = paymentRequest.value.integratedAddress
 
-    paymentTracker = setInterval(async() => {
+    paymentTracker = setInterval(async () => {
         await checkPayment()
     }, 10000);
 }
@@ -40,7 +40,7 @@ const checkPayment = async () => {
     if (paymentStatus.value.paymentComplete) {
         saveSuccessfulPayment(paymentStatus.value)
         clearInterval(paymentTracker)
-    } 
+    }
 }
 
 const clearPayment = () => {
@@ -58,38 +58,58 @@ onMounted(() => {
 </script>
 <!-- TODO: refactor template if statements (cleanup needed!) -->
 <template>
-    <p v-if="!paymentRequest.integratedAddress">
-        Requested Amount: 
-        <el-input v-model="requestAmount" @keyup="clearPayment()" placeholder="Please input" />
-    </p>
-    <p>
-        <el-button v-if="!paymentRequest.integratedAddress" type="success" @click="generatePayment">Generate Payment</el-button>
-    </p>
-
-    <div v-if="paymentRequest.paymentUri">
-        <p>
-            <QrCode :monero-uri="paymentRequest.paymentUri" />
-        </p>
-        <p>Please send {{ requestAmount }} XMR to {{ paymentRequest.integratedAddress }}</p>
-         <p>
-        <el-button v-if="paymentStatus.paymentComplete !== true" type="warning" @click="clearPayment">Cancel Payment</el-button>
-        <el-button v-if="paymentStatus.paymentComplete === true" type="success" @click="clearPayment">Next Payment</el-button>
-
-    </p>
+    <div v-if="!paymentRequest.integratedAddress">
+        <el-row justify="center">
+            {{ requestAmount }} XMR
+        </el-row>
+        <el-row justify="center">
+            <el-input v-model="requestAmount" @keyup="clearPayment()" placeholder="Please input" />
+        </el-row>
+        <el-row justify="center">
+            <el-button v-if="!paymentRequest.integratedAddress" type="success" @click="generatePayment">Generate
+                Payment
+            </el-button>
+        </el-row>
     </div>
+    <div v-if="paymentRequest.paymentUri">
 
-    <div v-if="paymentRequest.integratedAddress && !paymentStatus.moneroTx">Waiting for Payment...</div>
-    <div v-if="paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming">Payment Found! </div>
-    <div v-if="paymentStatus.paymentComplete">✅ Payment Complete!</div>
-    <div v-if="paymentStatus && paymentRequest.integratedAddress">
+        <el-row justify="center">
+            <div v-if="paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming">Payment
+                Found!
+            </div>
+            <div v-if="paymentStatus.paymentComplete">✅ Payment Complete!</div>
+        </el-row>
 
-        <p>Your payment status is: {{ paymentStatus.paymentStatus ? paymentStatus.paymentStatus : 'Not detected' }}</p>
-        <p
-            v-if="paymentStatus.moneroTx"
-        >Current Confirmations: {{ paymentStatus.confirmations }}</p>
+        <el-row justify="center">
+            <div v-if="paymentStatus && paymentRequest.integratedAddress">
+                <p v-if="!paymentStatus.paymentComplete && paymentStatus.moneroTx">Current Confirmations: {{ paymentStatus.confirmations }}</p>
+            </div>
+        </el-row>
+        <el-row justify="center">
+            <QrCode :monero-uri="paymentRequest.paymentUri" />
+        </el-row>
+        <el-row justify="center">
+            <p v-if="!paymentStatus.paymentComplete">Please send {{ requestAmount }} XMR to: </p>
+        </el-row>
+        <el-row justify="center">
+            <p v-if="!paymentStatus.paymentComplete" class="monero">{{ paymentRequest.integratedAddress }}</p>
+        </el-row>
+        <el-row justify="center">
+            <el-button v-if="paymentStatus.paymentComplete !== true" type="warning" @click="clearPayment">Cancel
+                Payment
+            </el-button>
+            <el-button v-if="paymentStatus.paymentComplete === true" type="success" @click="clearPayment">Next
+                Payment
+            </el-button>
+        </el-row>
     </div>
 
     <div v-if="paymentRequest.integratedAddress">
         <Status />
     </div>
 </template>
+<style>
+.monero {
+    word-break: break-word;
+}
+</style>
