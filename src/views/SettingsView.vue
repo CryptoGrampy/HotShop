@@ -14,8 +14,6 @@ import Header from '../components/Header.vue';
             <Settings />
         </el-main>
     </el-container>
-
-
 </template>
 
 <style scoped>

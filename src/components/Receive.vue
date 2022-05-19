@@ -7,6 +7,7 @@ import { usePaymentStore } from '../store/payment';
 import { storeToRefs } from 'pinia';
 import NumPad from './NumPad.vue';
 import DisplayAmount from './DisplayAmount.vue';
+import PaymentResult from './PaymentResult.vue';
 
 const paymentStore = usePaymentStore()
 const { active, succeeded } = storeToRefs(paymentStore)
@@ -66,49 +67,59 @@ const onCurrentAmountChange = (val: string) => {
 </script>
 <!-- TODO: refactor template if statements (cleanup needed!) -->
 <template>
+
+    <el-row justify="center">
+        <el-col :span="24">
+            <div
+            v-if="!paymentStatus.paymentComplete && !(paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming)">
+            <DisplayAmount :amount="paymentRequest.paymentUri ? String(requestAmount) : numPadAmount" symbol="ɱ" />
+        </div>
+        </el-col>
+    </el-row>
+
     <div v-if="!paymentRequest.integratedAddress">
-        <DisplayAmount :amount=numPadAmount symbol="ɱ" />
         <NumPad :init-amount="numPadAmount" @currentAmountChange="onCurrentAmountChange" />
         <el-row justify="center">
-            <el-button :disabled="Number(numPadAmount) === 0" type="success" class="request-button" v-if="!paymentRequest.integratedAddress"
-                @click="generatePayment">
+            <el-button :disabled="Number(numPadAmount) === 0" type="success" class="payment-button"
+                v-if="!paymentRequest.integratedAddress" @click="generatePayment">
                 Request
             </el-button>
         </el-row>
     </div>
     <div v-if="paymentRequest.paymentUri">
-
         <el-row justify="center">
             <el-col :span="24">
                 <div v-if="paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming">Payment
-                Found!
-            </div>
-            <!-- TODO: use e+ Result: https://element-plus.org/en-US/component/result.html -->
-            <div v-if="paymentStatus.paymentComplete">✅ Payment Complete!</div>
+                    Found. Confirming
+                    {{ paymentStatus.confirmations }}/{{ paymentStatus.requestedPayment.requestedConfirmations }}.
+                </div>
+                <div v-if="paymentStatus.paymentComplete">
+                    <el-result icon="success" title="Payment Received!" :sub-title="`You paid ${requestAmount} XMR`">
+                    </el-result>
+                </div>
             </el-col>
         </el-row>
 
-        <el-row justify="center">
-            <div v-if="paymentStatus && paymentRequest.integratedAddress">
-                <p v-if="!paymentStatus.paymentComplete && paymentStatus.moneroTx">Current Confirmations: {{
-                        paymentStatus.confirmations
-                }}</p>
-            </div>
-        </el-row>
-        <el-row justify="center">
+        <el-row justify="center"
+            v-if="!paymentStatus.paymentComplete && !(paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming)">
             <QrCode :monero-uri="paymentRequest.paymentUri" />
         </el-row>
-        <el-row justify="center">
-            <p v-if="!paymentStatus.paymentComplete">Please send {{ requestAmount }} XMR to: </p>
+        <el-row justify="center"
+            v-if="!paymentStatus.paymentComplete && !(paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming)">
+            <el-progress :show-text="false" :percentage="100" :indeterminate="true" :duration="5" />
         </el-row>
-        <el-row justify="center">
+
+        <!-- <el-row justify="center"
+            v-if="!paymentStatus.paymentComplete && !(paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming)">
             <p v-if="!paymentStatus.paymentComplete" class="monero">{{ paymentRequest.integratedAddress }}</p>
-        </el-row>
+        </el-row> -->
         <el-row justify="center">
-            <el-button v-if="paymentStatus.paymentComplete !== true" type="warning" @click="clearPayment">Cancel
+            <el-button class="payment-button" v-if="paymentStatus.paymentComplete !== true" type="warning"
+                @click="clearPayment">Cancel
                 Payment
             </el-button>
-            <el-button v-if="paymentStatus.paymentComplete === true" type="success" @click="clearPayment">Next
+            <el-button class="payment-button" v-if="paymentStatus.paymentComplete === true" type="success"
+                @click="clearPayment">Next
                 Payment
             </el-button>
         </el-row>
@@ -116,8 +127,12 @@ const onCurrentAmountChange = (val: string) => {
 
 </template>
 <style scoped>
+.el-progress--line {
+    margin: 15px 0 30px;
+    width: 100%;
+}
 
-.request-button {
+.payment-button {
     font-size: 20px;
     text-align: center;
     border-radius: 20px;
@@ -125,15 +140,7 @@ const onCurrentAmountChange = (val: string) => {
     width: 250px;
 }
 
-.numpad-wrapper {
-    max-width: 300px;
-}
-
 .monero {
     word-break: break-word;
-}
-
-.el-button {
-    font-family: cursive;
 }
 </style>

@@ -14,15 +14,6 @@ import Header from '../components/Header.vue';
 </template>
 
 <style scoped>
-html,
-body {
-  overflow: hidden;
-  /* Hide scrollbars */
-}
-
-.main {
-  min-height: 400px;
-}
 
 .header {
   padding: 0px;

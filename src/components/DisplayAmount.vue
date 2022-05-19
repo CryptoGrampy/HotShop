@@ -8,10 +8,10 @@ const props = defineProps<{
 </script>
 
 <template>
-    <el-row justify="center" class="current-amount" align="middle">
-        {{ props.symbol }} <span>{{ props.amount }}</span><span
+    <div class="current-amount" align="middle">
+        {{ props.symbol }}<span>{{ props.amount }}</span><span
             v-if="props.amount.charAt(props.amount.length - 1) === '.'" class="decimal-preview">0</span>
-    </el-row>
+    </div>
 </template>
 
 <style scoped>
