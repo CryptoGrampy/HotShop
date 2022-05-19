@@ -2,11 +2,11 @@
 import { onMounted, ref } from 'vue'
 import { simplePay } from '../main';
 import { PaymentRequest, PaymentResponse, PaymentStatus } from '../SimplePay';
-import Status from './Status.vue';
 import QrCode from './QrCode.vue';
 import { usePaymentStore } from '../store/payment';
 import { storeToRefs } from 'pinia';
 import NumPad from './NumPad.vue';
+import DisplayAmount from './DisplayAmount.vue';
 
 const paymentStore = usePaymentStore()
 const { active, succeeded } = storeToRefs(paymentStore)
@@ -22,6 +22,7 @@ const paymentStatus = ref({} as PaymentResponse)
 const address = ref('')
 const requestAmount = ref(props.requestAmount || 0.001)
 
+const numPadAmount = ref('0')
 let paymentTracker
 
 const generatePayment = async () => {
@@ -47,6 +48,7 @@ const checkPayment = async () => {
 const clearPayment = () => {
     paymentStatus.value = {} as PaymentResponse
     paymentRequest.value = {} as PaymentRequest
+    numPadAmount.value = '0'
     clearInterval(paymentTracker)
 }
 
@@ -56,20 +58,19 @@ onMounted(() => {
     }
 })
 
+const onCurrentAmountChange = (val: string) => {
+    numPadAmount.value = val
+    requestAmount.value = Number(val)
+}
+
 </script>
 <!-- TODO: refactor template if statements (cleanup needed!) -->
 <template>
     <div v-if="!paymentRequest.integratedAddress">
-        <!-- <el-row justify="center">
-            <el-input v-model="requestAmount" @keyup="clearPayment()" placeholder="Please input" />
-        </el-row> -->
+        <DisplayAmount :amount=numPadAmount symbol="ɱ" />
+        <NumPad :init-amount="numPadAmount" @currentAmountChange="onCurrentAmountChange" />
         <el-row justify="center">
-            <el-col span="24">
-                <NumPad />
-            </el-col>
-        </el-row>
-        <el-row justify="center">
-            <el-button type="success" class="request-button" v-if="!paymentRequest.integratedAddress"
+            <el-button :disabled="Number(numPadAmount) === 0" type="success" class="request-button" v-if="!paymentRequest.integratedAddress"
                 @click="generatePayment">
                 Request
             </el-button>
@@ -78,11 +79,13 @@ onMounted(() => {
     <div v-if="paymentRequest.paymentUri">
 
         <el-row justify="center">
-            <div v-if="paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming">Payment
+            <el-col :span="24">
+                <div v-if="paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming">Payment
                 Found!
             </div>
             <!-- TODO: use e+ Result: https://element-plus.org/en-US/component/result.html -->
             <div v-if="paymentStatus.paymentComplete">✅ Payment Complete!</div>
+            </el-col>
         </el-row>
 
         <el-row justify="center">
@@ -113,12 +116,17 @@ onMounted(() => {
 
 </template>
 <style scoped>
+
 .request-button {
     font-size: 20px;
     text-align: center;
     border-radius: 20px;
     padding: 20px;
     width: 250px;
+}
+
+.numpad-wrapper {
+    max-width: 300px;
 }
 
 .monero {

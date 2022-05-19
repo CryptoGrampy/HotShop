@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { useConfigStore } from '../store/hot-shop-config';
 import { storeToRefs } from 'pinia';
-
 import {
     User,
-    Timer
 } from '@element-plus/icons-vue'
-
 
 const configStore = useConfigStore()
 const { user } = storeToRefs(configStore)

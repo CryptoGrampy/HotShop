@@ -18,18 +18,21 @@ const configStore = useConfigStore();
 <template>
     <el-row class="app-wrapper" justify="center">
         <el-col :xs="24" :sm="16" :md="14" :lg="12">
-        <el-card :body-style="{ paddingTop: '0px' }">
-            <router-view />
-        </el-card>
+            <el-card :body-style="{ paddingTop: '0px' }">
+                <router-view />
+            </el-card>
         </el-col>
     </el-row>
     <el-row class="footer" justify="center" align="middle">
-       <Status />&nbsp&nbsp|&nbsp&nbsp<a href="https://github.com/CryptoGrampy/HotShop">Powered by HotShop</a>
+        <el-space :size="10" spacer="|">
+            <Status />
+            <a href="https://github.com/CryptoGrampy/HotShop">Powered by HotShop</a>
+        </el-space>
+      
     </el-row>
 </template>
 
 <style>
-
 .app-wrapper {
     margin-bottom: 15px;
 }

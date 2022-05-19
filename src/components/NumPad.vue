@@ -1,8 +1,27 @@
 <script setup lang="ts">
 import { computed } from '@vue/reactivity';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { ArrowLeftBold } from '@element-plus/icons-vue'
 
+const currentAmount = ref('0')
+
+const emit = defineEmits<{
+    (e: 'currentAmountChange', value: string): void
+}>()
+
+const props = defineProps<{
+    initAmount: string
+}>()
+
+const test = ref(props.initAmount)
+
+watch(test, (newAmount) => {
+    console.log(newAmount, test)
+})
+
+// This component should output an xmr value.  Could be tied directly to store or emit to parent
+
+// TODO: Move currencies into separate component/store
 const currencies = [
     {
         value: 'XMR',
@@ -23,96 +42,90 @@ const symbol = computed(() => {
     return currencies.find(val => val.value === currency.value)?.symbol
 })
 
-const currentAmount = ref('')
 
+/**
+ * currentAmountChange, emit currentAmount { xmrAmount: .00001, { currency: USD, convertedAmount: 10.02}
+ */
+
+watch(currentAmount, (newAmount) => {
+    if (currentAmount.value === '') {
+        currentAmount.value += '0'
+    }
+
+    emit('currentAmountChange', newAmount)
+})
+
+const updateAmount = (val: string) => {
+    if (currentAmount.value === '0') {
+        currentAmount.value = val
+    } else if (val === '.') {
+        if (currentAmount.value.indexOf('.') === -1) {
+            currentAmount.value += '.'
+        }
+    }
+    else {
+        currentAmount.value+=val
+    }
+}
 
 </script>
 <template>
-        {{currentAmount}}
     <div class="wrapper">
         <el-row justify="center">
-            <p class="current-amount">
-                {{ symbol }}0.00
-            </p>
-        </el-row>
-        <div v-if="liveRate === true">
-            <el-row justify="center">
-                <p>
-                    ~ 0.00 USD
-                </p>
-            </el-row>
-            <el-row justify="center" class="">
-                <el-select class="currency-select" style="border-radius: 20px;" v-model="currency" placeholder="Select"
-                    size="small">
-                    <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value"
-                        :disabled="item.disabled" />
-                </el-select>
-            </el-row>
-        </div>
-        <el-row justify="center">
-            <el-col :span="24">
-                <el-row justify="center">
-                    <el-col :span="8">
-                        <el-button type="button" @touchend="currentAmount+='1'" text class="numpad">1</el-button>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-button type="button" @touchend="currentAmount+='2'" text class="numpad">2</el-button>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-button type="button" @touchend="currentAmount+='3'" text class="numpad">3</el-button>
-                    </el-col>
-                </el-row>
-                <el-row justify="center">
-                    <el-col :span="8">
-                        <el-button type="button" @touchend="currentAmount+='4'" text class="numpad">4</el-button>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-button type="button" @touchend="currentAmount+='5'" text class="numpad">5</el-button>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-button type="button" @touchend="currentAmount+='6'" text class="numpad">6</el-button>
-                    </el-col>
-                </el-row>
-                <el-row justify="center">
-                    <el-col :span="8">
-                        <el-button type="button" @touchend="currentAmount+='7'" text class="numpad">7</el-button>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-button type="button" @touchend="currentAmount+='8'" text class="numpad">8</el-button>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-button type="button" @touchend="currentAmount+='9'" text class="numpad">9</el-button>
-                    </el-col>
-                </el-row>
-                <el-row justify="center">
-                    <el-col :span="8">
-                        <el-button type="button" @touchend="currentAmount.indexOf('.') === -1 ? currentAmount+='.' : ''" text class="numpad">.</el-button>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-button type="button" @touchend="currentAmount+='0'" text class="numpad">0</el-button>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-button type="button" @touchend="currentAmount = currentAmount.slice(0, currentAmount.length - 1)" text class="numpad">
-                            <el-icon :size="20">
-                                <ArrowLeftBold />
-                            </el-icon>
-                        </el-button>
-                    </el-col>
-                </el-row>
-            </el-col>
+            <el-space>
+                <el-button @click="updateAmount('1')" text class="numpad">1</el-button>
+                <el-button @click="updateAmount('2')" text class="numpad">2</el-button>
+                <el-button @click="updateAmount('3')" text class="numpad">3</el-button>
+            </el-space>
+            <el-space>
+                <el-button @click="updateAmount('4')" text class="numpad">4</el-button>
+                <el-button @click="updateAmount('5')" text class="numpad">5</el-button>
+                <el-button @click="updateAmount('6')" text class="numpad">6</el-button>
+            </el-space>
+            <el-space>
+                <el-button @click="updateAmount('7')" text class="numpad">7</el-button>
+                <el-button @click="updateAmount('8')" text class="numpad">8</el-button>
+                <el-button @click="updateAmount('9')" text class="numpad">9</el-button>
+            </el-space>
+            <el-space>
+                <el-button @click="currentAmount.indexOf('.') === -1 ? currentAmount += '.' : ''" text class="numpad">.
+                </el-button>
+                <el-button @click="updateAmount('0')" text class="numpad">0</el-button>
+                <el-button @click="currentAmount = currentAmount.slice(0, currentAmount.length - 1)" text
+                    class="numpad">
+                    <el-icon :size="20">
+                        <ArrowLeftBold />
+                    </el-icon>
+                </el-button>
+            </el-space>
         </el-row>
     </div>
+    <!--
+    <el-row justify="center">
+        <p class="current-amount">
+            {{ symbol }}0.00
+        </p>
+    </el-row>
+    <div v-if="liveRate === true">
+        <el-row justify="center">
+            <p>
+                ~ 0.00 USD
+            </p>
+        </el-row>
+        <el-row justify="center" class="">
+            <el-select class="currency-select" style="border-radius: 20px;" v-model="currency" placeholder="Select"
+                size="small">
+                <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value"
+                    :disabled="item.disabled" />
+            </el-select>
+        </el-row>
+    </div>
+      -->
 </template>
 <style scoped>
 .wrapper {
+    max-width: 400px;
     margin-bottom: 20px;
-}
-
-.numpad-wrapper {}
-
-.current-amount {
-    margin: 10px 0 20px;
-    font-size: 50px;
 }
 
 .currency-select {
