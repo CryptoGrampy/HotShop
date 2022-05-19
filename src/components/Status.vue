@@ -1,9 +1,9 @@
 <script setup lang="ts">
-/**
- * Placeholder for a simple component that displays 
- * monerod connection status as a symbol- broken 
- */
+// TODO: Move to store
+import { simplePayReady } from '../SimplePay';
 </script>
 
 <template>
+<span v-if="simplePayReady">🟢 Online</span>
+<span v-else="!simplePayReady">🔴 Offline</span>
 </template>

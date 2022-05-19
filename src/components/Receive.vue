@@ -6,6 +6,7 @@ import Status from './Status.vue';
 import QrCode from './QrCode.vue';
 import { usePaymentStore } from '../store/payment';
 import { storeToRefs } from 'pinia';
+import NumPad from './NumPad.vue';
 
 const paymentStore = usePaymentStore()
 const { active, succeeded } = storeToRefs(paymentStore)
@@ -59,15 +60,18 @@ onMounted(() => {
 <!-- TODO: refactor template if statements (cleanup needed!) -->
 <template>
     <div v-if="!paymentRequest.integratedAddress">
-        <el-row justify="center">
-            {{ requestAmount }} XMR
-        </el-row>
-        <el-row justify="center">
+        <!-- <el-row justify="center">
             <el-input v-model="requestAmount" @keyup="clearPayment()" placeholder="Please input" />
+        </el-row> -->
+        <el-row justify="center">
+            <el-col span="24">
+                <NumPad />
+            </el-col>
         </el-row>
         <el-row justify="center">
-            <el-button v-if="!paymentRequest.integratedAddress" type="success" @click="generatePayment">Generate
-                Payment
+            <el-button type="success" class="request-button" v-if="!paymentRequest.integratedAddress"
+                @click="generatePayment">
+                Request
             </el-button>
         </el-row>
     </div>
@@ -77,12 +81,15 @@ onMounted(() => {
             <div v-if="paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming">Payment
                 Found!
             </div>
+            <!-- TODO: use e+ Result: https://element-plus.org/en-US/component/result.html -->
             <div v-if="paymentStatus.paymentComplete">✅ Payment Complete!</div>
         </el-row>
 
         <el-row justify="center">
             <div v-if="paymentStatus && paymentRequest.integratedAddress">
-                <p v-if="!paymentStatus.paymentComplete && paymentStatus.moneroTx">Current Confirmations: {{ paymentStatus.confirmations }}</p>
+                <p v-if="!paymentStatus.paymentComplete && paymentStatus.moneroTx">Current Confirmations: {{
+                        paymentStatus.confirmations
+                }}</p>
             </div>
         </el-row>
         <el-row justify="center">
@@ -104,12 +111,21 @@ onMounted(() => {
         </el-row>
     </div>
 
-    <div v-if="paymentRequest.integratedAddress">
-        <Status />
-    </div>
 </template>
-<style>
+<style scoped>
+.request-button {
+    font-size: 20px;
+    text-align: center;
+    border-radius: 20px;
+    padding: 20px;
+    width: 250px;
+}
+
 .monero {
     word-break: break-word;
+}
+
+.el-button {
+    font-family: cursive;
 }
 </style>
