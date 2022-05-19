@@ -78,7 +78,9 @@ const onCurrentAmountChange = (val: string) => {
     </el-row>
 
     <div v-if="!paymentRequest.integratedAddress">
+    <el-row justify="center">
         <NumPad :init-amount="numPadAmount" @currentAmountChange="onCurrentAmountChange" />
+    </el-row>
         <el-row justify="center">
             <el-button :disabled="Number(numPadAmount) === 0" type="success" class="payment-button"
                 v-if="!paymentRequest.integratedAddress" @click="generatePayment">
@@ -130,6 +132,7 @@ const onCurrentAmountChange = (val: string) => {
 .el-progress--line {
     margin: 15px 0 30px;
     width: 100%;
+    max-width: 300px;
 }
 
 .payment-button {
