@@ -16,7 +16,8 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '16'
-
+    - name: Set Creds
+      run: git config user.name "CryptoGrampy" && git config user.email "CryptoGrampy@protonmail.com"
     - name: Build
       run: |
         npm i
