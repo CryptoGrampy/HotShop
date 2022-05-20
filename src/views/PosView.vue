@@ -7,17 +7,17 @@ import Header from '../components/Header.vue';
 
 <template>
 
-  <el-container>
-    <el-header>
-      <Header />
-    </el-header>
-    <el-main>
-      <div v-if="simplePayReady">
-        <Receive />
-      </div>
-      <div v-if="!simplePayReady">Rolling up windows. Please wait... (may take a minute or so)</div>
-    </el-main>
-  </el-container>
-
-
+  <Header class="header" />
+  <el-row justify="center" v-loading="!simplePayReady" element-loading-text="Setting up HotShop...">
+    <el-col :span="24">
+      <Receive />
+    </el-col>
+  </el-row>
 </template>
+
+<style scoped>
+.header {
+  padding: 0px;
+  margin-bottom: 10px;
+}
+</style>

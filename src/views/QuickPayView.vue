@@ -17,7 +17,7 @@ const props = defineProps<{
     <div v-if="!simplePayReady">Rolling up windows.  Please wait... (may take a minute or so)</div>
 </template>
 
-<style>
+<style scoped>
 body {
     word-wrap: break-word;
 }

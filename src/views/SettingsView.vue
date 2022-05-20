@@ -6,17 +6,12 @@ import Header from '../components/Header.vue';
 </script>
 
 <template>
-    <el-container>
-        <el-header>
-            <Header />
-        </el-header>
-        <el-main>
-            <Settings />
-        </el-main>
-    </el-container>
-
-
+    <Header class="header" />
+    <Settings />
 </template>
 
-<style>
+<style scoped>
+.header {
+  padding: 0px;
+}
 </style>
