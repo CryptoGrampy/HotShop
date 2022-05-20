@@ -1,4 +1,4 @@
-name: NodeJS with Webpack
+name: deploy gh-pages
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [14.x]
     
     steps:
     - uses: actions/checkout@v3
