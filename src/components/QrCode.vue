@@ -12,11 +12,13 @@ const props = defineProps<{
 
 </script>
 <template>
+<!-- todo: wrap this in a clickable monero uri link ? -->
   <figure>
     <vue-qrcode :value="props.moneroUri" :options="{
       width: 200,
       errorCorrectionLevel: 'Q',
     }"></vue-qrcode>
+    <!-- todo: use local monero asset for image logo -->
     <img class="qrcode__image" :src="user?.logoUrl" alt="">
   </figure>
 </template>
