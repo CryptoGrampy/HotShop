@@ -184,6 +184,7 @@ export class SimplePay {
             uri: this.config.monerodUri,
             username: this.config.monerodUsername,
             password: this.config.monerodPassword,
+            rejectUnauthorized: false,
             proxyToWorker: true,
         })
         const connectionManager = new monerojs.MoneroConnectionManager(true)
