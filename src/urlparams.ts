@@ -1,4 +1,5 @@
 import { Network } from "./SimplePay";
+import { CurrencyOption } from "./store/currency";
 import { HotShopConfig } from "./store/hot-shop-config";
 
 export const getConfigFromHash = (): HotShopConfig => {
@@ -16,6 +17,8 @@ export const getConfigFromHash = (): HotShopConfig => {
         defaultConfirmations: 0,
         monerodUsername: '',
         monerodPassword: '',
+        exchangeCurrency: 'USD',
+        useAsPrimary: true,
         shopName: 'HotShop',
         logoUrl: 'https://www.getmonero.org/press-kit/symbols/monero-symbol-480.png'
     }
@@ -37,7 +40,9 @@ export const getConfigFromHash = (): HotShopConfig => {
         },
         user: {
             shopName: params.shopName,
-            logoUrl: params.logoUrl
+            logoUrl: params.logoUrl,
+            exchangeCurrency: CurrencyOption[String(params.exchangeCurrency)],
+            useExchangeAsPrimary: params.useAsPrimary
         },
     }
 

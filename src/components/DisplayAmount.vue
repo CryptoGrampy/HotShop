@@ -17,6 +17,7 @@ const props = defineProps<{
 <style scoped>
 .current-amount {
     font-size: 50px;
+    font-weight: bold;
     margin-bottom: 10px;
 }
 

@@ -2,18 +2,34 @@
 import { useConfigStore } from '../store/hot-shop-config';
 import VueQrcode from '@chenfengyuan/vue-qrcode';
 import { storeToRefs } from 'pinia';
+import { ElMessage } from 'element-plus'
 
 const configStore = useConfigStore()
 const { user } = storeToRefs(configStore)
 
 const props = defineProps<{
   moneroUri: string
+  address: string
 }>()
+
+const openMessage = () => {
+  ElMessage({
+    message: 'Address copied!',
+    type: 'success',
+  })
+}
+
+const clipboardData = navigator.clipboard
+
+const copyToClipboard = () => {
+  clipboardData.writeText(props.address);
+  openMessage()
+}
 
 </script>
 <template>
-<!-- todo: wrap this in a clickable monero uri link ? -->
-  <figure>
+  <!-- todo: wrap this in a clickable monero uri link ? -->
+  <figure @click="copyToClipboard">
     <vue-qrcode :value="props.moneroUri" :options="{
       width: 200,
       errorCorrectionLevel: 'Q',
@@ -23,14 +39,18 @@ const props = defineProps<{
   </figure>
 </template>
 <style scoped>
-
 figure {
   margin: 10px 0 0;
   padding: 0;
 }
+
+figure:hover {
+  cursor: pointer;
+}
 .qrcode {
   position: relative;
 }
+
 .qrcode__image {
   background-color: white;
   border-radius: 0.30rem;

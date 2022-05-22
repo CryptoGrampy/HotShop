@@ -2,6 +2,7 @@ import { Network, SimplePayConfig } from "../SimplePay";
 import { defineStore } from "pinia";
 import { getConfigFromHash, getHashFromConfig, getUrlOrigin } from "../urlparams";
 import { simplePay } from "../main";
+import { CurrencyOption, ExchangeCurrencyOptions } from "./currency";
 
 /**
  * - store hashfragments here
@@ -15,6 +16,8 @@ export interface UserConfig {
     logoUrl?: string
     shopName?: string
     uniqueShopUrl?: string
+    exchangeCurrency?: ExchangeCurrencyOptions
+    useExchangeAsPrimary?: boolean
 }
 
 // Things not used or saved across sessions
@@ -42,6 +45,8 @@ export const useConfigStore = defineStore('hot-shop-config', {
         user: {
             logoUrl: 'https://www.getmonero.org/press-kit/symbols/monero-symbol-480.png',
             shopName: 'Grampy Shop',
+            exchangeCurrency: CurrencyOption.USD,
+            useExchangeAsPrimary: true
         }
     }),
     getters: {

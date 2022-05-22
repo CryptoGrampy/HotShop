@@ -4,6 +4,7 @@ import { ref } from 'vue';
 import { simplePay } from '../main';
 import { Network, simplePayReady } from '../SimplePay';
 import { storeToRefs } from 'pinia';
+import { currencies, CurrencyOption } from '../store/currency';
 
 /**
  * The goal of this component is to:
@@ -47,7 +48,6 @@ const updateSettings = async () => {
     currentStoreUrl.value = myHotShopUrl.value
     await simplePay.updateConfig(configStore.$state.payment)
 }
-
 </script>
 
 <template>
@@ -60,8 +60,12 @@ const updateSettings = async () => {
 
     <p>
         Monerod URI
+        <el-link>
+            (<router-link to="/node-checker">Test with the Node Compatibility Tool</router-link>)
+        </el-link>
         <el-input v-model="settingsForm.payment.monerodUri"
             placeholder="Please input your Monerod address (note Mainnet/Stagenet)" />
+
     </p>
 
     <p>
@@ -90,16 +94,28 @@ const updateSettings = async () => {
             placeholder="Please input your desired transaction confirmations (higher = slower confirmation)" />
     </p>
 
-       <p>
+    <p>
         Logo URL:
-        <el-input v-model="settingsForm.user.logoUrl"
-            placeholder="Please input your custom logo URL" />
+        <el-input v-model="settingsForm.user.logoUrl" placeholder="Please input your custom logo URL" />
     </p>
 
-       <p>
+    <p>
+        Exchange Currency:
+        <el-select v-model="settingsForm.user.exchangeCurrency" placeholder="Select">
+            <el-option :label="currencies[CurrencyOption.NONE].displayName" :value="currencies[CurrencyOption.NONE].ticker" />
+            <el-option :label="currencies[CurrencyOption.USD].displayName" :value="currencies[CurrencyOption.USD].ticker" />
+            <el-option :label="currencies[CurrencyOption.EUR].displayName" :value="currencies[CurrencyOption.EUR].ticker" />
+        </el-select>
+    </p>
+
+    <!-- <p v-if="settingsForm.user.exchangeCurrency !== CurrencyOption.NONE">
+        <el-checkbox v-model="settingsForm.user.useExchangeAsPrimary" placeholder="Select"
+            label="Use Exchange Currency as Primary" />
+    </p> -->
+
+    <p>
         Shop Name:
-        <el-input v-model="settingsForm.user.shopName"
-            placeholder="Please input your custom shop Name" />
+        <el-input v-model="settingsForm.user.shopName" placeholder="Please input your custom shop Name" />
     </p>
 
     <el-button @click="updateSettings" type="primary">Update Settings</el-button>

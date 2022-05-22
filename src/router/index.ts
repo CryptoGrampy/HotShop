@@ -11,18 +11,23 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/settings',
     name: 'settings',
-    component: () => import(/* webpackChunkName: "about" */ '../views/SettingsView.vue')
+    component: () => import(/* webpackChunkName: "settings" */ '../views/SettingsView.vue')
   },
   {
     path: '/history',
     name: 'history',
-    component: () => import(/* webpackChunkName: "about" */ '../views/HistoryView.vue')
+    component: () => import(/* webpackChunkName: "history" */ '../views/HistoryView.vue')
   },
   {
     path: '/receive/:requestAmount',
     name: 'receive',
-    component: () => import(/* webpackChunkName: "about" */ '../views/QuickPayView.vue'),
+    component: () => import(/* webpackChunkName: "quickpay" */ '../views/QuickPayView.vue'),
     props: true
+  },
+  {
+    path: '/node-checker',
+    name: 'node-checker',
+    component: () => import(/* webpackChunkName: "nodechecker" */ '../views/NodeCheckerView.vue'),
   }
 ]
 

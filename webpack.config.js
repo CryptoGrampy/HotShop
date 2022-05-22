@@ -59,7 +59,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          from: "*.*",
+          from: "**.{js,wasm}",
           context: path.resolve(__dirname, "node_modules/monero-javascript/dist"),
         },
         {
