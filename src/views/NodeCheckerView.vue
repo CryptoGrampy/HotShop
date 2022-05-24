@@ -48,10 +48,10 @@ const testNode = async () => {
         directly with public Monero nodes can't use just *any* public node. Webapps require a couple specific Monerod
         configuration options to be set to communicate properly and without errors.</p>
     <p>The public node must:</p>
-    <ul>
-        <li>1. Be HTTPS with a valid certificate or a Tor Hidden Service (.onion). HTTP nodes will not work.</li>
-        <li>2. Have this flag set in the Monerod config: <code>--rpc-access-control-origins=*</code></li>
-    </ul>
+    <ol>
+        <li>Be HTTPS with a valid certificate or a Tor Hidden Service (.onion). HTTP nodes will not work.</li>
+        <li>Have this flag set in the Monerod config: <code>--rpc-access-control-origins=*</code></li>
+    </ol>
     <el-row justify="center">
         <el-input v-model="node" placeholder="ex. https://mynode.com:18081">
             <template #append>

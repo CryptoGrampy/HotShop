@@ -53,7 +53,7 @@ const updateSettings = async () => {
 <template>
     <p>
         Network:
-        <el-select v-model="settingsForm.payment.network" placeholder="Select" size="large">
+        <el-select v-model="settingsForm.payment.network" placeholder="Select">
             <el-option v-for="item in Network" :key="item" :label="item" :value="item" />
         </el-select>
     </p>

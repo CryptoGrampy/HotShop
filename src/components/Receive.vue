@@ -77,7 +77,6 @@ const secondaryDisplayAmount = computed(() => {
     if (exchangeCurrency.value?.exchangeRate && exchangeCurrencyStatus && paymentRequest.value.paymentUri) {
         return `${exchangeCurrency.value?.symbol}${(exchangeCurrency.value.exchangeRate * requestAmount.value).toFixed(2)}`
     } else if (exchangeCurrency.value?.exchangeRate && exchangeCurrencyStatus) {
-        console.log('not display payment info', (exchangeCurrency.value.exchangeRate * Number(numPadAmount.value)).toFixed(2))
         return `${exchangeCurrency.value?.symbol}${(exchangeCurrency.value.exchangeRate * Number(numPadAmount.value)).toFixed(2)}`
     }
 })
