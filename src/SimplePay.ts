@@ -88,10 +88,15 @@ export class SimplePay {
     }
 
     public async updateConfig(config?: SimplePayConfig) {
+        this.monerodConnectionStatus = false
         if (config) {
             this.config = config
         }
-        this.monerodConnectionStatus = false
+
+        if (this.wallet) {
+            await this.wallet.stopSyncing()
+            await this.wallet.close()
+        }
 
         await LibraryUtils.loadFullModule();
         await this.initWallet()
@@ -135,7 +140,7 @@ export class SimplePay {
         return paymentResponse
     }
 
-    public async initWallet(): Promise<void> {
+    public async initWallet(): Promise<void> {        
         this.wallet = await monerojs.createWalletFull({
             // needs dummy password
             password: "supersecretpassword123",
@@ -156,6 +161,7 @@ export class SimplePay {
     public async createPaymentRequest(xmrAmount: number, requestedConfirmations?: number, label?: string): Promise<PaymentRequest> {
         const integratedAddressState: monerojs.MoneroIntegratedAddress = await this.wallet.getIntegratedAddress()
 
+        console.log('current primary address', integratedAddressState.getStandardAddress())
         const paymentRequest: PaymentRequest = {
             integratedAddress: integratedAddressState.getIntegratedAddress(),
             paymentId: integratedAddressState.getPaymentId(),

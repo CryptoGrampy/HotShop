@@ -123,7 +123,7 @@ declare module 'monero-javascript' {
         async getIncomingTransfers(query: any): Promise<MoneroIncomingTransfer[]>
         async getAddress(accountIdx: int, subaddressIdx: int): Promise<string>;
         async stopSyncing(): Promise<void>
-
+        async close(): Promise<void>
     }
 
     declare class MoneroWalletListener {
