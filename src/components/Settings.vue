@@ -59,7 +59,7 @@ const updateSettings = async () => {
     </p>
 
     <p>
-        Monerod URI
+        Web-Compatible Monerod Address
         <el-link>
             (<router-link to="/node-checker">Test with the Node Compatibility Tool</router-link>)
         </el-link>
