@@ -94,7 +94,6 @@ export class SimplePay {
         }
 
         if (this.wallet) {
-            await this.wallet.stopSyncing()
             await this.wallet.close()
         }
 
