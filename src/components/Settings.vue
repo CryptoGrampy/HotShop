@@ -5,6 +5,7 @@ import { simplePay } from '../main';
 import { Network, simplePayReady } from '../SimplePay';
 import { storeToRefs } from 'pinia';
 import { currencies, CurrencyOption } from '../store/currency';
+import { ElMessage } from 'element-plus'
 
 /**
  * The goal of this component is to:
@@ -35,6 +36,13 @@ const settingsForm = ref({
 
 })
 
+const settingsUpdatedMessage = () => {
+  ElMessage({
+    message: 'Settings changed!  Please update your HotShop bookmark.',
+    type: 'success',
+  })
+}
+
 const updateSettings = async () => {
     /**
      * Validate if necessary
@@ -47,10 +55,12 @@ const updateSettings = async () => {
     configStore.$state = settingsForm.value
     currentStoreUrl.value = myHotShopUrl.value
     await simplePay.updateConfig(configStore.$state.payment)
+    settingsUpdatedMessage()
 }
 </script>
 
 <template>
+    <p><el-link type="primary" :href="currentStoreUrl">My Custom HotShop Shop URL (Add this link to your bookmarks!) </el-link></p>
     <p>
         Network:
         <el-select v-model="settingsForm.payment.network" placeholder="Select">
@@ -119,6 +129,4 @@ const updateSettings = async () => {
     </p>
 
     <el-button @click="updateSettings" type="primary">Update Settings</el-button>
-
-    <p>My Custom Shop URL (Add this to your bookmarks): <a :href="currentStoreUrl">Shop URL </a></p>
 </template>
