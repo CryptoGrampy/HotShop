@@ -11,7 +11,7 @@ const props = defineProps<{
 <template>
     <h2>Hello, Quick(ish)Pay</h2>
     <div v-if="simplePayReady">
-      <Receive :request-amount="Number(props.requestAmount)"/>
+      <Receive :quick-pay-amount="Number(props.requestAmount)"/>
     </div>
 
     <div v-if="!simplePayReady">Rolling up windows.  Please wait... (may take a minute or so)</div>

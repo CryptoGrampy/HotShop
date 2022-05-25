@@ -1,89 +1,108 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { simplePay } from '../main';
-import { PaymentRequest, PaymentResponse, PaymentStatus } from '../SimplePay';
+import { PaymentStatus } from '../SimplePay';
 import QrCode from './QrCode.vue';
 import { usePaymentStore } from '../store/payment';
 import { storeToRefs } from 'pinia';
 import NumPad from './NumPad.vue';
 import DisplayAmount from './DisplayAmount.vue';
-import { exchangeCurrency, exchangeCurrencyStatus, CurrencyOption, stopTrackingRate, trackExchangeRate } from '../store/currency';
+import { exchangeCurrency, exchangeCurrencyStatus, CurrencyOption, stopTrackingRate, trackExchangeRate, currencies } from '../store/currency';
 import { useConfigStore } from '../store/hot-shop-config';
 import { computed } from '@vue/reactivity';
 
-const paymentStore = usePaymentStore()
-const configStore = useConfigStore()
-const { active, succeeded } = storeToRefs(paymentStore)
-const { createNewPayment, saveSuccessfulPayment } = paymentStore
-
-const { user } = storeToRefs(configStore)
-
 const props = defineProps<{
-    requestAmount?: number
+    quickPayAmount?: number
 }>()
 
-const paymentRequest = ref({} as PaymentRequest)
-const paymentStatus = ref({} as PaymentResponse)
-const address = ref('')
-const requestAmount = ref(props.requestAmount || 0.001)
+const paymentStore = usePaymentStore()
+const { activeRequest, activeStatus, numPadAmount } = storeToRefs(paymentStore)
+const { saveSuccessfulPayment, clearActiveRequest } = paymentStore
 
-const numPadAmount = ref('0')
-let paymentTracker
+const configStore = useConfigStore()
+const { user } = storeToRefs(configStore)
+
+const currentXmrAmount = computed(() => {
+    if (activeRequest.value.requestAmount > 0) {
+        return activeRequest.value.requestAmount
+    }
+    const currentNumpadValue = Number(numPadAmount.value)
+    if (currentNumpadValue > 0 && exchangeCurrencyStatus && exchangeCurrency.value?.exchangeRate > 0) {
+        if (user?.value?.useExchangeAsPrimary) {
+            return Number((currentNumpadValue / exchangeCurrency.value?.exchangeRate).toFixed(12))
+        }
+    }
+
+    return currentNumpadValue
+})
+
+
+let paymentTrackerIntervalRef
+
 
 const generatePayment = async () => {
-    clearPayment()
-    paymentRequest.value = await simplePay.createPaymentRequest(requestAmount.value)
+    clearInterval(paymentTrackerIntervalRef)
 
-    createNewPayment(paymentRequest.value)
-    address.value = paymentRequest.value.integratedAddress
+    activeRequest.value = await simplePay.createPaymentRequest(currentXmrAmount.value)
 
-    paymentTracker = setInterval(async () => {
+    paymentTrackerIntervalRef = setInterval(async () => {
         await checkPayment()
     }, 2000);
 }
 
 const checkPayment = async () => {
-    paymentStatus.value = await simplePay.checkForPayment(paymentRequest.value)
-    if (paymentStatus.value.paymentComplete) {
-        saveSuccessfulPayment(paymentStatus.value)
-        clearInterval(paymentTracker)
+    activeStatus.value = await simplePay.checkForPayment(activeRequest.value)
+
+    if (activeStatus.value.paymentComplete) {
+        saveSuccessfulPayment(activeStatus.value)
+        clearInterval(paymentTrackerIntervalRef)
     }
 }
 
 const clearPayment = () => {
-    paymentStatus.value = {} as PaymentResponse
-    paymentRequest.value = {} as PaymentRequest
-    numPadAmount.value = '0'
-    clearInterval(paymentTracker)
+    clearInterval(paymentTrackerIntervalRef)
+    clearActiveRequest()
 }
 
 onMounted(() => {
-    if (props.requestAmount && props.requestAmount > 0) {
+    if (props.quickPayAmount && props.quickPayAmount > 0) {
         generatePayment()
     }
 
     trackExchangeRate(CurrencyOption[String(user?.value?.exchangeCurrency)])
 })
 
+onBeforeUnmount(() => {
+    clearPayment()
+})
+
 const showPaymentScreen = computed(() => {
-    return paymentRequest.value.paymentUri ? true : false
+    return activeRequest.value.paymentUri ? true : false
 })
 
 const displayPaymentInfo = computed(() => {
-    return (!paymentStatus.value.paymentComplete && !(paymentStatus.value.moneroTx && paymentStatus.value.paymentStatus === PaymentStatus.confirming))
+    return (!activeStatus.value.paymentComplete && !(activeStatus.value.moneroTx && activeStatus.value.paymentStatus === PaymentStatus.confirming))
 })
 
-const secondaryDisplayAmount = computed(() => {
-    if (exchangeCurrency.value?.exchangeRate && exchangeCurrencyStatus && paymentRequest.value.paymentUri) {
-        return `${exchangeCurrency.value?.symbol}${(exchangeCurrency.value.exchangeRate * requestAmount.value).toFixed(2)}`
-    } else if (exchangeCurrency.value?.exchangeRate && exchangeCurrencyStatus) {
-        return `${exchangeCurrency.value?.symbol}${(exchangeCurrency.value.exchangeRate * Number(numPadAmount.value)).toFixed(2)}`
+const subDisplayAmount = computed(() => {
+    if (exchangeCurrencyStatus && exchangeCurrency.value?.exchangeRate) {
+        if (user?.value?.useExchangeAsPrimary) {
+            const reqAmount = activeRequest.value.requestAmount
+
+            if (reqAmount > 0) {
+                return `${currencies[CurrencyOption.XMR].symbol}${reqAmount}`
+            } else {
+                const value = Number(numPadAmount.value) > 0 ? Number((Number(numPadAmount.value) / exchangeCurrency.value?.exchangeRate).toFixed(12)) : 0
+                return `${currencies[CurrencyOption.XMR].symbol}${value}`
+            }
+        } else {
+            return `~${exchangeCurrency.value?.symbol}${(exchangeCurrency.value.exchangeRate * currentXmrAmount.value).toFixed(2)}`
+        }
     }
 })
 
 const onCurrentAmountChange = (val: string) => {
     numPadAmount.value = val
-    requestAmount.value = Number(val)
 }
 
 onBeforeUnmount(() => {
@@ -98,7 +117,8 @@ onBeforeUnmount(() => {
         <el-row justify="center">
             <el-col :span="24">
                 <div v-if="displayPaymentInfo">
-                    <DisplayAmount :amount="paymentRequest.paymentUri ? String(requestAmount) : numPadAmount"
+                    <DisplayAmount
+                        :amount="quickPayAmount && quickPayAmount > 0 ? String(quickPayAmount) : numPadAmount"
                         symbol="ɱ" />
                 </div>
             </el-col>
@@ -109,23 +129,16 @@ onBeforeUnmount(() => {
         <div v-if="displayPaymentInfo">
             <el-row justify="center">
                 <el-col :span="24">
-                    <DisplayAmount :amount="paymentRequest.paymentUri ? String(requestAmount) : numPadAmount"
-                        symbol="ɱ" />
+                    <DisplayAmount
+                        :amount="quickPayAmount && quickPayAmount > 0 ? String(quickPayAmount) : numPadAmount"
+                        :symbol="user?.useExchangeAsPrimary ? exchangeCurrency!.symbol : currencies[CurrencyOption.XMR].symbol" />
                 </el-col>
             </el-row>
             <el-row justify="center">
                 <p class="exchange-currency">
-                    {{ secondaryDisplayAmount }}
+                    ({{ subDisplayAmount }})
                 </p>
             </el-row>
-            <!-- <el-row justify="center">
-                <p class="exchange-currency"
-                    v-if="exchangeCurrency && exchangeCurrency.exchangeRate && exchangeCurrency.symbol">
-                    ~{{ exchangeCurrency.symbol }}
-                    <span v-if="paymentRequest && paymentRequest.paymentUri && exchangeCurrency && exchangeCurrency.exchangeRate && requestAmount">{{ (exchangeCurrency.exchangeRate * requestAmount).toFixed(2)}}</span>
-                    <span v-if="!paymentRequest?.paymentUri && exchangeCurrency && exchangeCurrency.exchangeRate && numPadAmount">{{ (exchangeCurrency.exchangeRate * Number(numPadAmount)).toFixed(2)}}</span>
-                </p>
-            </el-row> -->
         </div>
     </div>
 
@@ -135,7 +148,7 @@ onBeforeUnmount(() => {
         </el-row>
         <el-row justify="center">
             <el-button :disabled="Number(numPadAmount) === 0" type="success" class="payment-button"
-                v-if="!paymentRequest.integratedAddress" @click="generatePayment">
+                v-if="!activeRequest.integratedAddress" @click="generatePayment">
                 Request
             </el-button>
         </el-row>
@@ -144,29 +157,31 @@ onBeforeUnmount(() => {
     <div v-if="showPaymentScreen">
         <el-row justify="center">
             <el-col :span="24">
-                <div v-if="paymentStatus.moneroTx && paymentStatus.paymentStatus === PaymentStatus.confirming">Payment
-                    Found. Confirming
-                    {{ paymentStatus.confirmations }}/{{ paymentStatus.requestedPayment.requestedConfirmations }}.
+                <div v-if="activeStatus.paymentStatus === PaymentStatus.confirming">Payment
+                    <el-result icon="info" title="Payment Detected! Confirming..."
+                        :sub-title="`Current Confirmations: ${activeStatus.confirmations} / ${activeStatus.requestedPayment.requestedConfirmations}`">
+                    </el-result>
                 </div>
-                <div v-if="paymentStatus.paymentComplete">
-                    <el-result icon="success" title="Payment Received!" :sub-title="`You paid ${requestAmount} XMR`">
+                <div v-if="activeStatus.paymentComplete === true">
+                    <el-result icon="success" title="Payment Received!"
+                        :sub-title="`You paid ${activeStatus.requestedPayment.requestAmount} XMR`">
                     </el-result>
                 </div>
             </el-col>
         </el-row>
 
-        <el-row justify="center" v-if="displayPaymentInfo && paymentRequest.paymentUri">
-            <QrCode :address="paymentRequest.integratedAddress" :monero-uri="paymentRequest.paymentUri" />
+        <el-row justify="center" v-if="displayPaymentInfo && activeRequest.paymentUri">
+            <QrCode :address="activeRequest.integratedAddress" :monero-uri="activeRequest.paymentUri" />
         </el-row>
         <el-row justify="center" v-if="displayPaymentInfo">
             <el-progress :show-text="false" :percentage="100" :indeterminate="true" :duration="5" />
         </el-row>
         <el-row justify="center">
-            <el-button class="payment-button" v-if="paymentStatus.paymentComplete !== true" type="warning"
+            <el-button class="payment-button" v-if="activeStatus.paymentComplete !== true" type="warning"
                 @click="clearPayment">Cancel
                 Payment
             </el-button>
-            <el-button class="payment-button" v-if="paymentStatus.paymentComplete === true" type="success"
+            <el-button class="payment-button" v-if="activeStatus.paymentComplete === true" type="success"
                 @click="clearPayment">Next
                 Payment
             </el-button>

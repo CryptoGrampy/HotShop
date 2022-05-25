@@ -118,10 +118,10 @@ const updateSettings = async () => {
         </el-select>
     </p>
 
-    <!-- <p v-if="settingsForm.user.exchangeCurrency !== CurrencyOption.NONE">
+    <p v-if="settingsForm.user.exchangeCurrency !== CurrencyOption.NONE">
         <el-checkbox v-model="settingsForm.user.useExchangeAsPrimary" placeholder="Select"
             label="Use Exchange Currency as Primary" />
-    </p> -->
+    </p>
 
     <p>
         Shop Name:

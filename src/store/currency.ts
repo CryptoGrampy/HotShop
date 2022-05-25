@@ -5,7 +5,7 @@ export interface Currency {
     displayName: string
     ticker: string
     symbol: string
-    exchangeRate?: number
+    exchangeRate: number
 }
 
 export enum CurrencyOption {
@@ -27,11 +27,13 @@ export const currencies: Dict<Currency> = {
     [CurrencyOption.USD]: {
         displayName: 'USD',
         ticker: CurrencyOption.USD,
+        exchangeRate: 0,
         symbol: '$'
     },
     [CurrencyOption.EUR]: {
         displayName: 'EUR',
         ticker: CurrencyOption.EUR,
+        exchangeRate: 0,
         symbol: '€'
     },
     [CurrencyOption.NONE]: {
@@ -51,7 +53,7 @@ export const currencies: Dict<Currency> = {
  */
 
 let intervalRef: NodeJS.Timer
-export const exchangeCurrency: Ref<Currency | null> = ref(null)
+export const exchangeCurrency: Ref<Currency> = ref(currencies[CurrencyOption.NONE])
 export const exchangeCurrencyStatus: Ref<boolean> = ref(false)
 
 const getRate = async (currency: ExchangeCurrencyOptions) => {
