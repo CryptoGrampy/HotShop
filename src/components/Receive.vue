@@ -27,7 +27,7 @@ const currentXmrAmount = computed(() => {
         return activeRequest.value.requestAmount
     }
     const currentNumpadValue = Number(numPadAmount.value)
-    if (currentNumpadValue > 0 && exchangeCurrencyStatus && exchangeCurrency.value?.exchangeRate > 0) {
+    if (exchangeCurrency.value.symbol !== CurrencyOption.NONE && currentNumpadValue > 0 && exchangeCurrencyStatus && exchangeCurrency.value?.exchangeRate > 0) {
         if (user?.value?.useExchangeAsPrimary) {
             return Number((currentNumpadValue / exchangeCurrency.value?.exchangeRate).toFixed(12))
         }
@@ -164,7 +164,7 @@ onBeforeUnmount(() => {
                 </div>
                 <div v-if="activeStatus.paymentComplete === true">
                     <el-result icon="success" title="Payment Received!"
-                        :sub-title="`You paid ${activeStatus.requestedPayment.requestAmount} XMR`">
+                        :sub-title="`You paid ${activeRequest.requestAmount} XMR`">
                     </el-result>
                 </div>
             </el-col>
@@ -192,6 +192,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .exchange-currency {
     font-weight: bold;
+    margin-top: 0;
 }
 
 .el-progress--line {

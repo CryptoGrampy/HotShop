@@ -67,6 +67,7 @@ const getRate = async (currency: ExchangeCurrencyOptions) => {
         exchangeCurrencyStatus.value = true
         exchangeCurrency.value.exchangeRate = json.result[`XXMRZ${currencies[currency].displayName}`]['a'][0]
     } else {
+        exchangeCurrency.value = currencies[CurrencyOption.NONE]
         exchangeCurrencyStatus.value = false
     }
 }
@@ -84,5 +85,6 @@ export const trackExchangeRate = async (currency: ExchangeCurrencyOptions) => {
 
 export const stopTrackingRate = () => {
     exchangeCurrencyStatus.value = false
+    exchangeCurrency.value = currencies[CurrencyOption.NONE]
     clearInterval(intervalRef)
 }
