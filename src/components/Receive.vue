@@ -157,7 +157,7 @@ onBeforeUnmount(() => {
     <div v-if="showPaymentScreen">
         <el-row justify="center">
             <el-col :span="24">
-                <div v-if="activeStatus.paymentStatus === PaymentStatus.confirming">Payment
+                <div v-if="activeStatus.paymentStatus === PaymentStatus.confirming">
                     <el-result icon="info" title="Payment Detected! Confirming..."
                         :sub-title="`Current Confirmations: ${activeStatus.confirmations} / ${activeStatus.requestedPayment.requestedConfirmations}`">
                     </el-result>
