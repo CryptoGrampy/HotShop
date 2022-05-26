@@ -10,6 +10,7 @@ import DisplayAmount from './DisplayAmount.vue';
 import { exchangeCurrency, exchangeCurrencyStatus, CurrencyOption, stopTrackingRate, trackExchangeRate, currencies } from '../store/currency';
 import { useConfigStore } from '../store/hot-shop-config';
 import { computed } from '@vue/reactivity';
+import { ElMessage } from 'element-plus';
 
 const props = defineProps<{
     quickPayAmount?: number
@@ -105,18 +106,35 @@ const onCurrentAmountChange = (val: string) => {
     numPadAmount.value = val
 }
 
+const openMessage = () => {
+    ElMessage({
+        message: 'XMR amount copied!',
+        type: 'success',
+    })
+}
+
+const clipboardData = navigator.clipboard
+
+const copyToClipboard = () => {
+    if (showPaymentScreen.value) {
+        clipboardData.writeText(String(activeRequest.value.requestAmount));
+        openMessage()
+    }
+}
+
+
 onBeforeUnmount(() => {
     stopTrackingRate()
 })
 
 </script>
 <!-- TODO: refactor template if statements and really nasty numpad / request amount stuff -->
-<template>
+<template> 
     <!-- if display xmr only or if exchange API is down -->
     <div v-if="user?.exchangeCurrency === CurrencyOption.NONE || !exchangeCurrencyStatus">
         <el-row justify="center">
             <el-col :span="24">
-                <div v-if="displayPaymentInfo">
+                <div @click="copyToClipboard" v-if="displayPaymentInfo">
                     <DisplayAmount
                         :amount="quickPayAmount && quickPayAmount > 0 ? String(quickPayAmount) : numPadAmount"
                         symbol="ɱ" />
@@ -126,7 +144,7 @@ onBeforeUnmount(() => {
     </div>
     <!-- if exchangeCurrency and exchangeCurrencyStatus -->
     <div v-if="user?.exchangeCurrency !== CurrencyOption.NONE && exchangeCurrencyStatus">
-        <div v-if="displayPaymentInfo">
+        <div @click="copyToClipboard" v-if="displayPaymentInfo">
             <el-row justify="center">
                 <el-col :span="24">
                     <DisplayAmount
