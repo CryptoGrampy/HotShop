@@ -1,12 +1,10 @@
-import PosView from '../views/PosView.vue'
-
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'home',
-    component: PosView
+    component: () => import(/* webpackChunkName: "pos" */ '../views/PosView.vue')
   },
   {
     path: '/settings',

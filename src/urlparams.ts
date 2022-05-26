@@ -63,7 +63,7 @@ export const getHashFromConfig = (config: HotShopConfig): string => {
         }
     })
     
-    return '#' + encodeURIComponent(hashFragment)
+    return encodeURIComponent(hashFragment)
 }
 
 export const getUrlOrigin = (): string => {
