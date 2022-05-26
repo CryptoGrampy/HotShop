@@ -5,6 +5,7 @@
   - [Why do I need this? Why can't I just use a mobile wallet to accept payment?](#why-do-i-need-this-why-cant-i-just-use-a-mobile-wallet-to-accept-payment)
   - [How does this work?](#how-does-this-work)
   - [How do I use it?](#how-do-i-use-it)
+  - [Self-Hosting?](#self-hosting)
   - [What does HotShop NOT do?](#what-does-hotshop-not-do)
   - [Potential Future Features/Exploration](#potential-future-featuresexploration)
   - [Donate](#donate)
@@ -69,6 +70,11 @@ Rough Idea of what happens when you use HotShop:
 4. Save the settings
 5. Save the Bookmarkable link at the top of the settings page.  Anytime you make settings changes, you'll need to update your bookmark.  The bookmark is the HotShop url with all of your custom settings included as HashFragments (https://myhotshop.com/#mycustomsetting=foo&myothersetting=bar)
 6. That's it.  Type a number in the numpad, press Request and let someone scan the QR.  The screen will let you know when payment has been received. Use > 0 confirmations in the settings for large payments.
+
+
+## Self-Hosting?
+
+While anyone can use a public HotShop and customize it to their own liking, it's totally possible to run your own. I've added dockerfiles to make it easy to build, otherwise you can clone the repo and use your own static hosting provider- some of them - Netlify and Render in particular - integrate extremely easily with Github/Gitlab.  Others- neocities- will not let you host .wasm files on their free tier. 
 
 ## What does HotShop NOT do?
 
