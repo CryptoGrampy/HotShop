@@ -48,7 +48,7 @@ const generatePayment = async () => {
 
     paymentTrackerIntervalRef = setInterval(async () => {
         await checkPayment()
-    }, 2000);
+    }, 10000);
 }
 
 const checkPayment = async () => {
