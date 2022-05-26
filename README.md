@@ -29,7 +29,7 @@ HotShop is a simple to use Point of Sale webapp with a simple aesthetic and UI s
 
 ## Quickstart
 
-1. Navigate to the HotShop website
+1. Navigate to the [public HotShop website](https://hotshop.onrender.com/)
 2. Add your Primary Key and Secret View Key in the Settings section (Click the person icon in the top right corner)
 3. Update
 4. Save the custom shop link at the top of the profile page (Bookmark it, save in a notepad etc)
@@ -74,7 +74,7 @@ Rough Idea of what happens when you use HotShop:
 
 ## Self-Hosting?
 
-While anyone can use a public HotShop and customize it to their own liking, it's totally possible to run your own. I've added dockerfiles to make it easy to build, otherwise you can clone the repo and use your own static hosting provider- some of them - Netlify and Render in particular - integrate extremely easily with Github/Gitlab.  Others- neocities- will not let you host .wasm files on their free tier. 
+While anyone can use a public HotShop and customize it to their own liking, it's totally possible to run your own. I've added dockerfiles to make it easy to build, otherwise you can clone the repo and use your own static hosting provider- some of them - [Netlify](https://www.netlify.com/) and [Render](https://render.com/) in particular - integrate extremely easily with Github/Gitlab.  Others- neocities- will not let you host .wasm files on their free tier. 
 
 ## What does HotShop NOT do?
 
