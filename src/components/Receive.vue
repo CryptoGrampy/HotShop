@@ -106,7 +106,7 @@ const subDisplayAmount = computed(() => {
 })
 
 const swapMainAndSubDisplayCurrencies = () => {
-    if (exchangeCurrency.value && exchangeCurrencyStatus.value && user?.value) {
+    if (exchangeCurrency.value && exchangeCurrencyStatus.value && user?.value && !showPaymentScreen) {
         clearPayment()
         user.value.useExchangeAsPrimary = !user.value.useExchangeAsPrimary
     }
@@ -164,7 +164,7 @@ onBeforeUnmount(() => {
                 <span @click="swapMainAndSubDisplayCurrencies" class="exchange-currency">
                     {{ subDisplayAmount }}
                 </span>
-                <el-icon @click="swapMainAndSubDisplayCurrencies" size="10">
+                <el-icon v-if="!showPaymentScreen" @click="swapMainAndSubDisplayCurrencies" size="10">
                     <DCaret class="caret" />
                 </el-icon>
             </el-row>
