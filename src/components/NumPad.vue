@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from '@vue/reactivity';
-import { ref, watch } from 'vue';
+import { onUpdated, ref, watch } from 'vue';
 import { ArrowLeftBold } from '@element-plus/icons-vue'
 
 const currentAmount = ref('0')
@@ -13,40 +12,13 @@ const props = defineProps<{
     initAmount: string
 }>()
 
-const test = ref(props.initAmount)
-
-watch(test, (newAmount) => {
-    console.log(newAmount, test)
-})
-
 // This component should output an xmr value.  Could be tied directly to store or emit to parent
 
-// TODO: Move currencies into separate component/store
-const currencies = [
-    {
-        value: 'XMR',
-        label: 'XMR',
-        symbol: 'ɱ'
-    },
-    {
-        value: 'USD',
-        label: 'USD',
-        disabled: true,
-        symbol: '$'
-    },
-]
-
-const liveRate = ref(false)
-const currency = ref('XMR')
-const symbol = computed(() => {
-    return currencies.find(val => val.value === currency.value)?.symbol
+onUpdated(() => {
+    if (props.initAmount === '0') {
+        currentAmount.value = '0'
+    }
 })
-
-
-/**
- * currentAmountChange, emit currentAmount { xmrAmount: .00001, { currency: USD, convertedAmount: 10.02}
- */
-
 watch(currentAmount, (newAmount) => {
     if (currentAmount.value === '') {
         currentAmount.value += '0'
@@ -100,27 +72,7 @@ const updateAmount = (val: string) => {
             </el-space>
         </el-row>
     </div>
-    <!--
-    <el-row justify="center">
-        <p class="current-amount">
-            {{ symbol }}0.00
-        </p>
-    </el-row>
-    <div v-if="liveRate === true">
-        <el-row justify="center">
-            <p>
-                ~ 0.00 USD
-            </p>
-        </el-row>
-        <el-row justify="center" class="">
-            <el-select class="currency-select" style="border-radius: 20px;" v-model="currency" placeholder="Select"
-                size="small">
-                <el-option v-for="item in currencies" :key="item.value" :label="item.label" :value="item.value"
-                    :disabled="item.disabled" />
-            </el-select>
-        </el-row>
-    </div>
-      -->
+   
 </template>
 <style scoped>
 .wrapper {
