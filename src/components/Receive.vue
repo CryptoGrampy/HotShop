@@ -106,7 +106,7 @@ const subDisplayAmount = computed(() => {
 })
 
 const swapMainAndSubDisplayCurrencies = () => {
-    if (exchangeCurrency.value && exchangeCurrencyStatus.value && user?.value && !showPaymentScreen) {
+    if (exchangeCurrency.value && exchangeCurrencyStatus.value && user?.value && !showPaymentScreen.value) {
         clearPayment()
         user.value.useExchangeAsPrimary = !user.value.useExchangeAsPrimary
     }
