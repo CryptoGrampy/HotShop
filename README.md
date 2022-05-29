@@ -51,12 +51,12 @@ HotShop is a simple to use Point of Sale webapp with a simple aesthetic and UI s
 
 HotShop is a dumb static site made of html, css, javascript and webassembly files that can be hosted on nearly any (free) static hosting provider (Github Pages, Netlify, etc); there are no servers involved outside of a public Monero node that provides your HotShop with latest blockchain data and the static site host.  
 
-You don't need to host your own HotShop, either.  The site itself is dumb and anyone can use the same HotShop site, but once downloaded to your browser, it applies your custom information- the secret sauce- and makes it your own custom experience. 
+You don't need to host your own HotShop, either.  The site itself is dumb and anyone can use the same HotShop site, but once downloaded to your browser, it applies your custom information via Hash Fragments- the secret sauce- and makes it your own custom experience. 
 
 
 Rough Idea of what happens when you use HotShop:
-1. Your browser hits the HotShop website and downloads the static content (HTML, CSS, etc) and sends NOTHING to the website host outside of typical browser request information (browser info, ip address, etc- this is typical) - however, your public key, view key and any custom settings of your HotShop do not get sent anywhere.
-2. Your browser renders the HotShop site for you locally, and then applies your custom settings, which are saved as HashFragments in the big scary looking URL.
+1. Your browser hits the HotShop website and downloads the static content (HTML, CSS, etc) and sends NOTHING to the website host outside of typical browser request information (browser info, ip address, etc- this is typical) - however, your public key, view key and any custom settings of your HotShop do not get sent as part of ANY outgoing http reqeusts- they remain in your browser.
+2. Your browser renders the HotShop site for you locally, and then applies your custom settings, which are saved as Hash Fragments in the big scary looking UR.
 3. Using your custom settings, your browser creates a full Monero view wallet IN THE BROWSER (Thanks to @Woodser and the Monero-Javascript WASM wallet), using your Primary and View key that you've specified.  These keys allow HotShop to generate fresh and unique payment addresses's as well as allow it to listen for  and validate payments that happen at these generated addresses.   
 4. Your browser then makes a direct connection to whatever Web-Compatible Monero node you've specified as the provider of the blockchain data for your HotShop. HotShop doesn't disclose any of your wallet information to Monero nodes.
 5. At this point HotShop should be loaded.  You can type in a value, Press Request, and HotShop begins listening for payments that happen.
