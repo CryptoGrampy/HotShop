@@ -11,6 +11,9 @@ import { exchangeCurrency, exchangeCurrencyStatus, CurrencyOption, stopTrackingR
 import { useConfigStore } from '../store/hot-shop-config';
 import { computed } from '@vue/reactivity';
 import { ElMessage } from 'element-plus';
+import {
+    DCaret,
+} from '@element-plus/icons-vue'
 
 const props = defineProps<{
     quickPayAmount?: number
@@ -102,6 +105,13 @@ const subDisplayAmount = computed(() => {
     }
 })
 
+const swapMainAndSubDisplayCurrencies = () => {
+    if (exchangeCurrency.value && exchangeCurrencyStatus.value && user?.value) {
+        clearPayment()
+        user.value.useExchangeAsPrimary = !user.value.useExchangeAsPrimary
+    }
+}
+
 const onCurrentAmountChange = (val: string) => {
     numPadAmount.value = val
 }
@@ -129,7 +139,7 @@ onBeforeUnmount(() => {
 
 </script>
 <!-- TODO: refactor template if statements and really nasty numpad / request amount stuff -->
-<template> 
+<template>
     <!-- if display xmr only or if exchange API is down -->
     <div v-if="user?.exchangeCurrency === CurrencyOption.NONE || !exchangeCurrencyStatus">
         <el-row justify="center">
@@ -142,7 +152,6 @@ onBeforeUnmount(() => {
             </el-col>
         </el-row>
     </div>
-    <!-- if exchangeCurrency and exchangeCurrencyStatus -->
     <div v-if="user?.exchangeCurrency !== CurrencyOption.NONE && exchangeCurrencyStatus">
         <div @click="copyToClipboard" v-if="displayPaymentInfo">
             <el-row justify="center">
@@ -152,10 +161,13 @@ onBeforeUnmount(() => {
                         :symbol="user?.useExchangeAsPrimary ? exchangeCurrency!.symbol : currencies[CurrencyOption.XMR].symbol" />
                 </el-col>
             </el-row>
-            <el-row justify="center">
-                <p class="exchange-currency">
-                    ({{ subDisplayAmount }})
-                </p>
+            <el-row justify="center" align="middle" class="sub-display">
+                <span @click="swapMainAndSubDisplayCurrencies" class="exchange-currency">
+                    {{ subDisplayAmount }}
+                </span>
+                <el-icon @click="swapMainAndSubDisplayCurrencies" size="10">
+                    <DCaret class="caret" />
+                </el-icon>
             </el-row>
         </div>
     </div>
@@ -210,13 +222,16 @@ onBeforeUnmount(() => {
 <style scoped>
 .exchange-currency {
     font-weight: bold;
-    margin-top: 0;
 }
 
 .el-progress--line {
     margin: 15px 0 30px;
     width: 100%;
     max-width: 300px;
+}
+
+.sub-display {
+    margin-bottom: 20px;
 }
 
 .payment-button {
