@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import Receive from '../components/Receive.vue';
-import { simplePayReady } from '../SimplePay';
-import Header from '../components/Header.vue';
-
+import ReceiveComponent from "../components/ReceiveComponent.vue";
+import { simplePayReady } from "../SimplePay";
+import HeaderComponent from "../components/HeaderComponent.vue";
 </script>
 
 <template>
-
-  <Header class="header" />
-  <el-row justify="center" v-loading="!simplePayReady" element-loading-text="Setting up HotShop...">
+  <HeaderComponent class="header" />
+  <el-row
+    v-loading="!simplePayReady"
+    justify="center"
+    element-loading-text="Setting up HotShop..."
+  >
     <el-col :span="24">
-      <Receive />
+      <ReceiveComponent />
     </el-col>
   </el-row>
 </template>

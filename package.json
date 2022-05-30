@@ -8,7 +8,7 @@
     "build": "webpack --mode production",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "lint": "eslint"
+    "lint": "eslint --ext .ts,.vue src --fix"
   },
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
@@ -26,6 +26,7 @@
   "devDependencies": {
     "@babel/core": "^7.17.12",
     "@babel/preset-env": "^7.17.12",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
     "assert": "^2.0.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.5",
@@ -33,13 +34,16 @@
     "copy-webpack-plugin": "^10.2.4",
     "crypto-browserify": "^3.12.0",
     "css-loader": "^6.7.1",
-    "eslint": "^8.15.0",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.7.1",
     "gh-pages": "^4.0.0",
     "html-webpack-plugin": "^5.5.0",
     "https-browserify": "^1.0.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
+    "prettier": "^2.6.2",
     "process": "^0.11.10",
     "querystring-es3": "^0.2.1",
     "stream-browserify": "^3.0.0",
@@ -53,20 +57,6 @@
     "webpack": "^5.72.1",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.9.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "rules": {}
   },
   "browserslist": [
     "> 1%",
