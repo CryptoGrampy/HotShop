@@ -1,6 +1,10 @@
 import { Network, SimplePayConfig } from "../SimplePay";
 import { defineStore } from "pinia";
-import { getConfigFromHash, getHashFromConfig, getUrlOrigin } from "../urlparams";
+import {
+  getConfigFromHash,
+  getHashFromConfig,
+  getUrlOrigin,
+} from "../urlparams";
 import { simplePay } from "../main";
 import { CurrencyOption, ExchangeCurrencyOptions } from "./currency";
 
@@ -13,65 +17,69 @@ import { CurrencyOption, ExchangeCurrencyOptions } from "./currency";
  */
 
 export interface UserConfig {
-    logoUrl?: string
-    shopName?: string
-    uniqueShopUrl?: string
-    exchangeCurrency?: ExchangeCurrencyOptions
-    useExchangeAsPrimary?: boolean
+  logoUrl?: string;
+  shopName?: string;
+  uniqueShopUrl?: string;
+  exchangeCurrency?: ExchangeCurrencyOptions;
+  useExchangeAsPrimary?: boolean;
 }
 
 // Things not used or saved across sessions
 export interface SessionConfig {
-    requestAmount: number
+  requestAmount: number;
 }
 
 export interface HotShopConfig {
-    payment: SimplePayConfig
-    user?: UserConfig
-    // session: SessionConfig
+  payment: SimplePayConfig;
+  user?: UserConfig;
+  // session: SessionConfig
 }
 
-export const useConfigStore = defineStore('hot-shop-config', {
-    state: (): HotShopConfig => ({
-        payment: {
-            primaryAddress: '',
-            secretViewKey: '',
-            network: Network.mainnet,
-            monerodUri: '',
-            defaultConfirmations: 0,
-            monerodUsername: '',
-            monerodPassword: '',
-        },
-        user: {
-            logoUrl: 'https://www.getmonero.org/press-kit/symbols/monero-symbol-480.png',
-            shopName: 'Grampy Shop',
-            exchangeCurrency: CurrencyOption.USD,
-            useExchangeAsPrimary: true
-        }
-    }),
-    getters: {
-        myHotShopUrl(state): string {
-            return `${getUrlOrigin()}/#${getHashFromConfig({ payment: state.payment, user: state.user })}`
-        },
-        currentConfig(): HotShopConfig {
-            return { payment: this.payment, user: this.user }
-        }
+export const useConfigStore = defineStore("hot-shop-config", {
+  state: (): HotShopConfig => ({
+    payment: {
+      primaryAddress: "",
+      secretViewKey: "",
+      network: Network.mainnet,
+      monerodUri: "",
+      defaultConfirmations: 0,
+      monerodUsername: "",
+      monerodPassword: "",
     },
-    actions: {
-        async init() {
-            const hashConfig = getConfigFromHash()
-            this.$state = { ...this.$state, ...hashConfig }
-            await simplePay.updateConfig(this.payment)
-        },
-        increment(): void {
-            this.payment.defaultConfirmations++
-        },
-        updateUserConfig(updatedConfig: UserConfig) {
-            this.user = { ...this.user, ...updatedConfig }
-        },
-        getStaticConfig(): HotShopConfig {
-            const config = this.$state
-            return config
-        }
-    }
-})
+    user: {
+      logoUrl:
+        "https://www.getmonero.org/press-kit/symbols/monero-symbol-480.png",
+      shopName: "Grampy Shop",
+      exchangeCurrency: CurrencyOption.USD,
+      useExchangeAsPrimary: true,
+    },
+  }),
+  getters: {
+    myHotShopUrl(state): string {
+      return `${getUrlOrigin()}/#${getHashFromConfig({
+        payment: state.payment,
+        user: state.user,
+      })}`;
+    },
+    currentConfig(): HotShopConfig {
+      return { payment: this.payment, user: this.user };
+    },
+  },
+  actions: {
+    async init() {
+      const hashConfig = getConfigFromHash();
+      this.$state = { ...this.$state, ...hashConfig };
+      await simplePay.updateConfig(this.payment);
+    },
+    increment(): void {
+      this.payment.defaultConfirmations++;
+    },
+    updateUserConfig(updatedConfig: UserConfig) {
+      this.user = { ...this.user, ...updatedConfig };
+    },
+    getStaticConfig(): HotShopConfig {
+      const config = this.$state;
+      return config;
+    },
+  },
+});

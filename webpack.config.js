@@ -14,7 +14,6 @@ module.exports = {
   },
   module: {
     rules: [
- 
       {
         test: /\.js$/,
         exclude: /node_modules/,
@@ -25,8 +24,8 @@ module.exports = {
       {
         test: /\.m?js/,
         resolve: {
-          fullySpecified: false
-        }
+          fullySpecified: false,
+        },
       },
       {
         test: /\.vue$/,
@@ -34,23 +33,23 @@ module.exports = {
       },
       {
         test: /\.ts$/,
-        loader: 'ts-loader',
+        loader: "ts-loader",
         options: {
-          appendTsSuffixTo: [/\.vue$/]
-        }
+          appendTsSuffixTo: [/\.vue$/],
+        },
       },
       {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
-      }
+      },
     ],
   },
-  externals: ['worker_threads','ws','perf_hooks', 'child_process'], // exclude nodejs
+  externals: ["worker_threads", "ws", "perf_hooks", "child_process"], // exclude nodejs
   plugins: [
     new VueLoaderPlugin(),
     new webpack.ProvidePlugin({
-      process: 'process/browser',
-      Buffer: ['buffer', 'Buffer']
+      process: "process/browser",
+      Buffer: ["buffer", "Buffer"],
     }),
     new htmlWebpackPlugin({
       template: path.resolve(__dirname, "public", "index.html"),
@@ -60,13 +59,16 @@ module.exports = {
       patterns: [
         {
           from: "**.{js,wasm}",
-          context: path.resolve(__dirname, "node_modules/monero-javascript/dist"),
+          context: path.resolve(
+            __dirname,
+            "node_modules/monero-javascript/dist"
+          ),
         },
         {
           from: "index.css",
           context: path.resolve(__dirname, "node_modules/element-plus/dist"),
         },
-      ]
+      ],
     }),
   ],
   resolve: {
@@ -75,30 +77,31 @@ module.exports = {
       fs: "html5-fs",
     },
     extensions: ["*", ".js", ".vue", ".json", ".ts"],
-    fallback: { // browser polyfills
-      assert: require.resolve('assert'),
+    fallback: {
+      // browser polyfills
+      assert: require.resolve("assert"),
       //buffer: require.resolve('buffer'),
       //console: require.resolve('console-browserify'),
       //constants: require.resolve('constants-browserify'),
-      crypto: require.resolve('crypto-browserify'),
+      crypto: require.resolve("crypto-browserify"),
       //domain: require.resolve('domain-browser'),
       //events: require.resolve('events'),
-      http: require.resolve('stream-http'),
-      https: require.resolve('https-browserify'),
-      os: require.resolve('os-browserify/browser'),
-      path: require.resolve('path-browserify'),
+      http: require.resolve("stream-http"),
+      https: require.resolve("https-browserify"),
+      os: require.resolve("os-browserify/browser"),
+      path: require.resolve("path-browserify"),
       //punycode: require.resolve('punycode'),
       //process: require.resolve('process/browser'),
-      querystring: require.resolve('querystring-es3'),
-      stream: require.resolve('stream-browserify'),
+      querystring: require.resolve("querystring-es3"),
+      stream: require.resolve("stream-browserify"),
       //string_decoder: require.resolve('string_decoder'),
       //sys: require.resolve('util'),
       //timers: require.resolve('timers-browserify'),
       //tty: require.resolve('tty-browserify'),
-      url: require.resolve('url'),
-      util: require.resolve('util'),
+      url: require.resolve("url"),
+      util: require.resolve("util"),
       //vm: require.resolve('vm-browserify'),
-      zlib: require.resolve('browserify-zlib')
-    }
+      zlib: require.resolve("browserify-zlib"),
+    },
   },
 };
