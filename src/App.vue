@@ -55,6 +55,6 @@ a:active {
 .el-button {
   border-radius: 0px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-  font-weight: bold;
+  font-weight: bold !important;
 }
 </style>

@@ -63,6 +63,11 @@ module.exports = {
             __dirname,
             "node_modules/monero-javascript/dist"
           ),
+        },
+        {
+          from: "*",
+          context: path.resolve(__dirname, "src/assets/images"),
+          to: path.resolve(__dirname, "dist/assets/images")
         }
       ],
     }),

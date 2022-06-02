@@ -11,7 +11,7 @@ const { user } = storeToRefs(configStore);
     <el-col :span="17">
       <router-link class="logo" to="/">
         <el-row align="middle">
-          <img :src="user?.logoUrl" />
+          <img :src="user?.logoUrl" alt="store logo" />
           <h1>
             {{ user?.shopName }}
           </h1>
