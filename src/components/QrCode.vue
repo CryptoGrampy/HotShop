@@ -27,7 +27,6 @@ const copyToClipboard = () => {
 };
 </script>
 <template>
-  <!-- todo: wrap this in a clickable monero uri link ? -->
   <figure @click="copyToClipboard">
     <vue-qrcode
       :value="props.moneroUri"

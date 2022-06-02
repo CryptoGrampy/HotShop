@@ -180,8 +180,8 @@ export class SimplePay {
 
   public async createPaymentRequest(
     xmrAmount: number,
-    requestedConfirmations?: number,
-    label?: string
+    label?: string,
+    requestedConfirmations?: number
   ): Promise<PaymentRequest> {
     const integratedAddressState: monerojs.MoneroIntegratedAddress =
       await this.wallet.getIntegratedAddress();
@@ -215,8 +215,8 @@ export class SimplePay {
     xmrAmount: number,
     label?: string
   ) {
-    return `monero:${integratedAddress}?tx_amount=${xmrAmount}&recipient_name=HotShop${
-      label ? "tx_amount" + label : ""
+    return `monero:${integratedAddress}?tx_amount=${xmrAmount}${
+      label ? `&recipient_name=${label}` : ""
     }`;
   }
 

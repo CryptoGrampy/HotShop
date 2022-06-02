@@ -57,8 +57,13 @@ let paymentTrackerIntervalRef;
 const generatePayment = async () => {
   clearInterval(paymentTrackerIntervalRef);
 
+  const label =
+    user?.value?.shopName && user.value.shopName.trim().length > 0
+      ? user?.value?.shopName
+      : "HotShop";
   activeRequest.value = await simplePay.createPaymentRequest(
-    currentXmrAmount.value
+    currentXmrAmount.value,
+    label
   );
 
   paymentTrackerIntervalRef = setInterval(async () => {
@@ -206,7 +211,11 @@ onBeforeUnmount(() => {
                 ? String(quickPayAmount)
                 : numPadAmount
             "
-            :symbol="user?.useExchangeAsPrimary ? exchangeCurrency!.symbol : currencies[CurrencyOption.XMR].symbol"
+            :symbol="
+              user?.useExchangeAsPrimary
+                ? exchangeCurrency.symbol
+                : currencies[CurrencyOption.XMR].symbol
+            "
           />
         </el-col>
       </el-row>
