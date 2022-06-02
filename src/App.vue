@@ -35,6 +35,12 @@ const configStore = useConfigStore();
   margin-bottom: 15px;
 }
 
+.header {
+  padding: 0px;
+  margin-top:20px;
+  margin-bottom: 30px;
+}
+
 .footer {
   font-size: 12px;
 }

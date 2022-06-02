@@ -7,9 +7,3 @@ import HeaderComponent from "../components/HeaderComponent.vue";
   <HeaderComponent class="header" />
   <SettingsComponent />
 </template>
-
-<style scoped>
-.header {
-  padding: 0px;
-}
-</style>
