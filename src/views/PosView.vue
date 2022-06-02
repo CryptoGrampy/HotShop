@@ -16,10 +16,3 @@ import HeaderComponent from "../components/HeaderComponent.vue";
     </el-col>
   </el-row>
 </template>
-
-<style scoped>
-.header {
-  padding: 0px;
-  margin-bottom: 10px;
-}
-</style>

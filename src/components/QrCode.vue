@@ -35,8 +35,7 @@ const copyToClipboard = () => {
         errorCorrectionLevel: 'Q',
       }"
     ></vue-qrcode>
-    <!-- todo: use local monero asset for image logo -->
-    <img class="qrcode__image" :src="user?.logoUrl" alt="" />
+    <img class="qrcode__image" src="/assets/images/monero-symbol-480.png" alt="" />
   </figure>
 </template>
 <style scoped>

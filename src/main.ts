@@ -4,6 +4,7 @@ import { Network, SimplePay } from "./SimplePay";
 import ElementPlus from "element-plus";
 import { createPinia } from "pinia";
 import router from "./router";
+import 'element-plus/dist/index.css'
 
 // TODO: optional config in simplepay constructor to get rid of these dummy vals
 export const simplePay: SimplePay = new SimplePay({

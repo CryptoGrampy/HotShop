@@ -114,7 +114,7 @@ const updateSettings = async () => {
   </p>
 
   <p>
-    View Key:
+    Secret View Key:
     <el-input
       v-model="settingsForm.payment.secretViewKey"
       placeholder="Please input your secret View Key"

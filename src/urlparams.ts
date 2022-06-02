@@ -23,7 +23,7 @@ export const getConfigFromHash = (): HotShopConfig => {
     useAsPrimary: true,
     shopName: "HotShop",
     logoUrl:
-      "https://www.getmonero.org/press-kit/symbols/monero-symbol-480.png",
+      "/assets/images/monero-symbol-480.png",
   };
 
   hash.split("&").map((keyvalue) => {
