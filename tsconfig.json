@@ -14,9 +14,9 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "components/*": ["src/components/*"]
+      "@/*": ["src/*"]
     },
+    "types": ["element-plus/global"],
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
   "include": [
