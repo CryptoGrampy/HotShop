@@ -9,7 +9,7 @@ const { user } = storeToRefs(configStore);
 <template>
   <el-row align="middle">
     <el-col :span="21">
-      <router-link class="logo" to="/">
+      <router-link class="logo" :to="{ name: 'pos' }">
         <el-row align="middle">
           <img :src="user?.logoUrl" />
           <h1>
@@ -20,7 +20,7 @@ const { user } = storeToRefs(configStore);
     </el-col>
     <el-col :span="3">
       <el-row justify="end">
-        <router-link to="/settings">
+        <router-link :to="{ name: 'settings' }">
           <el-icon :size="30">
             <User />
           </el-icon>

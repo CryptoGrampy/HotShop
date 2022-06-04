@@ -1,17 +1,18 @@
-import { createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHashHistory, RouteRecordRaw, START_LOCATION } from "vue-router";
+import PosView from '../views/PosView.vue'
+import SettingsView from '../views/SettingsView.vue'
+
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "pos",
-    component: () =>
-      import(/* webpackChunkName: "home" */ "../views/PosView.vue"),
+    component: PosView
   },
   {
     path: "/settings",
     name: "settings",
-    component: () =>
-      import(/* webpackChunkName: "home" */ "../views/SettingsView.vue"),
+    component: SettingsView
   },
   // {
   //   path: "/history",
@@ -40,5 +41,14 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes,
 });
+
+router.beforeEach((to, from) => {
+  if (from === START_LOCATION) {
+    // initial navigation
+    console.log('start location!', to)
+  } else {
+    console.log('location change location!', to)
+  }
+})
 
 export default router;
