@@ -46,8 +46,14 @@ router.beforeEach((to, from) => {
   if (from === START_LOCATION) {
     // initial navigation
     console.log('start location!', to)
+    if (!to.name) {
+      router.push({name: 'pos'})
+    }
   } else {
     console.log('location change location!', to)
+    if (!to.name) {
+      router.push({name: 'pos'})
+    }
   }
 })
 
