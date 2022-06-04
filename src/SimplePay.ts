@@ -115,7 +115,7 @@ export class SimplePay {
   ): Promise<PaymentResponse> {
     // TODO: Review returned promises/activate stricter tsconfig
     // TODO: Review this txQuery and determine if this is appropriate way to get payment tx (esp double spend/failed part)
-    const transactions: MoneroIncomingTransfer[] | undefined =
+    const transactions = 
       await this.wallet.getIncomingTransfers({
         amount: MoneroUtils.xmrToAtomicUnits(paymentRequest.requestAmount),
         txQuery: {
