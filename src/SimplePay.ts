@@ -135,15 +135,13 @@ export class SimplePay {
     };
 
     if (transactions && transactions?.length > 0) {
-      console.log("Transaction found!");
-      console.log("Full transaction Data: ", transactions[0]);
-      console.log("getTx: ", transactions[0].getTx());
-      const txData = transactions[0].getTx();
+      const incomingTx = transactions[transactions.length-1]
 
-      console.log(
-        "transaction data",
-        transactions[0].getTx().getNumConfirmations()
-      );
+      if (MoneroUtils.atomicUnitsToXmr(incomingTx.getAmount()) !== paymentRequest.requestAmount) {
+        return paymentResponse
+      }
+      
+      const txData = incomingTx.getTx();
 
       paymentResponse.moneroTx = txData;
       paymentResponse.confirmations = txData.getNumConfirmations();
