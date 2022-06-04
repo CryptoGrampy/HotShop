@@ -3,29 +3,29 @@ import { createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw } 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "home",
+    name: "pos",
     component: () =>
-      import(/* webpackChunkName: "pos" */ "../views/PosView.vue"),
+      import(/* webpackChunkName: "home" */ "../views/PosView.vue"),
   },
   {
     path: "/settings",
     name: "settings",
     component: () =>
-      import(/* webpackChunkName: "settings" */ "../views/SettingsView.vue"),
+      import(/* webpackChunkName: "home" */ "../views/SettingsView.vue"),
   },
-  {
-    path: "/history",
-    name: "history",
-    component: () =>
-      import(/* webpackChunkName: "history" */ "../views/HistoryView.vue"),
-  },
-  {
-    path: "/receive/:requestAmount",
-    name: "receive",
-    component: () =>
-      import(/* webpackChunkName: "quickpay" */ "../views/QuickPayView.vue"),
-    props: true,
-  },
+  // {
+  //   path: "/history",
+  //   name: "history",
+  //   component: () =>
+  //     import(/* webpackChunkName: "history" */ "../views/HistoryView.vue"),
+  // },
+  // {
+  //   path: "/receive/:requestAmount",
+  //   name: "receive",
+  //   component: () =>
+  //     import(/* webpackChunkName: "quickpay" */ "../views/QuickPayView.vue"),
+  //   props: true,
+  // },
   {
     path: "/node-checker",
     name: "node-checker",
