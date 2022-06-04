@@ -28,6 +28,8 @@ const configStore = useConfigStore();
       <a href="https://github.com/CryptoGrampy/HotShop">Powered by HotShop</a>
     </el-space>
   </el-row>
+  <el-row justify="center" class="warn"> <span>This is <u>ALPHA</u> Software: expect and report bugs.</span>
+  </el-row>
 </template>
 
 <style>
@@ -37,8 +39,14 @@ const configStore = useConfigStore();
 
 .header {
   padding: 0px;
-  margin-top:20px;
+  margin-top: 20px;
   margin-bottom: 30px;
+}
+
+.warn {
+  color: red;
+  margin-top: 5px;
+  font-size: 12px;
 }
 
 .footer {
