@@ -16,7 +16,7 @@
 
 Welcome to the HotShop- An ephemeral, browser-based Monero point of sale. Accept and Validate Monero payments using a bookmarkable, sharable web URL without having to download any apps or browser extensions, without losing your privacy and without putting your private keys in danger.
 
-**Currently in Alpha state- please use at your own risk**
+**Currently in Alpha state- please use at your own risk.  Until I feel the software is stable, I will absolutely be making occasional breaking changes. This may or may not disrupt your saved shop URL and it may disrupt your payments.  The goal is building a solid PoS experience.  If you run into issues, please let me know.  I will make a normal release when there is app stability (likely in the next month or two) and remove this warning**
 
 HotShop is a simple to use Point of Sale webapp with a simple aesthetic and UI similar to CashApp, Kasisto (RIP) or POS.cash that can be accessed from just about any web browser (on mobile or desktop) with a slight amount of user customization (company name/image, etc). It even works on Tor and works with web-compatible Monero nodes (I think).
 
