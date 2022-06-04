@@ -111,6 +111,7 @@ declare module "monero-javascript" {
 
   declare class MoneroIncomingTransfer {
     getTx(): MoneroTx;
+    getAmount(): BigInteger
   }
 
   declare class MoneroTx {
