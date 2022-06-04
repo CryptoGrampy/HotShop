@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw, START_LOCATION } from "vue-router";
+import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import PosView from '../views/PosView.vue'
 import SettingsView from '../views/SettingsView.vue'
 
@@ -42,18 +42,9 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from) => {
-  if (from === START_LOCATION) {
-    // initial navigation
-    console.log('start location!', to)
-    if (!to.name) {
-      router.push({name: 'pos'})
-    }
-  } else {
-    console.log('location change location!', to)
-    if (!to.name) {
-      router.push({name: 'pos'})
-    }
+router.beforeEach((to) => {
+  if (!to.name) {
+    router.push({ name: 'pos' })
   }
 })
 
