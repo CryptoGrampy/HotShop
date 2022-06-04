@@ -12,6 +12,7 @@ export enum CurrencyOption {
   XMR = "XMR",
   USD = "USD",
   EUR = "EUR",
+  BRL = "BRL",
   NONE = "NONE",
 }
 
@@ -39,6 +40,12 @@ export const currencies: Dict<Currency> = {
     exchangeRate: 0,
     symbol: "€",
   },
+  [CurrencyOption.BRL]: {
+    displayName: "BRL",
+    ticker: CurrencyOption.BRL,
+    exchangeRate: 0,
+    symbol: "R$",
+  },
   [CurrencyOption.NONE]: {
     displayName: "None",
     ticker: CurrencyOption.NONE,
@@ -62,18 +69,18 @@ export const exchangeCurrencyStatus: Ref<boolean> = ref(false);
 
 const getRate = async (currency: ExchangeCurrencyOptions) => {
   const response = await fetch(
-    `https://api.kraken.com/0/public/Ticker?pair=XMR${currencies[currency].displayName}`
+    `https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=${currencies[currency].displayName}`
   );
   const json = await response.json();
 
   exchangeCurrency.value = currencies[currency];
-  const exchangeRate =
-    json.result[`XXMRZ${currencies[currency].displayName}`]["a"][0];
+  const currentExchangeRate =
+    json['monero'][currencies[currency].displayName.toLowerCase()];
 
-  if (exchangeRate && exchangeRate > 0) {
+  if (currentExchangeRate && currentExchangeRate > 0) {
     exchangeCurrencyStatus.value = true;
     exchangeCurrency.value.exchangeRate =
-      json.result[`XXMRZ${currencies[currency].displayName}`]["a"][0];
+      currentExchangeRate;
   } else {
     exchangeCurrency.value = currencies[CurrencyOption.NONE];
     exchangeCurrencyStatus.value = false;

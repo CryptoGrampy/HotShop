@@ -56,7 +56,6 @@ export const useConfigStore = defineStore("hot-shop-config", {
   }),
   getters: {
     myHotShopUrl(state): string {
-      console.log(getUrlOrigin())
       return `${getUrlOrigin()}/#/#${getHashFromConfig({
         payment: state.payment,
         user: state.user,

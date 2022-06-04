@@ -147,13 +147,17 @@ const updateSettings = async () => {
         :label="currencies[CurrencyOption.NONE].displayName"
         :value="currencies[CurrencyOption.NONE].ticker"
       />
-      <el-option
-        :label="currencies[CurrencyOption.USD].displayName"
-        :value="currencies[CurrencyOption.USD].ticker"
+       <el-option
+        :label="currencies[CurrencyOption.BRL].displayName"
+        :value="currencies[CurrencyOption.BRL].ticker"
       />
       <el-option
         :label="currencies[CurrencyOption.EUR].displayName"
         :value="currencies[CurrencyOption.EUR].ticker"
+      />
+      <el-option
+        :label="currencies[CurrencyOption.USD].displayName"
+        :value="currencies[CurrencyOption.USD].ticker"
       />
     </el-select>
   </p>
