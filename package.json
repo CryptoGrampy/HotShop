@@ -7,9 +7,14 @@
     "serve": "webpack-dev-server --mode development",
     "build": "webpack --mode production",
     "predeploy": "npm run build",
-    "lint": "eslint --ext .ts,.vue src --fix"
+    "lint": "eslint --ext .ts,.vue src --fix",
+    "capacitor": "npm run build && npx cap add android && npx cap add ios"
   },
   "dependencies": {
+    "@capacitor/android": "^3.5.1",
+    "@capacitor/cli": "^3.5.1",
+    "@capacitor/core": "^3.5.1",
+    "@capacitor/ios": "^3.5.1",
     "@chenfengyuan/vue-qrcode": "^2.0.0",
     "@element-plus/icons-vue": "^1.1.4",
     "base58-monero": "^0.0.5",
