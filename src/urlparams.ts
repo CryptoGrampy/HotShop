@@ -22,6 +22,7 @@ export const getConfigFromHash = (): HotShopConfig => {
     exchangeCurrency: "USD",
     useAsPrimary: true,
     shopName: "HotShop",
+    displayShopName: true,
     logoUrl:
       "/assets/images/monero-symbol-480.png",
   };
@@ -46,6 +47,7 @@ export const getConfigFromHash = (): HotShopConfig => {
       logoUrl: params.logoUrl,
       exchangeCurrency: CurrencyOption[String(params.exchangeCurrency)],
       useExchangeAsPrimary: params.useAsPrimary,
+      displayShopName: params.displayShopName
     },
   };
 

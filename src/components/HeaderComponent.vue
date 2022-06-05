@@ -12,7 +12,7 @@ const { user } = storeToRefs(configStore);
       <router-link class="logo" :to="{ name: 'pos' }">
         <el-row align="middle">
           <img :src="user?.logoUrl" />
-          <h1>
+          <h1 v-if="user?.displayShopName">
             {{ user?.shopName }}
           </h1>
         </el-row>

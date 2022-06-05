@@ -22,6 +22,7 @@ export interface UserConfig {
   uniqueShopUrl?: string;
   exchangeCurrency?: ExchangeCurrencyOptions;
   useExchangeAsPrimary?: boolean;
+  displayShopName?: boolean;
 }
 
 // Things not used or saved across sessions
@@ -52,6 +53,7 @@ export const useConfigStore = defineStore("hot-shop-config", {
       shopName: "Grampy Shop",
       exchangeCurrency: CurrencyOption.USD,
       useExchangeAsPrimary: true,
+      displayShopName: true
     },
   }),
   getters: {
