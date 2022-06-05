@@ -6,6 +6,7 @@ import { Network, simplePayReady } from "../SimplePay";
 import { storeToRefs } from "pinia";
 import { currencies, CurrencyOption } from "../store/currency";
 import { ElMessage } from "element-plus";
+import { User, Monitor } from "@element-plus/icons-vue";
 
 /**
  * The goal of this component is to:
@@ -22,9 +23,8 @@ const configStore = useConfigStore();
 
 // static values from store
 const currentStoreUrl = ref(configStore.myHotShopUrl);
-
 // ref values from store
-const { myHotShopUrl } = storeToRefs(configStore);
+const { myHotShopUrl, myKioskUrl } = storeToRefs(configStore);
 
 const settingsForm = ref({
   payment: {
@@ -32,12 +32,13 @@ const settingsForm = ref({
   },
   user: {
     ...configStore.user,
+    kiosk: false
   },
 });
 
 const settingsUpdatedMessage = () => {
   ElMessage({
-    message: "Settings changed!  Please update your HotShop bookmark.",
+    message: "Settings changed!  Please re-bookmark your HotShop Admin and Kiosk links.",
     type: "success",
   });
 };
@@ -59,10 +60,34 @@ const updateSettings = async () => {
 </script>
 
 <template>
+  <h3>
+    My Custom HotShop Links (Add these to your bookmarks):
+  </h3>
+  <el-row>
+    <el-tooltip placement="right">
+      <template #content>Your custom HotShop Admin URL<br>- Use for updating settings.<br>- Use as your main PoS link if
+        you're not concerned about customers accessing your settings.
+        <br>- Make sure to re-bookmark after updating settings.</template>
+      <el-link type="primary" :href="currentStoreUrl">
+        <el-icon class="url-icon" :size="18">
+          <User />
+        </el-icon>Admin URL
+      </el-link>
+    </el-tooltip>
+  </el-row>
   <p>
-    <el-link type="primary" :href="currentStoreUrl">My Custom HotShop Shop URL (Add this link to your bookmarks!)
-    </el-link>
+    <el-tooltip placement="right">
+      <template #content>The Kiosk version of your HotShop <br>- Settings button hidden and links disabled. <br> -
+        Bookmark this link for kiosk mode.
+        <br>- Make sure to re-bookmark after updating settings.</template>
+      <el-link type="primary" :href="myKioskUrl">
+        <el-icon class="url-icon" :size="18">
+          <Monitor />
+        </el-icon> Kiosk URL
+      </el-link>
+    </el-tooltip>
   </p>
+  <h3>Custom HotShop Settings</h3>
   <p>
     Network:
     <el-select v-model="settingsForm.payment.network" placeholder="Select">
@@ -105,8 +130,6 @@ const updateSettings = async () => {
       placeholder="Please input your desired transaction confirmations (higher = slower confirmation)" />
   </p>
 
-
-
   <p>
     Exchange Currency:
     <el-select v-model="settingsForm.user.exchangeCurrency" placeholder="Select">
@@ -136,6 +159,11 @@ const updateSettings = async () => {
     <el-input v-model="settingsForm.user.logoUrl" placeholder="Please input your custom logo URL" />
   </p>
 
-
   <el-button type="primary" @click="updateSettings">Update Settings</el-button>
 </template>
+<style scoped>
+.url-icon {
+  padding-bottom: 4px;
+  margin-right: 5px;
+}
+</style>

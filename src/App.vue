@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { useConfigStore } from "./store/hot-shop-config";
 import StatusComponent from "./components/StatusComponent.vue";
+import { storeToRefs } from "pinia";
 
 const configStore = useConfigStore();
+const { kioskMode } = storeToRefs(configStore);
+
 (async () => await configStore.init())();
 
 /**
@@ -25,7 +28,8 @@ const configStore = useConfigStore();
   <el-row class="footer" justify="center" align="middle">
     <el-space :size="10" spacer="|">
       <StatusComponent />
-      <a href="https://github.com/CryptoGrampy/HotShop">Powered by HotShop</a>
+      <a v-if="!kioskMode" href="https://github.com/CryptoGrampy/HotShop">Powered by HotShop</a>
+      <span v-if="kioskMode">Powered by HotShop</span>
     </el-space>
   </el-row>
   <el-row justify="center" class="warn"> <span>This is <u>ALPHA</u> Software: expect and report bugs.</span>
@@ -35,12 +39,6 @@ const configStore = useConfigStore();
 <style>
 .app-wrapper {
   margin-bottom: 15px;
-}
-
-.header {
-  padding: 0px;
-  margin-top: 20px;
-  margin-bottom: 30px;
 }
 
 .warn {

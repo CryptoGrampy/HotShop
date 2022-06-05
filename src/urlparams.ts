@@ -23,6 +23,7 @@ export const getConfigFromHash = (): HotShopConfig => {
     useAsPrimary: true,
     shopName: "HotShop",
     displayShopName: true,
+    kiosk: false,
     logoUrl:
       "/assets/images/monero-symbol-480.png",
   };
@@ -47,11 +48,12 @@ export const getConfigFromHash = (): HotShopConfig => {
       logoUrl: params.logoUrl,
       exchangeCurrency: CurrencyOption[String(params.exchangeCurrency)],
       useExchangeAsPrimary: params.useAsPrimary,
-      displayShopName: params.displayShopName
+      displayShopName: params.displayShopName,
+      // TODO: figure out why this is necessary- it may be due to there not being a corresponding settings form casting the string to boolean
+      kiosk: (params.kiosk === true || (params.kiosk as unknown as string) === 'true')
     },
   };
 
-  // TODO: clear fragments from url window.location.hash = ''
   return config;
 };
 
@@ -63,13 +65,12 @@ export const getHashFromConfig = (config: HotShopConfig): string => {
 
   Object.keys(fullConfig).map((key, index, array) => {
     if (fullConfig[key] !== undefined && String(fullConfig[key]).length > 0) {
-      hashFragment += `${key}=${fullConfig[key]}${
-        index !== array.length - 1 ? "&" : ""
-      }`;
+      hashFragment += `${key}=${fullConfig[key]}${index !== array.length - 1 ? "&" : ""
+        }`;
     }
   });
 
-  return encodeURIComponent(hashFragment);
+  return hashFragment;
 };
 
 export const getUrlOrigin = (): string => {

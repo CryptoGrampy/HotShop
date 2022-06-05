@@ -23,6 +23,7 @@ export interface UserConfig {
   exchangeCurrency?: ExchangeCurrencyOptions;
   useExchangeAsPrimary?: boolean;
   displayShopName?: boolean;
+  kiosk?: boolean;
 }
 
 // Things not used or saved across sessions
@@ -53,15 +54,25 @@ export const useConfigStore = defineStore("hot-shop-config", {
       shopName: "Grampy Shop",
       exchangeCurrency: CurrencyOption.USD,
       useExchangeAsPrimary: true,
-      displayShopName: true
+      displayShopName: true,
+      kiosk: false
     },
   }),
   getters: {
     myHotShopUrl(state): string {
-      return `${getUrlOrigin()}/#/#${getHashFromConfig({
+      return `${getUrlOrigin()}/#/#${encodeURIComponent(getHashFromConfig({
         payment: state.payment,
         user: state.user,
-      })}`;
+      }))}`;
+    },
+    myKioskUrl(state): string {
+      return `${getUrlOrigin()}/#/#${encodeURIComponent(getHashFromConfig({
+        payment: state.payment,
+        user: { ...state.user, kiosk: true },
+      }))}`;
+    },
+    kioskMode(state): boolean {
+      return Boolean(state.user?.kiosk)
     },
     currentConfig(): HotShopConfig {
       return { payment: this.payment, user: this.user };
