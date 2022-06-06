@@ -6,7 +6,7 @@ import {
   getUrlOrigin,
 } from "../urlparams";
 import { simplePay } from "../main";
-import { CurrencyOption, ExchangeCurrencyOptions } from "./currency";
+import { ExchangeCurrencyOptions } from "./currency";
 
 /**
  * - store hashfragments here
@@ -26,6 +26,27 @@ export interface UserConfig {
   kiosk?: boolean;
 }
 
+export const defaultEmptyHotShopConfig: HotShopConfig = {
+  payment: {
+    primaryAddress: null,
+    secretViewKey: null,
+    network: null,
+    monerodUri: null,
+    defaultConfirmations: null,
+    monerodUsername: null,
+    monerodPassword: null,
+  },
+  user: {
+    logoUrl: null,
+    shopName: null,
+    uniqueShopUrl: null,
+    exchangeCurrency: null,
+    useExchangeAsPrimary: null,
+    displayShopName: null,
+    kiosk: null
+  }
+} as unknown as HotShopConfig
+
 // Things not used or saved across sessions
 export interface SessionConfig {
   requestAmount: number;
@@ -39,24 +60,7 @@ export interface HotShopConfig {
 
 export const useConfigStore = defineStore("hot-shop-config", {
   state: (): HotShopConfig => ({
-    payment: {
-      primaryAddress: "",
-      secretViewKey: "",
-      network: Network.mainnet,
-      monerodUri: "",
-      defaultConfirmations: 0,
-      monerodUsername: "",
-      monerodPassword: "",
-    },
-    user: {
-      logoUrl:
-        "https://www.getmonero.org/press-kit/symbols/monero-symbol-480.png",
-      shopName: "Grampy Shop",
-      exchangeCurrency: CurrencyOption.USD,
-      useExchangeAsPrimary: true,
-      displayShopName: true,
-      kiosk: false
-    },
+    ...defaultEmptyHotShopConfig
   }),
   getters: {
     myHotShopUrl(state): string {

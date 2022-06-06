@@ -1,6 +1,8 @@
-import { Network } from "./SimplePay";
+import { Network, SimplePayConfig } from "./SimplePay";
 import { CurrencyOption } from "./store/currency";
-import { HotShopConfig } from "./store/hot-shop-config";
+import { defaultEmptyHotShopConfig, HotShopConfig, UserConfig } from "./store/hot-shop-config";
+
+interface HashParamConfig extends SimplePayConfig, UserConfig { }
 
 export const getConfigFromHash = (): HotShopConfig => {
   // get all hashes (could be more than 1)
@@ -8,66 +10,76 @@ export const getConfigFromHash = (): HotShopConfig => {
   // get last hash - this is where the custom config lives, and decode
   const hash = decodeURIComponent(hashFragments[hashFragments.length - 1]);
 
-  // Set default app params - might change this in the future
-  const params = {
-    primaryAddress:
-      "49ouNFXbQxj72FYjEgRjVTa35dHVrSL118vNFhxDvQWHJYpZp523EckbrqiSjM6Vb1H6Ap43qYpNRHBaVS9oBFtZUeTaH88",
-    secretViewKey:
-      "9fb781ad709a41bd651f92c2e380813b9ca8abfb7e733105202e1d9f12799c03",
-    network: Network.mainnet,
-    monerodUri: "https://community.organic-meatballs.duckdns.org:443",
-    defaultConfirmations: 0,
-    monerodUsername: "",
-    monerodPassword: "",
-    exchangeCurrency: "USD",
-    useAsPrimary: true,
-    shopName: "HotShop",
-    displayShopName: true,
-    kiosk: false,
-    logoUrl:
-      "/assets/images/monero-symbol-480.png",
-  };
+  // if user has provided config
+  if (hash.includes('primaryAddress')) {
 
-  hash.split("&").map((keyvalue) => {
-    const temp = keyvalue.split("=");
-    params[temp[0]] = temp[1];
-  });
+    let hashConfig: HashParamConfig = { ...defaultEmptyHotShopConfig.payment, ...defaultEmptyHotShopConfig.user }
 
-  const config: HotShopConfig = {
-    payment: {
-      primaryAddress: params.primaryAddress,
-      secretViewKey: params.secretViewKey,
-      network: params.network,
-      monerodUri: params.monerodUri,
-      monerodUsername: params.monerodUsername,
-      monerodPassword: params.monerodPassword,
-      defaultConfirmations: params.defaultConfirmations,
-    },
-    user: {
-      shopName: params.shopName,
-      logoUrl: params.logoUrl,
-      exchangeCurrency: CurrencyOption[String(params.exchangeCurrency)],
-      useExchangeAsPrimary: params.useAsPrimary,
-      displayShopName: params.displayShopName,
-      // TODO: figure out why this is necessary- it may be due to there not being a corresponding settings form casting the string to boolean
-      kiosk: (params.kiosk === true || (params.kiosk as unknown as string) === 'true')
-    },
-  };
+    hash.split("&").map((keyvalue) => {
+      const temp = keyvalue.split("=");
+      hashConfig[temp[0]] = temp[1];
+    });
 
-  return config;
+    const config: HotShopConfig = {
+      payment: {
+        primaryAddress: hashConfig.primaryAddress,
+        secretViewKey: hashConfig.secretViewKey,
+        network: hashConfig.network,
+        monerodUri: hashConfig.monerodUri,
+        monerodUsername: hashConfig.monerodUsername,
+        monerodPassword: hashConfig.monerodPassword,
+        defaultConfirmations: hashConfig.defaultConfirmations,
+      },
+      user: {
+        shopName: hashConfig.shopName,
+        logoUrl: hashConfig.logoUrl,
+        exchangeCurrency: CurrencyOption[String(hashConfig.exchangeCurrency)],
+        useExchangeAsPrimary: (hashConfig.useExchangeAsPrimary === true || (hashConfig.useExchangeAsPrimary as unknown as string) === 'true'),
+        displayShopName: (hashConfig.displayShopName === true || (hashConfig.displayShopName as unknown as string) === 'true'),
+        kiosk: (hashConfig.kiosk === true || (hashConfig.kiosk as unknown as string) === 'true')
+      },
+    };
+
+    return config
+  } else {
+    // default to testing hotshop config
+    const hotShopTestConfig: HotShopConfig = {
+      payment: {
+        primaryAddress:
+          "49ouNFXbQxj72FYjEgRjVTa35dHVrSL118vNFhxDvQWHJYpZp523EckbrqiSjM6Vb1H6Ap43qYpNRHBaVS9oBFtZUeTaH88",
+        secretViewKey:
+          "9fb781ad709a41bd651f92c2e380813b9ca8abfb7e733105202e1d9f12799c03",
+        network: Network.mainnet,
+        monerodUri: "https://community.organic-meatballs.duckdns.org:443",
+        defaultConfirmations: 0,
+        monerodUsername: "",
+        monerodPassword: "",
+      },
+      user: {
+        exchangeCurrency: CurrencyOption.USD,
+        useExchangeAsPrimary: true,
+        shopName: 'HotShop',
+        displayShopName: true,
+        kiosk: false,
+        logoUrl: "/assets/images/monero-symbol-480.png",
+      }
+    }
+
+    return hotShopTestConfig
+  }
+
+  
 };
 
-// Generates hash fragment portion of bookmarkable HotShop URL
+// Generates hash fragment portion of bookmarkable HotShop URL 
 export const getHashFromConfig = (config: HotShopConfig): string => {
   const fullConfig = { ...config.payment, ...config.user };
 
   let hashFragment = "";
 
   Object.keys(fullConfig).map((key, index, array) => {
-    if (fullConfig[key] !== undefined && String(fullConfig[key]).length > 0) {
-      hashFragment += `${key}=${fullConfig[key]}${index !== array.length - 1 ? "&" : ""
-        }`;
-    }
+    hashFragment += `${key}=${fullConfig[key]}${index !== array.length - 1 ? "&" : ""
+      }`;
   });
 
   return hashFragment;
