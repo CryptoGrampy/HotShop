@@ -132,7 +132,7 @@ const updateSettings = async () => {
 
   <p>
     Exchange Currency:
-    <el-select v-model="settingsForm.user.exchangeCurrency" placeholder="Select">
+    <el-select v-model="settingsForm.user.exchangeCurrency" filterable placeholder="Select">
       <el-option :label="currencies[CurrencyOption.NONE].displayName" :value="currencies[CurrencyOption.NONE].ticker" />
       <el-option :label="currencies[CurrencyOption.BRL].displayName" :value="currencies[CurrencyOption.BRL].ticker" />
       <el-option :label="currencies[CurrencyOption.EUR].displayName" :value="currencies[CurrencyOption.EUR].ticker" />
