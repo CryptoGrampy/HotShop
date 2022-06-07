@@ -297,7 +297,7 @@ export class SimplePay {
       this.restoreHeight = await this.wallet.getDaemonHeight();
 
       await this.wallet.setSyncHeight(this.restoreHeight - 1);
-      await this.wallet.startSyncing(10000);
+      await this.wallet.startSyncing(5000);
     } else {
       await this.wallet.stopSyncing();
       simplePayReady.value = false;
