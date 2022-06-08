@@ -68,7 +68,7 @@ const generatePayment = async () => {
   );
 
   if (activeRequest.value.paymentUri) {
-    broadcastNfcMessage(activeRequest.value.paymentUri)
+    broadcastNfcMessage(activeRequest.value.integratedAddress)
   }
 
   paymentTrackerIntervalRef = setInterval(async () => {

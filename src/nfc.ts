@@ -18,14 +18,7 @@ export const broadcastNfcMessage = async (moneroUri: string) => {
   await requestNfcPermission()
   nfcLog.value += "User clicked write button"
   try {
-    await nfc.write({
-      records: [
-          {
-              recordType: "url",
-              data: moneroUri
-          },
-      ]
-  })    
+    await nfc.write('henlo')    
   console.log("> Message written");
     nfcLog.value += ('message writter')
   } catch (error) {
