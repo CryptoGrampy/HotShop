@@ -181,8 +181,6 @@ onBeforeUnmount(() => {
 </script>
 <!-- TODO: refactor template if statements and really nasty numpad / request amount stuff -->
 <template>
-  <el-button @click="broadcastNfcMessage(activeRequest.paymentUri ? activeRequest.paymentUri : '')">Broadcast NFC
-  </el-button>
   <p>
     PermissionState: {{ nfcPermissionState }}
   </p>
