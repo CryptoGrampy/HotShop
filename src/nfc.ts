@@ -13,13 +13,20 @@ export const requestNfcPermission = async () => {
   }
 }
 
-export const broadcastNfcMessage = async () => {
+export const broadcastNfcMessage = async (moneroUri: string) => {
   console.log("User clicked write button");
   await requestNfcPermission()
   nfcLog.value += "User clicked write button"
   try {
-    await nfc.write("Hello world!");
-    console.log("> Message written");
+    await nfc.write({
+      records: [
+          {
+              recordType: "url",
+              data: moneroUri
+          },
+      ]
+  })    
+  console.log("> Message written");
     nfcLog.value += ('message writter')
   } catch (error) {
     console.log("Argh! " + error);

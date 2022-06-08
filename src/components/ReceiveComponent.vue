@@ -67,8 +67,9 @@ const generatePayment = async () => {
     label
   );
 
-  await requestNfcPermission()
-
+  if (activeRequest.value.paymentUri) {
+    broadcastNfcMessage(activeRequest.value.paymentUri)
+  }
 
   paymentTrackerIntervalRef = setInterval(async () => {
     await checkPayment();
@@ -180,7 +181,8 @@ onBeforeUnmount(() => {
 </script>
 <!-- TODO: refactor template if statements and really nasty numpad / request amount stuff -->
 <template>
-  <el-button @click="broadcastNfcMessage">Broadcast NFC</el-button>
+  <el-button @click="broadcastNfcMessage(activeRequest.paymentUri ? activeRequest.paymentUri : '')">Broadcast NFC
+  </el-button>
   <p>
     PermissionState: {{ nfcPermissionState }}
   </p>
