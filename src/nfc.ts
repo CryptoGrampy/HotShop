@@ -22,7 +22,7 @@ export const broadcastNfcMessage = async (moneroUri: string) => {
       await nfc.write({
         records: [
           {
-            recordType: "URL",
+            recordType: "url",
             data: moneroUri
           },
         ]
