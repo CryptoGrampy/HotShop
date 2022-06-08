@@ -12,7 +12,7 @@ export const requestNfcPermission = async () => {
 
 export const broadcastNfcMessage = async () => {
   console.log("User clicked write button");
-  // await requestNfcPermission()
+  await requestNfcPermission()
   nfcLog.value += "User clicked write button"
   try {
     const ndef = new NDEFReader();
