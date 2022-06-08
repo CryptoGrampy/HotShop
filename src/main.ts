@@ -18,7 +18,7 @@ export const simplePay: SimplePay = new SimplePay({
 });
 
 // @ts-ignore
-export const nfc = window.NDEFReader ? new window.NDEFReader() : undefined
+export const nfc = window.NDEFReader ? new window.NDEFReader() as NDEFReader : undefined
 
 const app = createApp(App);
 
