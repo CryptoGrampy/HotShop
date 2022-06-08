@@ -19,7 +19,7 @@ import { useConfigStore } from "../store/hot-shop-config";
 import { computed } from "@vue/reactivity";
 import { ElMessage } from "element-plus";
 import { DCaret } from "@element-plus/icons-vue";
-import { broadcastNfcMessage, nfc, requestNfcPermission } from "../nfc";
+import { broadcastNfcMessage, requestNfcPermission, nfcLog, nfcPermissionState } from "../nfc";
 
 const props = defineProps<{
   quickPayAmount?: number;
@@ -69,9 +69,6 @@ const generatePayment = async () => {
 
   await requestNfcPermission()
 
-  if (activeRequest.value.paymentUri) {
-    await broadcastNfcMessage(activeRequest.value.paymentUri)
-  }
 
   paymentTrackerIntervalRef = setInterval(async () => {
     await checkPayment();
@@ -103,12 +100,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   clearPayment();
 });
-
-let win;
-
-if ("NDEFReader" in window) {
-  win = new NDEFReader()
-}
 
 const showPaymentScreen = computed(() => {
   return activeRequest.value.paymentUri ? true : false;
@@ -189,6 +180,14 @@ onBeforeUnmount(() => {
 </script>
 <!-- TODO: refactor template if statements and really nasty numpad / request amount stuff -->
 <template>
+  <el-button @click="broadcastNfcMessage">Broadcast NFC</el-button>
+  <p>
+    PermissionState: {{ nfcPermissionState }}
+  </p>
+  <p>
+    NFC Log: {{ nfcLog }}
+
+  </p>
   <!-- if display xmr only or if exchange API is down -->
   <div v-if="
     user?.exchangeCurrency === CurrencyOption.NONE || !exchangeCurrencyStatus
