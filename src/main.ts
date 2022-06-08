@@ -17,7 +17,11 @@ export const simplePay: SimplePay = new SimplePay({
   monerodUri: "",
 });
 
+// @ts-ignore
+export const nfc = window.NDEFReader ? new window.NDEFReader() : undefined
+
 const app = createApp(App);
+
 app.use(ElementPlus);
 app.use(router);
 app.use(createPinia());

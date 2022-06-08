@@ -1,13 +1,16 @@
 import { ref } from "vue";
-
-export const nfc = ref(false)
+import { nfc } from './main'
 export const nfcPermissionState = ref("")
 export const nfcLog = ref('')
 
 export const requestNfcPermission = async () => {
-  //@ts-ignore
-  const permissions = await navigator.permissions.query({ name: "nfc" })
-  nfcPermissionState.value = permissions.state
+  try {
+    //@ts-ignore
+    const permissions = await navigator.permissions.query({ name: "nfc" })
+    nfcPermissionState.value = permissions.state
+  } catch(error) {
+    nfcLog.value+=String(`Cant add permission ${error}`)
+  }
 }
 
 export const broadcastNfcMessage = async () => {
@@ -15,8 +18,7 @@ export const broadcastNfcMessage = async () => {
   await requestNfcPermission()
   nfcLog.value += "User clicked write button"
   try {
-    const ndef = new NDEFReader();
-    await ndef.write("Hello world!");
+    await nfc.write("Hello world!");
     console.log("> Message written");
     nfcLog.value += ('message writter')
   } catch (error) {
