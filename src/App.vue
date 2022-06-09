@@ -30,6 +30,7 @@ const { kioskMode } = storeToRefs(configStore);
       <StatusComponent />
       <a v-if="!kioskMode" href="https://github.com/CryptoGrampy/HotShop">Powered by HotShop</a>
       <span v-if="kioskMode">Powered by HotShop</span>
+      <router-link v-if="!kioskMode" :to="{ name: 'about' }">About</router-link>
     </el-space>
   </el-row>
   <el-row justify="center" class="warn"> <span>This is <u>ALPHA</u> Software: expect and report bugs.</span>

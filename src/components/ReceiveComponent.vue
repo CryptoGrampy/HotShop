@@ -17,7 +17,6 @@ import {
 } from "../store/currency";
 import { useConfigStore } from "../store/hot-shop-config";
 import { computed } from "@vue/reactivity";
-import { ElMessage } from "element-plus";
 import { DCaret } from "@element-plus/icons-vue";
 
 const props = defineProps<{
@@ -154,22 +153,6 @@ const onCurrentAmountChange = (val: string) => {
   numPadAmount.value = val;
 };
 
-const openMessage = () => {
-  ElMessage({
-    message: "XMR amount copied!",
-    type: "success",
-  });
-};
-
-const clipboardData = navigator.clipboard;
-
-const copyToClipboard = () => {
-  if (showPaymentScreen.value) {
-    clipboardData.writeText(String(activeRequest.value.requestAmount));
-    openMessage();
-  }
-};
-
 onBeforeUnmount(() => {
   stopTrackingRate();
 });
@@ -184,7 +167,7 @@ onBeforeUnmount(() => {
   >
     <el-row justify="center">
       <el-col :span="24">
-        <div v-if="displayPaymentInfo" @click="copyToClipboard">
+        <div v-if="displayPaymentInfo">
           <DisplayAmount
             :amount="
               quickPayAmount && quickPayAmount > 0
@@ -202,7 +185,7 @@ onBeforeUnmount(() => {
       user?.exchangeCurrency !== CurrencyOption.NONE && exchangeCurrencyStatus
     "
   >
-    <div v-if="displayPaymentInfo" @click="copyToClipboard">
+    <div v-if="displayPaymentInfo">
       <el-row justify="center">
         <el-col :span="24">
           <DisplayAmount

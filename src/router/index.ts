@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import PosView from '../views/PosView.vue'
 import SettingsView from '../views/SettingsView.vue'
-
+import AboutView from '../views/AboutView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -13,6 +13,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/settings",
     name: "settings",
     component: SettingsView
+  },
+  {
+    path: "/about",
+    name: "about",
+    component: AboutView
   },
   // {
   //   path: "/history",
