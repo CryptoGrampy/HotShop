@@ -1,31 +1,19 @@
 {
   "compilerOptions": {
     "target": "esnext",
+    "useDefineForClassFields": true,
     "module": "esnext",
-    "strict": true,
-    "jsx": "preserve",
-    "importHelpers": true,
     "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "noImplicitAny": false,
-    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "jsx": "preserve",
     "sourceMap": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "types": ["element-plus/global"],
-    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "skipLibCheck": true,
+    "types": ["element-plus/global"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx",
-    "src/main.js"
-  ],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
