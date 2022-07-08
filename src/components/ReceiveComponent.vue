@@ -90,7 +90,7 @@ onMounted(() => {
     generatePayment();
   }
 
-  // trackExchangeRate(CurrencyOption[String(user?.value?.exchangeCurrency)]);
+  trackExchangeRate(CurrencyOption[String(user?.value?.exchangeCurrency)]);
 });
 
 onBeforeUnmount(() => {
