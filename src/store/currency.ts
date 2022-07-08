@@ -61,7 +61,7 @@ export const currencies: Dict<Currency> = {
  * - if exchangeCurrency updates to NOT '', begin tracking rate again
  */
 
-let intervalRef: NodeJS.Timer;
+let intervalRef;
 export const exchangeCurrency: Ref<Currency> = ref(
   currencies[CurrencyOption.NONE]
 );

@@ -13,7 +13,7 @@ export const getConfigFromHash = (): HotShopConfig => {
   // if user has provided config
   if (hash.includes('primaryAddress')) {
 
-    let hashConfig: HashParamConfig = { ...defaultEmptyHotShopConfig.payment, ...defaultEmptyHotShopConfig.user }
+    const hashConfig: HashParamConfig = { ...defaultEmptyHotShopConfig.payment, ...defaultEmptyHotShopConfig.user }
 
     hash.split("&").map((keyvalue) => {
       const temp = keyvalue.split("=");
@@ -61,14 +61,12 @@ export const getConfigFromHash = (): HotShopConfig => {
         shopName: 'HotShop',
         displayShopName: true,
         kiosk: false,
-        logoUrl: "/assets/images/monero-symbol-480.png",
+        logoUrl: "/img/monero-symbol-480.png",
       }
     }
 
     return hotShopTestConfig
-  }
-
-  
+  }  
 };
 
 // Generates hash fragment portion of bookmarkable HotShop URL 

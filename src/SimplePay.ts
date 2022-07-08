@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import monerojs, {
-  LibraryUtils,
   MoneroDaemonRpc,
-  MoneroIncomingTransfer,
   MoneroOutputWallet,
   MoneroRpcConnection,
-  MoneroUtils,
   MoneroWalletFull,
 } from "monero-javascript";
 import { ref } from "vue";
+
+const moneroUtils = monerojs.MoneroUtils;
 
 // TODO replace with callback init method and use vue store
 export const simplePayReady = ref(false);
@@ -90,7 +89,8 @@ export class SimplePay {
   unlockedBalance: any;
   monerodConnectionStatus?: boolean;
   connectionManager?: monerojs.MoneroConnectionManager;
-  constructor(private config: SimplePayConfig) {}
+  constructor(private config: SimplePayConfig) {
+  }
 
   public getConfig(): SimplePayConfig {
     return this.config;
@@ -106,7 +106,6 @@ export class SimplePay {
       await this.wallet.close();
     }
 
-    await LibraryUtils.loadFullModule();
     await this.initWallet();
   }
 
@@ -117,7 +116,7 @@ export class SimplePay {
     // TODO: Review this txQuery and determine if this is appropriate way to get payment tx (esp double spend/failed part)
     const transactions = 
       await this.wallet.getIncomingTransfers({
-        amount: MoneroUtils.xmrToAtomicUnits(paymentRequest.requestAmount),
+        amount: moneroUtils.xmrToAtomicUnits(paymentRequest.requestAmount),
         txQuery: {
           paymentId: paymentRequest.paymentId,
           isDoubleSpendSeen: false,
@@ -137,7 +136,7 @@ export class SimplePay {
     if (transactions && transactions?.length > 0) {
       const incomingTx = transactions[transactions.length-1]
 
-      if (MoneroUtils.atomicUnitsToXmr(incomingTx.getAmount()) !== paymentRequest.requestAmount) {
+      if (moneroUtils.atomicUnitsToXmr(incomingTx.getAmount()) !== paymentRequest.requestAmount) {
         return paymentResponse
       }
       
@@ -165,6 +164,7 @@ export class SimplePay {
       networkType: this.config.network,
       primaryAddress: this.config.primaryAddress,
       privateViewKey: this.config.secretViewKey,
+      proxyToWorker: true
     });
 
     await this.wallet.addListener(this);
@@ -273,7 +273,7 @@ export class SimplePay {
   async onOutputReceived(output: MoneroOutputWallet) {
     console.log(
       "[event] output amount",
-      MoneroUtils.atomicUnitsToXmr(output.getAmount())
+      moneroUtils.atomicUnitsToXmr(output.getAmount())
     );
     console.log("[event] output tx", output.getTx());
     // Invoked 3 times per received output: once when unconfirmed, once when confirmed, and once when unlocked. The notified output includes basic fields only, so the output or its transaction should be fetched to get all available fields.
@@ -289,14 +289,13 @@ export class SimplePay {
     console.debug("[event] connection", this.monerodConnectionStatus);
 
     if (this.monerodConnectionStatus === true) {
-      console.log("setting wallet daemon connectin");
       await this.wallet.setDaemonConnection(connection);
 
       // getDaemonHeight - 1 is here to prevent this issue:
       // https://github.com/monero-ecosystem/monero-javascript/issues/76
       this.restoreHeight = await this.wallet.getDaemonHeight();
 
-      await this.wallet.setSyncHeight(this.restoreHeight - 1);
+      await this.wallet.setSyncHeight(this.restoreHeight-1);
       await this.wallet.startSyncing(5000);
     } else {
       await this.wallet.stopSyncing();

@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import { Network, SimplePay } from "./SimplePay";
 import ElementPlus from "element-plus";
+import './registerServiceWorker'
 import { createPinia } from "pinia";
 import router from "./router";
 import 'element-plus/dist/index.css'
@@ -19,6 +20,6 @@ export const simplePay: SimplePay = new SimplePay({
 
 const app = createApp(App);
 app.use(ElementPlus);
-app.use(router);
-app.use(createPinia());
+app.use(router as any)
+app.use(createPinia() as any);
 app.mount("#app");

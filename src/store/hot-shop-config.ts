@@ -7,6 +7,7 @@ import {
 } from "../urlparams";
 import { simplePay } from "../main";
 import { ExchangeCurrencyOptions } from "./currency";
+import { del, entries, get, update } from "idb-keyval";
 
 /**
  * - store hashfragments here
@@ -43,9 +44,9 @@ export const defaultEmptyHotShopConfig: HotShopConfig = {
     exchangeCurrency: null,
     useExchangeAsPrimary: null,
     displayShopName: null,
-    kiosk: null
-  }
-} as unknown as HotShopConfig
+    kiosk: null,
+  },
+} as unknown as HotShopConfig;
 
 // Things not used or saved across sessions
 export interface SessionConfig {
@@ -60,23 +61,27 @@ export interface HotShopConfig {
 
 export const useConfigStore = defineStore("hot-shop-config", {
   state: (): HotShopConfig => ({
-    ...defaultEmptyHotShopConfig
+    ...defaultEmptyHotShopConfig,
   }),
   getters: {
     myHotShopUrl(state): string {
-      return `${getUrlOrigin()}/#/#${encodeURIComponent(getHashFromConfig({
-        payment: state.payment,
-        user: state.user,
-      }))}`;
+      return `${getUrlOrigin()}/#/#${encodeURIComponent(
+        getHashFromConfig({
+          payment: state.payment,
+          user: state.user,
+        })
+      )}`;
     },
     myKioskUrl(state): string {
-      return `${getUrlOrigin()}/#/#${encodeURIComponent(getHashFromConfig({
-        payment: state.payment,
-        user: { ...state.user, kiosk: true },
-      }))}`;
+      return `${getUrlOrigin()}/#/#${encodeURIComponent(
+        getHashFromConfig({
+          payment: state.payment,
+          user: { ...state.user, kiosk: true },
+        })
+      )}`;
     },
     kioskMode(state): boolean {
-      return Boolean(state.user?.kiosk)
+      return Boolean(state.user?.kiosk);
     },
     currentConfig(): HotShopConfig {
       return { payment: this.payment, user: this.user };
@@ -85,13 +90,28 @@ export const useConfigStore = defineStore("hot-shop-config", {
   actions: {
     async init() {
       const hashConfig = getConfigFromHash();
-      this.$state = { ...this.$state, ...hashConfig };
+      const cachedConfig = await get("config").catch(err => console.log('error retrieving cachedConfig', err));
+
+      // TODO: Replace primary address with isCustomHotshop method
+      if (
+        hashConfig.payment.primaryAddress !==
+        "49ouNFXbQxj72FYjEgRjVTa35dHVrSL118vNFhxDvQWHJYpZp523EckbrqiSjM6Vb1H6Ap43qYpNRHBaVS9oBFtZUeTaH88"
+      ) {
+        this.$state = { ...this.$state, ...hashConfig };
+        await update("config", () => JSON.stringify(hashConfig));
+      } else if (cachedConfig) {
+        console.log('cachedConfig works', JSON.stringify(cachedConfig))
+        this.$state = { ...this.$state, ...JSON.parse(cachedConfig) };
+      } else {
+        this.$state = { ...this.$state, ...hashConfig };
+      }
+
       await simplePay.updateConfig(this.payment);
     },
     increment(): void {
       this.payment.defaultConfirmations++;
     },
-    updateUserConfig(updatedConfig: UserConfig) {
+    updateConfig(updatedConfig: UserConfig) {
       this.user = { ...this.user, ...updatedConfig };
     },
     getStaticConfig(): HotShopConfig {

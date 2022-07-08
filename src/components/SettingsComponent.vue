@@ -7,6 +7,8 @@ import { storeToRefs } from "pinia";
 import { currencies, CurrencyOption } from "../store/currency";
 import { ElMessage } from "element-plus";
 import { User, Monitor } from "@element-plus/icons-vue";
+  import { update } from 'idb-keyval';
+
 
 /**
  * The goal of this component is to:
@@ -55,6 +57,7 @@ const updateSettings = async () => {
   configStore.$state = settingsForm.value;
   currentStoreUrl.value = myHotShopUrl.value;
   await simplePay.updateConfig(configStore.$state.payment);
+  await update('config', () => JSON.stringify(settingsForm.value));
   settingsUpdatedMessage();
 };
 </script>
