@@ -13,7 +13,7 @@
     "@chenfengyuan/vue-qrcode": "^2.0.0",
     "@element-plus/icons-vue": "^1.1.4",
     "base58-monero": "^0.0.5",
-    "core-js": "^3.22.5",
+    "core-js": "^3.23.4",
     "element-plus": "^2.2.0",
     "keccak256": "^1.0.6",
     "monero-javascript": "^0.7.0",
