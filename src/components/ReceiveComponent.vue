@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, defineProps } from "vue";
+import { onBeforeUnmount, onMounted, defineProps, watch } from "vue";
 import { simplePay } from "../main";
 import { PaymentStatus } from "../SimplePay";
 import QrCode from "./QrCode.vue";
@@ -89,12 +89,17 @@ onMounted(() => {
   if (props.quickPayAmount && props.quickPayAmount > 0) {
     generatePayment();
   }
-
   trackExchangeRate(CurrencyOption[String(user?.value?.exchangeCurrency)]);
 });
 
 onBeforeUnmount(() => {
   clearPayment();
+});
+
+watch(user, (newUser, oldUser) => {
+  if (newUser.exchangeCurrency !== oldUser.exchangeCurrency) {
+    trackExchangeRate(CurrencyOption[String(user?.value?.exchangeCurrency)]);
+  }
 });
 
 const showPaymentScreen = computed(() => {

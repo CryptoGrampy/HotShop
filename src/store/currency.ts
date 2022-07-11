@@ -62,6 +62,7 @@ export const currencies: Dict<Currency> = {
  */
 
 let intervalRef;
+
 export const exchangeCurrency: Ref<Currency> = ref(
   currencies[CurrencyOption.NONE]
 );

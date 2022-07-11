@@ -7,7 +7,7 @@ module.exports = defineConfig({
   pwa: {
     name: 'HotShop',
     themeColor: '#ff6600',
-    assetsVersion: '2'
+    assetsVersion: '3'
   },
   productionSourceMap: false,
   transpileDependencies: ['monero-javascript'],
