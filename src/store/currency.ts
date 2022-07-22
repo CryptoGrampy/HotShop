@@ -61,29 +61,31 @@ export const currencies: Dict<Currency> = {
  * - if exchangeCurrency updates to NOT '', begin tracking rate again
  */
 
-let intervalRef: NodeJS.Timer;
+let intervalRef;
+
 export const exchangeCurrency: Ref<Currency> = ref(
   currencies[CurrencyOption.NONE]
 );
 export const exchangeCurrencyStatus: Ref<boolean> = ref(false);
 
 const getRate = async (currency: ExchangeCurrencyOptions) => {
-  const response = await fetch(
-    `https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=${currencies[currency].displayName}`
-  );
-  const json = await response.json();
+  if (currency) {
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=${currencies[currency].displayName}`
+    );
+    const json = await response.json();
 
-  exchangeCurrency.value = currencies[currency];
-  const currentExchangeRate =
-    json['monero'][currencies[currency].displayName.toLowerCase()];
+    exchangeCurrency.value = currencies[currency];
+    const currentExchangeRate =
+      json["monero"][currencies[currency].displayName.toLowerCase()];
 
-  if (currentExchangeRate && currentExchangeRate > 0) {
-    exchangeCurrencyStatus.value = true;
-    exchangeCurrency.value.exchangeRate =
-      currentExchangeRate;
-  } else {
-    exchangeCurrency.value = currencies[CurrencyOption.NONE];
-    exchangeCurrencyStatus.value = false;
+    if (currentExchangeRate && currentExchangeRate > 0) {
+      exchangeCurrencyStatus.value = true;
+      exchangeCurrency.value.exchangeRate = currentExchangeRate;
+    } else {
+      exchangeCurrency.value = currencies[CurrencyOption.NONE];
+      exchangeCurrencyStatus.value = false;
+    }
   }
 };
 

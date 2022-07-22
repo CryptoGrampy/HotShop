@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { defineProps } from 'vue';
 const props = defineProps<{
   amount: string;
   symbol: string;

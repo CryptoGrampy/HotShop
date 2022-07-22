@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted } from "vue";
+import { onBeforeUnmount, onMounted, defineProps, watch } from "vue";
 import { simplePay } from "../main";
 import { PaymentStatus } from "../SimplePay";
 import QrCode from "./QrCode.vue";
@@ -17,6 +17,7 @@ import {
 } from "../store/currency";
 import { useConfigStore } from "../store/hot-shop-config";
 import { computed } from "@vue/reactivity";
+import { ElMessage } from "element-plus";
 import { DCaret } from "@element-plus/icons-vue";
 
 const props = defineProps<{
@@ -88,12 +89,17 @@ onMounted(() => {
   if (props.quickPayAmount && props.quickPayAmount > 0) {
     generatePayment();
   }
-
   trackExchangeRate(CurrencyOption[String(user?.value?.exchangeCurrency)]);
 });
 
 onBeforeUnmount(() => {
   clearPayment();
+});
+
+watch(user, (newUser, oldUser) => {
+  if (newUser.exchangeCurrency !== oldUser.exchangeCurrency) {
+    trackExchangeRate(CurrencyOption[String(user?.value?.exchangeCurrency)]);
+  }
 });
 
 const showPaymentScreen = computed(() => {
@@ -153,6 +159,22 @@ const onCurrentAmountChange = (val: string) => {
   numPadAmount.value = val;
 };
 
+const openMessage = () => {
+  ElMessage({
+    message: "XMR amount copied!",
+    type: "success",
+  });
+};
+
+const clipboardData = navigator.clipboard;
+
+const copyToClipboard = () => {
+  if (showPaymentScreen.value) {
+    clipboardData.writeText(String(activeRequest.value.requestAmount));
+    openMessage();
+  }
+};
+
 onBeforeUnmount(() => {
   stopTrackingRate();
 });
@@ -167,7 +189,7 @@ onBeforeUnmount(() => {
   >
     <el-row justify="center">
       <el-col :span="24">
-        <div v-if="displayPaymentInfo">
+        <div v-if="displayPaymentInfo" @click="copyToClipboard">
           <DisplayAmount
             :amount="
               quickPayAmount && quickPayAmount > 0
@@ -185,7 +207,7 @@ onBeforeUnmount(() => {
       user?.exchangeCurrency !== CurrencyOption.NONE && exchangeCurrencyStatus
     "
   >
-    <div v-if="displayPaymentInfo">
+    <div v-if="displayPaymentInfo" @click="copyToClipboard">
       <el-row justify="center">
         <el-col :span="24">
           <DisplayAmount
