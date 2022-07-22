@@ -1,4 +1,4 @@
-import { Network, SimplePayConfig } from "../SimplePay";
+import { SimplePayConfig } from "../SimplePay";
 import { defineStore } from "pinia";
 import {
   getConfigFromHash,
@@ -7,7 +7,7 @@ import {
 } from "../urlparams";
 import { simplePay } from "../main";
 import { ExchangeCurrencyOptions } from "./currency";
-import { del, entries, get, update } from "idb-keyval";
+import { get, update } from "idb-keyval";
 
 /**
  * - store hashfragments here
@@ -90,17 +90,21 @@ export const useConfigStore = defineStore("hot-shop-config", {
   actions: {
     async init() {
       const hashConfig = getConfigFromHash();
-      const cachedConfig = await get("config").catch(err => console.log('error retrieving cachedConfig', err));
+      const cachedConfig = await get("config").catch((err) =>
+        console.log("error retrieving cachedConfig", err)
+      );
 
       // TODO: Replace primary address with isCustomHotshop method
+
       if (
         hashConfig.payment.primaryAddress !==
         "49ouNFXbQxj72FYjEgRjVTa35dHVrSL118vNFhxDvQWHJYpZp523EckbrqiSjM6Vb1H6Ap43qYpNRHBaVS9oBFtZUeTaH88"
       ) {
         this.$state = { ...this.$state, ...hashConfig };
-        await update("config", () => JSON.stringify(hashConfig));
+        update("config", () => JSON.stringify(hashConfig)).catch((err) => {
+          console.log("error updating config");
+        });
       } else if (cachedConfig) {
-        console.log('cachedConfig works', JSON.stringify(cachedConfig))
         this.$state = { ...this.$state, ...JSON.parse(cachedConfig) };
       } else {
         this.$state = { ...this.$state, ...hashConfig };

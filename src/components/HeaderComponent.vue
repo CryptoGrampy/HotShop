@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useConfigStore } from "../store/hot-shop-config";
 import { storeToRefs } from "pinia";
-import { User, Monitor } from "@element-plus/icons-vue";
+import { Setting, Monitor } from "@element-plus/icons-vue";
 
 const configStore = useConfigStore();
 const { user, kioskMode } = storeToRefs(configStore);
@@ -30,7 +30,7 @@ const { user, kioskMode } = storeToRefs(configStore);
           <div v-if="!kioskMode">
             <router-link :to="{ name: 'settings' }">
               <el-icon :size="30">
-                <User />
+                <Setting />
               </el-icon>
             </router-link>&nbsp;
           </div>

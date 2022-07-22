@@ -1,15 +1,11 @@
 <script setup lang="ts">
 import { useConfigStore } from "../store/hot-shop-config";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
-import { storeToRefs } from "pinia";
 import { ElMessage } from "element-plus";
 import { defineProps } from "vue";
 
-const configStore = useConfigStore();
-const { user } = storeToRefs(configStore);
-
 const props = defineProps<{
-  moneroUri: string;
+  moneroUri?: string;
   address: string;
 }>();
 
@@ -30,7 +26,7 @@ const copyToClipboard = () => {
 <template>
   <figure @click="copyToClipboard">
     <vue-qrcode
-      :value="props.moneroUri"
+      :value="props.moneroUri ?? props.address"
       :options="{
         width: 200,
         errorCorrectionLevel: 'Q',
