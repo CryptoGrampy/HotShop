@@ -2,11 +2,14 @@
 import { useConfigStore } from "./store/hot-shop-config";
 import StatusComponent from "./components/StatusComponent.vue";
 import { storeToRefs } from "pinia";
+import { onMounted } from "vue";
 
 const configStore = useConfigStore();
 const { kioskMode } = storeToRefs(configStore);
 
-(async () => await configStore.init())();
+onMounted(async () => {
+  await configStore.init();
+});
 
 /**
  * TODO: Think about best place to init simplepay
@@ -28,12 +31,15 @@ const { kioskMode } = storeToRefs(configStore);
   <el-row class="footer" justify="center" align="middle">
     <el-space :size="10" spacer="|">
       <StatusComponent />
-      <a v-if="!kioskMode" href="https://github.com/CryptoGrampy/HotShop">Powered by HotShop</a>
+      <a v-if="!kioskMode" href="https://github.com/CryptoGrampy/HotShop"
+        >Powered by HotShop</a
+      >
       <span v-if="kioskMode">Powered by HotShop</span>
       <router-link v-if="!kioskMode" :to="{ name: 'about' }">About</router-link>
     </el-space>
   </el-row>
-  <el-row justify="center" class="warn"> <span>This is <u>ALPHA</u> Software: expect and report bugs.</span>
+  <el-row justify="center" class="warn">
+    <span>This is <u>ALPHA</u> Software: expect and report bugs.</span>
   </el-row>
 </template>
 
