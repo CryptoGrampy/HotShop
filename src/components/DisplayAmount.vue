@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { defineProps } from 'vue';
-const props = defineProps<{
-  amount: string;
-  symbol: string;
-}>();
+const props = defineProps({
+  amount: {
+    type: String,
+    required: true
+  },
+  symbol: {
+    type: String,
+    required: true
+  }
+});
 </script>
 
 <template>

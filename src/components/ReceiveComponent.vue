@@ -16,13 +16,16 @@ import {
   currencies,
 } from "../store/currency";
 import { useConfigStore } from "../store/hot-shop-config";
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 import { ElMessage } from "element-plus";
 import { DCaret } from "@element-plus/icons-vue";
 
-const props = defineProps<{
-  quickPayAmount?: number;
-}>();
+const props = defineProps({
+  quickPayAmount: {
+    type: Number,
+    required: false,
+  },
+});
 
 const paymentStore = usePaymentStore();
 const { activeRequest, activeStatus, numPadAmount } = storeToRefs(paymentStore);
@@ -141,6 +144,7 @@ const subDisplayAmount = computed(() => {
       ).toFixed(2)}`;
     }
   }
+  return ''
 });
 
 const swapMainAndSubDisplayCurrencies = () => {

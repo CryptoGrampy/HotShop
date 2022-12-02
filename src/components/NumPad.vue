@@ -9,9 +9,12 @@ const emit = defineEmits<{
   (e: "currentAmountChange", value: string): void;
 }>();
 
-const props = defineProps<{
-  initAmount: string;
-}>();
+const props = defineProps({
+  initAmount: {
+    type: String,
+    required: true
+  }
+});
 
 // This component should output an xmr value.  Could be tied directly to store or emit to parent
 

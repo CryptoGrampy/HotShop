@@ -102,7 +102,7 @@ export const useConfigStore = defineStore("hot-shop-config", {
       ) {
         this.$state = { ...this.$state, ...hashConfig };
         update("config", () => JSON.stringify(hashConfig)).catch((err) => {
-          console.log("error updating config");
+          console.log("error updating config", err);
         });
       } else if (cachedConfig) {
         this.$state = { ...this.$state, ...JSON.parse(cachedConfig) };
