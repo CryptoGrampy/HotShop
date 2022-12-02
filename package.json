@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@chenfengyuan/vue-qrcode": "^2.0.0",
-    "@element-plus/icons-vue": "^1.1.4",
-    "element-plus": "^2.2.0",
+    "@element-plus/icons-vue": "^2.0.10",
+    "element-plus": "^2.2.26",
     "idb-keyval": "^6.2.0",
     "monero-javascript": "^0.7.4",
     "pinia": "^2.0.14",
