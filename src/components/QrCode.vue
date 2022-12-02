@@ -30,7 +30,7 @@ const copyToClipboard = () => {
         errorCorrectionLevel: 'Q',
       }"
     ></vue-qrcode>
-    <img class="qrcode__image" src="/img/icons/android-chrome-512x512.png" alt="monero logo" />
+    <img class="qrcode__image" src="/img/icons/favicon-32x32.png" alt="monero logo" />
   </figure>
 </template>
 <style scoped>
