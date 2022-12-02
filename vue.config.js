@@ -7,7 +7,10 @@ module.exports = defineConfig({
   pwa: {
     name: 'HotShop',
     themeColor: '#ff6600',
-    assetsVersion: '3'
+    assetsVersion: '4',
+    iconPaths: {
+      faviconSVG: 'favicon.ico',
+    }
   },
   productionSourceMap: false,
   transpileDependencies: ['monero-javascript'],
