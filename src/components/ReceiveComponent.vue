@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, defineProps, watch } from "vue";
+import { onBeforeUnmount, onMounted, watch } from "vue";
 import { simplePay } from "../main";
 import { PaymentStatus } from "../SimplePay";
 import QrCode from "./QrCode.vue";
@@ -20,12 +20,10 @@ import { computed } from "vue";
 import { ElMessage } from "element-plus";
 import { DCaret } from "@element-plus/icons-vue";
 
-const props = defineProps({
-  quickPayAmount: {
-    type: Number,
-    required: false,
-  },
-});
+
+const props = defineProps<{
+  quickPayAmount?: number;
+}>();
 
 const paymentStore = usePaymentStore();
 const { activeRequest, activeStatus, numPadAmount } = storeToRefs(paymentStore);

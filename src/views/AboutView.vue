@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import HeaderComponent from "../components/HeaderComponent.vue";
-import QrCode from "../components/QrCode.vue";
+import HeaderComponent from "@/components/HeaderComponent.vue";
+import QrCode from "@/components/QrCode.vue";
 </script>
 <template>
   <HeaderComponent />

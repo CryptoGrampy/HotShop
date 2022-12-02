@@ -2,7 +2,6 @@
   import ReceiveComponent from "../components/ReceiveComponent.vue";
   import { simplePayReady } from "../SimplePay";
   import HeaderComponent from "../components/HeaderComponent.vue";
-  import { defineProps } from "vue";
 
   const props = defineProps<{
     requestAmount: string;

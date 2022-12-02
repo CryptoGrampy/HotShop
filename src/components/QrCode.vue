@@ -1,18 +1,11 @@
 <script setup lang="ts">
 import VueQrcode from "@chenfengyuan/vue-qrcode";
 import { ElMessage } from "element-plus";
-import { defineProps } from "vue";
 
-const props = defineProps({
-  moneroUri: {
-    type: String,
-    required: true
-  },
-  address: {
-    type: String,
-    required: true
-  },
-});
+const props = defineProps<{
+  moneroUri?: string;
+  address: string;
+}>();
 
 const openMessage = () => {
   ElMessage({

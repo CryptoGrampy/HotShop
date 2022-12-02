@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onUpdated, ref, watch } from "vue";
 import { ArrowLeftBold } from "@element-plus/icons-vue";
-import { defineEmits, defineProps } from "vue";
 
 const currentAmount = ref("0");
 
@@ -9,12 +8,9 @@ const emit = defineEmits<{
   (e: "currentAmountChange", value: string): void;
 }>();
 
-const props = defineProps({
-  initAmount: {
-    type: String,
-    required: true
-  }
-});
+const props = defineProps<{
+  initAmount: string;
+}>();
 
 // This component should output an xmr value.  Could be tied directly to store or emit to parent
 
