@@ -169,7 +169,7 @@ const updateSettings = async () => {
 
     <el-form-item label="Exchange Currency">
       <el-tooltip
-        content="The Exchange Rate uses the CoinGecko API.  Set to 'None' to disable."
+        content="Warning: The Exchange Rate uses the CoinGecko API.  Set to 'None' to disable."
       >
         <el-icon class="settings-icon" :size="20">
           <Warning />
