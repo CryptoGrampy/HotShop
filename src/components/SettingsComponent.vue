@@ -13,6 +13,7 @@ import {
   Cpu,
   PriceTag,
   Link,
+  Warning,
 } from "@element-plus/icons-vue";
 import { update } from "idb-keyval";
 
@@ -167,6 +168,14 @@ const updateSettings = async () => {
     </el-form-item>
 
     <el-form-item label="Exchange Currency">
+      <el-tooltip
+        content="The Exchange Rate uses the CoinGecko API.  Set to 'None' to disable."
+      >
+        <el-icon class="settings-icon" :size="20">
+          <Warning />
+        </el-icon>
+      </el-tooltip>
+      &nbsp;&nbsp;
       <el-select
         v-model="settingsForm.user.exchangeCurrency"
         filterable
