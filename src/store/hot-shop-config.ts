@@ -6,8 +6,8 @@ import {
   getUrlOrigin,
 } from "../urlparams";
 import { simplePay } from "../main";
-import { ExchangeCurrencyOptions } from "./currency";
 import { get, update } from "idb-keyval";
+import { ExchangeCurrencyOptions } from "./currencies";
 
 /**
  * - store hashfragments here

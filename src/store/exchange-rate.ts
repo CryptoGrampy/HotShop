@@ -1,58 +1,6 @@
 import { Ref, ref } from "vue";
-import { Dict } from "../util";
+import { currencies, Currency, CurrencyOption, ExchangeCurrencyOptions } from "./currencies";
 
-export interface Currency {
-  displayName: string;
-  ticker: string;
-  symbol: string;
-  exchangeRate: number;
-}
-
-export enum CurrencyOption {
-  XMR = "XMR",
-  USD = "USD",
-  EUR = "EUR",
-  BRL = "BRL",
-  NONE = "NONE",
-}
-
-export type ExchangeCurrencyOptions = Exclude<
-  CurrencyOption,
-  CurrencyOption.XMR
->;
-
-export const currencies: Dict<Currency> = {
-  [CurrencyOption.XMR]: {
-    displayName: "XMR",
-    ticker: CurrencyOption.XMR,
-    symbol: "ɱ",
-    exchangeRate: 1,
-  },
-  [CurrencyOption.USD]: {
-    displayName: "USD",
-    ticker: CurrencyOption.USD,
-    exchangeRate: 0,
-    symbol: "$",
-  },
-  [CurrencyOption.EUR]: {
-    displayName: "EUR",
-    ticker: CurrencyOption.EUR,
-    exchangeRate: 0,
-    symbol: "€",
-  },
-  [CurrencyOption.BRL]: {
-    displayName: "BRL",
-    ticker: CurrencyOption.BRL,
-    exchangeRate: 0,
-    symbol: "R$",
-  },
-  [CurrencyOption.NONE]: {
-    displayName: "None",
-    ticker: CurrencyOption.NONE,
-    symbol: "",
-    exchangeRate: 0,
-  },
-};
 
 /**
  * - exchangeCurrency gets updated when settings initializes and when settings are updated

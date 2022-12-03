@@ -1,5 +1,5 @@
 import { Network, SimplePayConfig } from "./SimplePay";
-import { CurrencyOption } from "./store/currency";
+import { CurrencyOption } from "./store/currencies";
 import { defaultEmptyHotShopConfig, HotShopConfig, UserConfig } from "./store/hot-shop-config";
 
 interface HashParamConfig extends SimplePayConfig, UserConfig { }

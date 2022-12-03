@@ -10,15 +10,14 @@ import DisplayAmount from "./DisplayAmount.vue";
 import {
   exchangeCurrency,
   exchangeCurrencyStatus,
-  CurrencyOption,
   stopTrackingRate,
   trackExchangeRate,
-  currencies,
-} from "../store/currency";
+} from "../store/exchange-rate";
 import { useConfigStore } from "../store/hot-shop-config";
 import { computed } from "vue";
-import { ElMessage } from "element-plus";
+import { ElButton, ElCol, ElIcon, ElMessage, ElProgress, ElResult, ElRow } from "element-plus";
 import { DCaret } from "@element-plus/icons-vue";
+import { CurrencyOption, currencies } from "@/store/currencies";
 
 
 const props = defineProps<{
