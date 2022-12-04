@@ -22,6 +22,6 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
         
       - name: Build and push Docker Image
-        run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+        run: docker build . --file Dockerfile --tag cryptogrampy/hotshop:$(date +%s)
 
 
