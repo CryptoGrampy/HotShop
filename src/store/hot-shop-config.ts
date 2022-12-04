@@ -6,8 +6,8 @@ import {
   getUrlOrigin,
 } from "../urlparams";
 import { simplePay } from "../main";
-import { ExchangeCurrencyOptions } from "./currency";
 import { get, update } from "idb-keyval";
+import { ExchangeCurrencyOptions } from "./currencies";
 
 /**
  * - store hashfragments here
@@ -102,7 +102,7 @@ export const useConfigStore = defineStore("hot-shop-config", {
       ) {
         this.$state = { ...this.$state, ...hashConfig };
         update("config", () => JSON.stringify(hashConfig)).catch((err) => {
-          console.log("error updating config");
+          console.log("error updating config", err);
         });
       } else if (cachedConfig) {
         this.$state = { ...this.$state, ...JSON.parse(cachedConfig) };

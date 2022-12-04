@@ -20,6 +20,8 @@ export const simplePay: SimplePay = new SimplePay({
 
 const app = createApp(App);
 app.use(ElementPlus);
+// eslint-disable-next-line
 app.use(router as any)
+// eslint-disable-next-line
 app.use(createPinia() as any);
 app.mount("#app");

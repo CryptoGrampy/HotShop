@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onUpdated, ref, watch } from "vue";
 import { ArrowLeftBold } from "@element-plus/icons-vue";
-import { defineEmits, defineProps } from "vue";
 
 const currentAmount = ref("0");
 

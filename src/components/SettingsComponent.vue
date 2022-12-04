@@ -4,7 +4,7 @@ import { reactive, ref, watch } from "vue";
 import { simplePay } from "../main";
 import { Network, simplePayReady } from "../SimplePay";
 import { storeToRefs } from "pinia";
-import { currencies, CurrencyOption } from "../store/currency";
+import { currencies, CurrencyOption } from "../store/currencies";
 import { ElMessage } from "element-plus";
 import {
   User,
@@ -13,6 +13,7 @@ import {
   Cpu,
   PriceTag,
   Link,
+  Warning,
 } from "@element-plus/icons-vue";
 import { update } from "idb-keyval";
 
@@ -167,26 +168,24 @@ const updateSettings = async () => {
     </el-form-item>
 
     <el-form-item label="Exchange Currency">
+      <el-tooltip
+        content="Warning: The Exchange Rate uses the CoinGecko API.  Set to 'None' to disable."
+      >
+        <el-icon class="settings-icon" :size="20">
+          <Warning />
+        </el-icon>
+      </el-tooltip>
+      &nbsp;&nbsp;
       <el-select
         v-model="settingsForm.user.exchangeCurrency"
         filterable
         placeholder="Select"
       >
         <el-option
-          :label="currencies[CurrencyOption.NONE].displayName"
-          :value="currencies[CurrencyOption.NONE].ticker"
-        />
-        <el-option
-          :label="currencies[CurrencyOption.BRL].displayName"
-          :value="currencies[CurrencyOption.BRL].ticker"
-        />
-        <el-option
-          :label="currencies[CurrencyOption.EUR].displayName"
-          :value="currencies[CurrencyOption.EUR].ticker"
-        />
-        <el-option
-          :label="currencies[CurrencyOption.USD].displayName"
-          :value="currencies[CurrencyOption.USD].ticker"
+          v-for="currency in currencies"
+          v-bind:key="currency.displayName"
+          :label="currency.displayName"
+          :value="currency.ticker"
         />
       </el-select>
     </el-form-item>

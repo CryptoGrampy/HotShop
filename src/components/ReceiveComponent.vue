@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, defineProps, watch } from "vue";
+import { onBeforeUnmount, onMounted, watch } from "vue";
 import { simplePay } from "../main";
 import { PaymentStatus } from "../SimplePay";
 import QrCode from "./QrCode.vue";
@@ -10,15 +10,15 @@ import DisplayAmount from "./DisplayAmount.vue";
 import {
   exchangeCurrency,
   exchangeCurrencyStatus,
-  CurrencyOption,
   stopTrackingRate,
   trackExchangeRate,
-  currencies,
-} from "../store/currency";
+} from "../store/exchange-rate";
 import { useConfigStore } from "../store/hot-shop-config";
-import { computed } from "@vue/reactivity";
-import { ElMessage } from "element-plus";
+import { computed } from "vue";
+import { ElButton, ElCol, ElIcon, ElMessage, ElProgress, ElResult, ElRow } from "element-plus";
 import { DCaret } from "@element-plus/icons-vue";
+import { CurrencyOption, currencies } from "@/store/currencies";
+
 
 const props = defineProps<{
   quickPayAmount?: number;
@@ -141,6 +141,7 @@ const subDisplayAmount = computed(() => {
       ).toFixed(2)}`;
     }
   }
+  return ''
 });
 
 const swapMainAndSubDisplayCurrencies = () => {

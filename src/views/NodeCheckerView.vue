@@ -28,7 +28,7 @@ const testNode = async () => {
   });
 
   if (response) {
-    if ((await response?.json()).result.status === "OK") {
+    if ((await response.json()).result.status === "OK") {
       nodeWorks.value = true;
     }
   }

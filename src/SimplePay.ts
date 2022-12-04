@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import monerojs, {
   MoneroDaemonRpc,
-  MoneroOutputWallet,
   MoneroRpcConnection,
   MoneroWalletFull,
 } from "monero-javascript";
@@ -25,6 +24,17 @@ export enum PaymentStatus {
   successful = "successful",
   failed = "failed",
 }
+
+export enum ConnectionStatus {
+  setup = "Setting up HotShop",
+  establishing = "Establishing connection with Monero node",
+  connected = "Connection established",
+  synchronizing = "Synchronizing blockchain",
+  synchronized = "Synchronized",
+  disconnected = "Disconnected",
+}
+
+export const monerodConnectionStatusText = ref(ConnectionStatus.setup);
 
 export enum TransactionResponseStatus {
   success = "success",
@@ -63,7 +73,7 @@ export interface PaymentRequest {
 export interface PaymentResponse {
   requestedPayment: PaymentRequest;
   txData: TransactionResponse | undefined;
-  moneroTx?: any;
+  moneroTx;
   confirmations?: number;
   paymentStatus: PaymentStatus;
   paymentComplete: boolean;
@@ -83,13 +93,12 @@ export class SimplePay {
   wallet!: MoneroWalletFull;
   daemonRpc?: MoneroDaemonRpc;
   moneroRpcConnection?: MoneroRpcConnection;
-  restoreHeight?;
-  syncProgress?: number;
-  balance: any;
-  unlockedBalance: any;
+  restoreHeight?: number;
+  syncProgress = ref(0);
   monerodConnectionStatus?: boolean;
   connectionManager?: monerojs.MoneroConnectionManager;
   constructor(private config: SimplePayConfig) {
+    monerodConnectionStatusText.value = ConnectionStatus.setup;
   }
 
   public getConfig(): SimplePayConfig {
@@ -98,6 +107,7 @@ export class SimplePay {
 
   public async updateConfig(config?: SimplePayConfig) {
     this.monerodConnectionStatus = false;
+    monerodConnectionStatusText.value = ConnectionStatus.setup;
     if (config) {
       this.config = config;
     }
@@ -114,15 +124,14 @@ export class SimplePay {
   ): Promise<PaymentResponse> {
     // TODO: Review returned promises/activate stricter tsconfig
     // TODO: Review this txQuery and determine if this is appropriate way to get payment tx (esp double spend/failed part)
-    const transactions = 
-      await this.wallet.getIncomingTransfers({
-        amount: moneroUtils.xmrToAtomicUnits(paymentRequest.requestAmount),
-        txQuery: {
-          paymentId: paymentRequest.paymentId,
-          isDoubleSpendSeen: false,
-          isFailed: false,
-        },
-      });
+    const transactions = await this.wallet.getIncomingTransfers({
+      amount: moneroUtils.xmrToAtomicUnits(paymentRequest.requestAmount),
+      txQuery: {
+        paymentId: paymentRequest.paymentId,
+        isDoubleSpendSeen: false,
+        isFailed: false,
+      },
+    });
 
     const paymentResponse: PaymentResponse = {
       requestedPayment: paymentRequest,
@@ -134,12 +143,15 @@ export class SimplePay {
     };
 
     if (transactions && transactions?.length > 0) {
-      const incomingTx = transactions[transactions.length-1]
+      const incomingTx = transactions[transactions.length - 1];
 
-      if (moneroUtils.atomicUnitsToXmr(incomingTx.getAmount()) !== paymentRequest.requestAmount) {
-        return paymentResponse
+      if (
+        moneroUtils.atomicUnitsToXmr(incomingTx.getAmount()) !==
+        paymentRequest.requestAmount
+      ) {
+        return paymentResponse;
       }
-      
+
       const txData = incomingTx.getTx();
 
       paymentResponse.moneroTx = txData;
@@ -164,16 +176,13 @@ export class SimplePay {
       networkType: this.config.network,
       primaryAddress: this.config.primaryAddress,
       privateViewKey: this.config.secretViewKey,
-      proxyToWorker: true
+      proxyToWorker: true,
     });
 
     await this.wallet.addListener(this);
-    console.log("Primary Address", await this.wallet.getPrimaryAddress());
 
     this.connectionManager = this.newConnectionManager();
     await this.connectionManager.startCheckingConnection();
-
-    console.log("wallet initialized");
   }
 
   public async createPaymentRequest(
@@ -183,11 +192,6 @@ export class SimplePay {
   ): Promise<PaymentRequest> {
     const integratedAddressState: monerojs.MoneroIntegratedAddress =
       await this.wallet.getIntegratedAddress();
-
-    console.log(
-      "current primary address",
-      integratedAddressState.getStandardAddress()
-    );
     const paymentRequest: PaymentRequest = {
       integratedAddress: integratedAddressState.getIntegratedAddress(),
       paymentId: integratedAddressState.getPaymentId(),
@@ -201,9 +205,6 @@ export class SimplePay {
         label
       ),
     };
-
-    console.log("Current Payment Request", paymentRequest);
-
     return paymentRequest;
   }
 
@@ -245,16 +246,16 @@ export class SimplePay {
     endHeight: any,
     percentDone: any
   ) {
-    console.log(
-      `[event] Height: ${height} | StartHeight: ${startHeight} EndHeight: ${endHeight}`
-    );
-    this.syncProgress = percentDone * 100;
-    console.debug("[event] sync", this.syncProgress, "%");
+    monerodConnectionStatusText.value = ConnectionStatus.synchronizing;
+
+    this.syncProgress.value = percentDone * 100;
 
     // We could generate payment id's immediately, but we need to wait until wallet is fully synced before we can scan for payments
-    if (this.syncProgress === 100) {
+    if (this.syncProgress.value === 100) {
+      monerodConnectionStatusText.value = ConnectionStatus.synchronized;
       simplePayReady.value = true;
     } else {
+      monerodConnectionStatusText.value = ConnectionStatus.synchronizing;
       simplePayReady.value = false;
     }
   }
@@ -263,30 +264,19 @@ export class SimplePay {
   onNewBlock() {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onOutputSpent() {}
-
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async onBalancesChanged(newBalance, newUnlockedBalance) {
-    this.balance = newBalance.toString(10);
-    this.unlockedBalance = newUnlockedBalance.toString(10);
-    console.debug("[event] balance", this.balance, "/", this.unlockedBalance);
-  }
-
-  async onOutputReceived(output: MoneroOutputWallet) {
-    console.log(
-      "[event] output amount",
-      moneroUtils.atomicUnitsToXmr(output.getAmount())
-    );
-    console.log("[event] output tx", output.getTx());
-    // Invoked 3 times per received output: once when unconfirmed, once when confirmed, and once when unlocked. The notified output includes basic fields only, so the output or its transaction should be fetched to get all available fields.
-    console.log("[event] output", output);
+    const balance = newBalance.toString(10);
+    const unlockedBalance = newUnlockedBalance.toString(10);
+    console.debug("[event] balance", balance, "/", unlockedBalance);
   }
 
   // MoneroConnectionManagerListener
   async onConnectionChanged(connection) {
     if (connection) {
       this.monerodConnectionStatus = connection.isConnected() === true;
-      console.log("connection", connection);
+      monerodConnectionStatusText.value = ConnectionStatus.connected;
     }
-    console.debug("[event] connection", this.monerodConnectionStatus);
 
     if (this.monerodConnectionStatus === true) {
       await this.wallet.setDaemonConnection(connection);
@@ -295,10 +285,12 @@ export class SimplePay {
       // https://github.com/monero-ecosystem/monero-javascript/issues/76
       this.restoreHeight = await this.wallet.getDaemonHeight();
 
-      await this.wallet.setSyncHeight(this.restoreHeight-1);
+      await this.wallet.setSyncHeight(this.restoreHeight - 1);
       await this.wallet.startSyncing(5000);
+      monerodConnectionStatusText.value = ConnectionStatus.synchronizing;
     } else {
       await this.wallet.stopSyncing();
+      monerodConnectionStatusText.value = ConnectionStatus.disconnected;
       simplePayReady.value = false;
     }
   }
