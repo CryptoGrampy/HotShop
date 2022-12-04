@@ -1,9 +1,7 @@
 version: "3"
 services:
   hotshop:
-    image: hotshop:latest
-    container_name: hotshop
-    build: ./
+    image: cryptogrampy/hotshop:latest
     restart: unless-stopped
     ports:
       - 8080:80
