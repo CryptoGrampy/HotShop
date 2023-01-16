@@ -15,7 +15,7 @@
     "element-plus": "^2.2.26",
     "idb-keyval": "^6.2.0",
     "monero-javascript": "^0.7.4",
-    "pinia": "^2.0.27",
+    "pinia": "^2.0.29",
     "qrcode": "^1.5.1",
     "register-service-worker": "^1.7.2",
     "vue": "^3.2.45",
