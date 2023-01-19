@@ -143,8 +143,9 @@ export class SimplePay {
     };
 
     if (transactions && transactions?.length > 0) {
-      const incomingTx = transactions[transactions.length - 1];
+      const incomingTx = transactions[transactions.length - 1];     
 
+      //TODO: Move to MoneroTransferQuery in getIncomingTransfers config
       if (
         moneroUtils.atomicUnitsToXmr(incomingTx.getAmount()) !==
         paymentRequest.requestAmount
@@ -153,6 +154,12 @@ export class SimplePay {
       }
 
       const txData = incomingTx.getTx();
+
+
+      if (this.nefariousUnlockTime(txData)) {
+        console.log("Nefarious transaction detected. Transaction unlock height: ", incomingTx.getTx().getUnlockHeight())
+        return paymentResponse
+      }
 
       paymentResponse.moneroTx = txData;
       paymentResponse.confirmations = txData.getNumConfirmations();
@@ -167,6 +174,10 @@ export class SimplePay {
     }
 
     return paymentResponse;
+  }
+
+  public nefariousUnlockTime(moneroTx: monerojs.MoneroTx): boolean {
+    return moneroTx.getUnlockHeight() !== 0
   }
 
   public async initWallet(): Promise<void> {
@@ -262,6 +273,8 @@ export class SimplePay {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onNewBlock() {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+  onOutputReceived() {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onOutputSpent() {}
   // eslint-disable-next-line @typescript-eslint/no-empty-function

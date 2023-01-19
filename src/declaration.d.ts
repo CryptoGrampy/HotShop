@@ -116,6 +116,7 @@ declare module "monero-javascript" {
 
   declare class MoneroTx {
     getNumConfirmations(): number;
+    getUnlockHeight(): number;
   }
 
   declare class MoneroIntegratedAddress {
