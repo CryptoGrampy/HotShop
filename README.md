@@ -18,9 +18,11 @@ Welcome to the HotShop- An ephemeral, browser-based Monero point of sale. Accept
 
 2 Minute Setup Video: https://www.youtube.com/watch?v=jdupXaYY3po
 
-**Currently in Alpha state- please use at your own risk. Additionally, HotShop will NOT recognize funds received from the SAME wallet (sending to yourself doesn't work!). Until I feel the software is stable, I will absolutely be making occasional breaking changes. This may or may not disrupt your saved shop URL and it may disrupt your payments.  The goal is building a solid PoS experience.  If you run into issues, please let me know/write issue tickets.  I will make a normal release when there is app stability (likely in the next month or two) and remove this warning**
+**Currently in Alpha state- please use at your own risk. Additionally, HotShop will NOT recognize funds received from the SAME wallet (sending to yourself doesn't work!). Until I feel the software is stable, I will absolutely be making occasional breaking changes. This may or may not disrupt your saved shop URL and it may disrupt your payments.  The goal is building a solid PoS experience.  If you run into issues, please let me know/write issue tickets.  
 
 HotShop is a simple to use Point of Sale webapp with a simple aesthetic and UI similar to CashApp, Kasisto (RIP) or POS.cash that can be accessed from just about any web browser (on mobile or desktop) with a slight amount of user customization (company name/image, etc). It even works on Tor and works with web-compatible Monero nodes (I think).
+
+You DO NOT need to run your own HotShop instance, HotShop is built in a way that a single instance of HotShop (hotshop.onrender.com for example) can support any number of users.  There is no server saving your HotShop config- all the magic happens and is saved locally in your browser.  
 
 <center> 
 <figure>
