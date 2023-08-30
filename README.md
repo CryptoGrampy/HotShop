@@ -78,13 +78,13 @@ Rough Idea of what happens when you use HotShop:
 
 While anyone can use a public HotShop and customize it to their own liking, it's totally possible to run your own. I've added dockerfiles to make it easy to build, otherwise you can clone the repo and use your own static hosting provider- some of them - [Netlify](https://www.netlify.com/) and [Render](https://render.com/) in particular - integrate extremely easily with Github/Gitlab. Others- neocities- will not let you host .wasm files on their free tier.
 
-### On Render instructions
-Repository: `https://github.com/CryptoGrampy/HotShop`
-Branch: `master`
-Build command: `npm i && npm run build`
-Publish directory: `dist`
+### [Render.com](https://render.com/) Free Static Hosting Deploy Settings:
+- Repository: `https://github.com/CryptoGrampy/HotShop`
+- Branch: `master`
+- Build command: `npm i && npm run build`
+- Publish directory: `dist`
 
-Docker:
+### Docker:
 
 HotShop can easily be deployed via Docker.  Please see the Dockerfile in the repo if you want to build yourself, or take a gander at the docker-compose.yml to see how the prebuilt cryptogrampy/hotshop Dockerhub image can be easily used.
 
