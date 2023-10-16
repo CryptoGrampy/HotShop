@@ -1,3 +1,5 @@
+Archiving this project 10/16/23: This project is no longer being maintained. Forks welcome.
+
 # HotShop
 
 - [HotShop](#hotshop)
